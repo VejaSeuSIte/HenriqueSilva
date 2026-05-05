@@ -2388,6 +2388,73 @@
      ═══════════════════════════════════════════════════════════ */
   .contact{display:none !important}
 
+
+  /* ═══════════════════════════════════════════════════════════
+     Animacoes: imagens slide-in junto com texto
+     ═══════════════════════════════════════════════════════════ */
+  /* Office: texto vem da esquerda, foto da direita ao mesmo tempo */
+  .office-text[data-reveal]{transform:translateX(-44px) !important;opacity:0;transition:opacity .9s cubic-bezier(.22,.8,.24,1), transform .9s cubic-bezier(.22,.8,.24,1)}
+  .office-photo[data-reveal]{transform:translateX(44px) !important;opacity:0;transition:opacity .9s cubic-bezier(.22,.8,.24,1) .15s, transform .9s cubic-bezier(.22,.8,.24,1) .15s}
+  .office-text[data-reveal][data-in], .office-photo[data-reveal][data-in]{transform:translateX(0) !important;opacity:1}
+
+  /* About: portrait esquerda + texto direita simultâneos */
+  .about-portrait[data-reveal]{transform:translateX(-50px) !important;opacity:0;transition:opacity 1s cubic-bezier(.22,.8,.24,1), transform 1s cubic-bezier(.22,.8,.24,1)}
+  .about-text[data-reveal]{transform:translateX(50px) !important;opacity:0;transition:opacity 1s cubic-bezier(.22,.8,.24,1) .12s, transform 1s cubic-bezier(.22,.8,.24,1) .12s}
+  .about-portrait[data-reveal][data-in], .about-text[data-reveal][data-in]{transform:translateX(0) !important;opacity:1}
+
+  /* Contact-CTA: bg image fade+scale ao entrar */
+  @keyframes vs-bgFadeIn{from{opacity:0;transform:scale(1.08)}to{opacity:1;transform:scale(1)}}
+  .contact-cta-bg{animation:vs-bgFadeIn 1.4s cubic-bezier(.22,.8,.24,1) both}
+
+  /* Hero: video sutil zoom-out infinito ja existe — mantido */
+
+  /* ═══════════════════════════════════════════════════════════
+     REVIEWS carrossel scroll-x (desktop tambem)
+     ═══════════════════════════════════════════════════════════ */
+  .reviews-scroll{
+    display:flex !important;
+    grid-template-columns:none !important;
+    gap:22px !important;
+    overflow-x:auto !important;
+    scroll-snap-type:x mandatory !important;
+    padding:8px 0 28px !important;
+    margin-left:0 !important;
+    margin-right:0 !important;
+    -webkit-overflow-scrolling:touch !important;
+    scroll-padding-left:8px !important;
+    scrollbar-width:thin;
+    scrollbar-color:rgba(212,175,55,.35) transparent;
+  }
+  .reviews-scroll::-webkit-scrollbar{height:6px}
+  .reviews-scroll::-webkit-scrollbar-track{background:transparent}
+  .reviews-scroll::-webkit-scrollbar-thumb{background:rgba(212,175,55,.3);border-radius:3px}
+  .reviews-scroll::-webkit-scrollbar-thumb:hover{background:rgba(212,175,55,.6)}
+
+  .reviews-scroll .review-card{
+    flex:0 0 calc(33.33% - 15px) !important;
+    scroll-snap-align:start !important;
+    min-width:340px !important;
+  }
+  .reviews-scroll .review-card:hover{transform:translateY(-3px) !important}
+
+  /* hint indicador "deslize" abaixo do carrossel */
+  .reviews-hint{
+    text-align:center;
+    margin-top:10px;
+    font-family:'Inter Tight', sans-serif;
+    font-size:11px;letter-spacing:.32em;text-transform:uppercase;
+    color:var(--gray-500);font-weight:500;
+    display:flex;align-items:center;justify-content:center;gap:14px;
+  }
+  .reviews-hint::before, .reviews-hint::after{
+    content:""; width:36px; height:1px;
+    background:rgba(212,175,55,.35);
+  }
+
+  @media(max-width:780px){
+    .reviews-scroll .review-card{flex-basis:88% !important; min-width:0 !important}
+  }
+
 </style>
 </head>
 <body data-auto-reveal="all" data-scroll-progress>
@@ -2526,50 +2593,54 @@
         <a href="#contato" class="area-arrow" aria-label="Falar sobre esta área"><svg viewBox="0 0 20 20"><path d="M3 10 L17 10"/><path d="M11 4 L17 10 L11 16"/></svg></a>
       </article>
     </div>
-    <div class="areas-secondary" data-stagger=">
+    <div class="areas-secondary" data-stagger="> .area-card" data-stagger-step="80" data-reveal="up">
       <article class="area-card compact">
-        <img class="area-photo" src="assets/area-previdenciario.jpg" alt="" loading="lazy" aria-hidden="true" />
-        <div class="area-num">— II —</div>
-        <div class="area-icon">
-          <svg viewBox="0 0 32 32"><path d="M16 4 L26 9 L26 22 C26 26 16 30 16 30 C16 30 6 26 6 22 L6 9 Z"/><path d="M11 16 L15 20 L22 13"/></svg>
-        </div>
+        <div class="area-icon"><svg viewBox="0 0 32 32"><path d="M16 4 L26 9 L26 22 C26 26 16 30 16 30 C16 30 6 26 6 22 L6 9 Z"/><path d="M11 16 L15 20 L22 13"/></svg></div>
         <h3>Direito <em>Previdenciário</em></h3>
-        <p>Ações contra o INSS: aposentadorias por idade, tempo de contribuição, especial e BPC/LOAS. Auxílios por incapacidade, revisões e conversões. Leitura criteriosa do CNIS e preparação documental do administrativo à ação judicial.</p>
-        <div class="area-tags"><span class="area-tag">Aposentadorias</span><span class="area-tag">BPC/LOAS</span><span class="area-tag">Revisões</span><span class="area-tag">INSS</span></div>
-        <a href="#contato" class="area-arrow" aria-label="Falar sobre esta área"><svg viewBox="0 0 20 20"><path d="M3 10 L17 10"/><path d="M11 4 L17 10 L11 16"/></svg></a>
+        <p>Ações contra o INSS: aposentadorias por idade, tempo de contribuição, especial e BPC/LOAS. Auxílios por incapacidade, revisões e conversões.</p>
+        <a href="#contato" class="area-arrow" aria-label="Falar"><svg viewBox="0 0 20 20"><path d="M3 10 L17 10"/><path d="M11 4 L17 10 L11 16"/></svg></a>
       </article>
       <article class="area-card compact">
-        <img class="area-photo" src="assets/area-civel.jpg" alt="" loading="lazy" aria-hidden="true" />
-        <div class="area-num">— III —</div>
-        <div class="area-icon">
-          <svg viewBox="0 0 32 32"><path d="M8 4h12l4 4v20H8z"/><path d="M20 4v4h4"/><path d="M12 14h12M12 18h12M12 22h8"/></svg>
-        </div>
+        <div class="area-icon"><svg viewBox="0 0 32 32"><path d="M8 4h12l4 4v20H8z"/><path d="M20 4v4h4"/><path d="M12 14h12M12 18h12M12 22h8"/></svg></div>
         <h3>Direito <em>Cível</em></h3>
-        <p>Contratos, indenizações, responsabilidade civil, danos morais e materiais. Cobranças, despejos, locatício, obrigações e demais questões patrimoniais entre particulares e entre empresas e particulares.</p>
-        <div class="area-tags"><span class="area-tag">Indenizações</span><span class="area-tag">Contratos</span><span class="area-tag">Cobranças</span></div>
-        <a href="#contato" class="area-arrow" aria-label="Falar sobre esta área"><svg viewBox="0 0 20 20"><path d="M3 10 L17 10"/><path d="M11 4 L17 10 L11 16"/></svg></a>
+        <p>Contratos, indenizações, responsabilidade civil, danos morais e materiais. Cobranças, despejos, locatício e demais questões patrimoniais.</p>
+        <a href="#contato" class="area-arrow" aria-label="Falar"><svg viewBox="0 0 20 20"><path d="M3 10 L17 10"/><path d="M11 4 L17 10 L11 16"/></svg></a>
       </article>
       <article class="area-card compact">
-        <img class="area-photo" src="assets/area-civel.jpg" alt="" loading="lazy" aria-hidden="true" />
-        <div class="area-num">— IV —</div>
-        <div class="area-icon">
-          <svg viewBox="0 0 32 32"><circle cx="12" cy="10" r="3"/><circle cx="22" cy="11" r="2.5"/><path d="M6 26c0-4 3-7 6-7s6 3 6 7"/><path d="M18 26c0-3 2-5 4-5s4 2 4 5"/></svg>
-        </div>
+        <div class="area-icon"><svg viewBox="0 0 32 32"><circle cx="12" cy="10" r="3"/><circle cx="22" cy="11" r="2.5"/><path d="M6 26c0-4 3-7 6-7s6 3 6 7"/><path d="M18 26c0-3 2-5 4-5s4 2 4 5"/></svg></div>
         <h3>Direito de <em>Família</em></h3>
-        <p>Divórcios consensuais e litigiosos, alimentos, partilha, guarda, regulamentação de vivência, reconhecimento de paternidade e demais questões do núcleo familiar — com a sensibilidade que esses casos exigem.</p>
-        <div class="area-tags"><span class="area-tag">Divórcio</span><span class="area-tag">Alimentos</span><span class="area-tag">Guarda</span><span class="area-tag">Partilha</span></div>
-        <a href="#contato" class="area-arrow" aria-label="Falar sobre esta área"><svg viewBox="0 0 20 20"><path d="M3 10 L17 10"/><path d="M11 4 L17 10 L11 16"/></svg></a>
+        <p>Divórcios consensuais e litigiosos, alimentos, partilha, guarda, regulamentação de vivência, reconhecimento de paternidade.</p>
+        <a href="#contato" class="area-arrow" aria-label="Falar"><svg viewBox="0 0 20 20"><path d="M3 10 L17 10"/><path d="M11 4 L17 10 L11 16"/></svg></a>
       </article>
       <article class="area-card compact">
-        <img class="area-photo" src="assets/area-civel.jpg" alt="" loading="lazy" aria-hidden="true" />
-        <div class="area-num">— V —</div>
-        <div class="area-icon">
-          <svg viewBox="0 0 32 32"><path d="M6 8h22l-2 12H10z"/><circle cx="12" cy="26" r="2"/><circle cx="24" cy="26" r="2"/><path d="M2 4h4"/></svg>
-        </div>
+        <div class="area-icon"><svg viewBox="0 0 32 32"><path d="M6 8h22l-2 12H10z"/><circle cx="12" cy="26" r="2"/><circle cx="24" cy="26" r="2"/></svg></div>
         <h3>Direito do <em>Consumidor</em></h3>
-        <p>Defesa em relações de consumo: cobranças indevidas, negécios bancos e financeiras, planos de saúde, viagens, telefonia, e-commerce, vicios de produto e serviço. Indenizações e devoluções em dobro.</p>
-        <div class="area-tags"><span class="area-tag">CDC</span><span class="area-tag">Bancos</span><span class="area-tag">Saúde</span><span class="area-tag">Telefonia</span></div>
-        <a href="#contato" class="area-arrow" aria-label="Falar sobre esta área"><svg viewBox="0 0 20 20"><path d="M3 10 L17 10"/><path d="M11 4 L17 10 L11 16"/></svg></a>
+        <p>Defesa em relações de consumo: cobranças indevidas, bancos, planos de saúde, viagens, telefonia, vícios de produto e serviço.</p>
+        <a href="#contato" class="area-arrow" aria-label="Falar"><svg viewBox="0 0 20 20"><path d="M3 10 L17 10"/><path d="M11 4 L17 10 L11 16"/></svg></a>
+      </article>
+      <article class="area-card compact">
+        <div class="area-icon"><svg viewBox="0 0 32 32"><path d="M5 14 L16 5 L27 14 V27 H5 Z"/><path d="M13 27 V20 H19 V27"/></svg></div>
+        <h3>Direito <em>Imobiliário</em></h3>
+        <p>Compra e venda, usucapião, regularização de imóvel, condomínio, distratos, despejos, ações possessórias e contratos de locação.</p>
+        <a href="#contato" class="area-arrow" aria-label="Falar"><svg viewBox="0 0 20 20"><path d="M3 10 L17 10"/><path d="M11 4 L17 10 L11 16"/></svg></a>
+      </article>
+      <article class="area-card compact">
+        <div class="area-icon"><svg viewBox="0 0 32 32"><path d="M6 22 L18 10"/><path d="M14 6 L26 18"/><path d="M4 24 L12 20"/><path d="M16 4 L24 12"/></svg></div>
+        <h3>Juizados <em>Especiais</em></h3>
+        <p>Ações cíveis até 40 salários mínimos: cobranças, pequenos litígios de consumo, indenizações e demandas de menor complexidade.</p>
+        <a href="#contato" class="area-arrow" aria-label="Falar"><svg viewBox="0 0 20 20"><path d="M3 10 L17 10"/><path d="M11 4 L17 10 L11 16"/></svg></a>
+      </article>
+      <article class="area-card compact">
+        <div class="area-icon"><svg viewBox="0 0 32 32"><path d="M16 4 V28"/><path d="M6 28 H26"/><path d="M16 8 L8 18"/><path d="M16 8 L24 18"/></svg></div>
+        <h3>Direito <em>Criminal</em></h3>
+        <p>Consultoria estratégica em matéria criminal mediante análise técnica criteriosa, com prioridade a clientes do portfólio em outros segmentos.</p>
+        <a href="#contato" class="area-arrow" aria-label="Falar"><svg viewBox="0 0 20 20"><path d="M3 10 L17 10"/><path d="M11 4 L17 10 L11 16"/></svg></a>
+      </article>
+      <article class="area-card compact">
+        <div class="area-icon"><svg viewBox="0 0 32 32"><circle cx="16" cy="16" r="11"/><path d="M16 8v16"/><path d="M12 12h6c1 0 2 1 2 2s-1 2-2 2h-4c-1 0-2 1-2 2s1 2 2 2h6"/></svg></div>
+        <h3>Direito <em>Tributário</em></h3>
+        <p>Defesa em execuções fiscais, planejamento tributário, parcelamentos, exclusões de tributos da base de cálculo e repetição de indébito.</p>
+        <a href="#contato" class="area-arrow" aria-label="Falar"><svg viewBox="0 0 20 20"><path d="M3 10 L17 10"/><path d="M11 4 L17 10 L11 16"/></svg></a>
       </article>
     </div>
   </div>
@@ -2592,7 +2663,7 @@
       <div class="reviews-banner-meta">Excelente · com base em <strong>62 avaliações</strong> no Google</div>
     </div>
 
-    <div class="reviews-grid" data-stagger=">
+    <div class="reviews-grid reviews-scroll" data-stagger=">
       <article class="review-card">
         <header class="review-head">
           <div class="review-avatar av1">CR</div>
@@ -2600,10 +2671,9 @@
             <div class="review-name">Carlos Roberto</div>
             <div class="review-date">há 1 mês · Google</div>
           </div>
-          <svg class="review-google" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285f4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34a853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#fbbc04"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#ea4335"/></svg>
         </header>
         <div class="review-stars" aria-label="5 de 5 estrelas">★★★★★</div>
-        <p class="review-quote">Dr. Henrique conduziu minha causa trabalhista com extrema profundidade técnica. Recuperei verbas que outro advogado tinha dito serem impossíveis. Atendimento direto, prazos cumpridos e linguagem clara. Recomendo de olhos fechados.</p>
+        <p class="review-quote">Dr. Henrique conduziu minha causa trabalhista com extrema profundidade técnica. Recuperei verbas que outro advogado tinha dito serem impossíveis. Recomendo de olhos fechados.</p>
       </article>
       <article class="review-card">
         <header class="review-head">
@@ -2612,10 +2682,9 @@
             <div class="review-name">Maria de Souza</div>
             <div class="review-date">há 3 meses · Google</div>
           </div>
-          <svg class="review-google" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285f4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34a853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#fbbc04"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#ea4335"/></svg>
         </header>
         <div class="review-stars" aria-label="5 de 5 estrelas">★★★★★</div>
-        <p class="review-quote">Aposentadoria por idade negada pelo INSS é minha. Dr. Henrique entrou com a ação, juntou tudo no CNIS, e em pouco mais de um ano saíu a sentença com atrasados. Profissional sério, paciente e atencioso.</p>
+        <p class="review-quote">Aposentadoria por idade negada pelo INSS é minha. Dr. Henrique entrou com a ação, juntou tudo no CNIS, e em pouco mais de um ano saiu a sentença com atrasados.</p>
       </article>
       <article class="review-card">
         <header class="review-head">
@@ -2624,14 +2693,48 @@
             <div class="review-name">José Alves</div>
             <div class="review-date">há 6 meses · Google</div>
           </div>
-          <svg class="review-google" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285f4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34a853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#fbbc04"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#ea4335"/></svg>
         </header>
         <div class="review-stars" aria-label="5 de 5 estrelas">★★★★★</div>
-        <p class="review-quote">Contratei a consultoria fixa para minha empresa. Os pareceres tecnicos e o trabalho preventivo evitaram passivos trabalhistas que teriam custado caro. Excelente custo-beneficio.</p>
+        <p class="review-quote">Contratei a consultoria fixa para minha empresa. Os pareceres técnicos e o trabalho preventivo evitaram passivos trabalhistas que teriam custado caro. Excelente custo-benefício.</p>
+      </article>
+      <article class="review-card">
+        <header class="review-head">
+          <div class="review-avatar av4">AF</div>
+          <div class="review-who">
+            <div class="review-name">Ana Ferreira</div>
+            <div class="review-date">há 8 meses · Google</div>
+          </div>
+        </header>
+        <div class="review-stars" aria-label="5 de 5 estrelas">★★★★★</div>
+        <p class="review-quote">Causa de divórcio resolvida com sensibilidade e firmeza. Tem dom para explicar termos jurídicos de forma simples — me senti acompanhada em cada audiência.</p>
+      </article>
+      <article class="review-card">
+        <header class="review-head">
+          <div class="review-avatar av5">RB</div>
+          <div class="review-who">
+            <div class="review-name">Roberto Barbosa</div>
+            <div class="review-date">há 1 ano · Google</div>
+          </div>
+        </header>
+        <div class="review-stars" aria-label="5 de 5 estrelas">★★★★★</div>
+        <p class="review-quote">Já 2 anos sou cliente do escritório. Profissional comprometido com a verdade do caso. Atendimento direto, prazos cumpridos.</p>
+      </article>
+      <article class="review-card">
+        <header class="review-head">
+          <div class="review-avatar av6">PL</div>
+          <div class="review-who">
+            <div class="review-name">Patrícia Lima</div>
+            <div class="review-date">há 1 ano · Google</div>
+          </div>
+        </header>
+        <div class="review-stars" aria-label="5 de 5 estrelas">★★★★★</div>
+        <p class="review-quote">Atendimento online impecável. Mesmo distante, comunicação clara, todos os documentos por PDF. Causa previdenciária ganha. Honorários justos.</p>
       </article>
     </div>
 
-    <div class="reviews-cta" data-reveal="up" data-delay="240">
+    
+    <div class="reviews-hint" aria-hidden="true">deslize para ver mais</div>
+  <div class="reviews-cta" data-reveal="up" data-delay="240">
       <a class="ghost-btn-dark" href="https://www.google.com/search?q=Henrique+Silva+Advocacia+Cabo+de+Santo+Agostinho" target="_blank" rel="noopener">
         Ver todas as 62 avaliações no Google
         <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 10 L17 10"/><path d="M11 4 L17 10 L11 16"/></svg>
@@ -2697,9 +2800,11 @@
 
     <div class="faq" data-reveal="fade" data-stagger="> .q" data-stagger-step="80">
       <details class="q"><summary>A primeira análise é gratuita?</summary><div class="q-body">Sim. A análise inicial pelo WhatsApp ou videoconferência não tem custo. Você só contrata se quiser avançar, com proposta de honorários formal antes de qualquer assinatura.</div></details>
-      <details class="q"><summary>Em quais áreas o escritório atua?</summary><div class="q-body"><strong>Trabalhista</strong> (foco em causas de alta complexidade), <strong>Previdenciário</strong>, <strong>Cível</strong>, <strong>Família</strong>, <strong>Empresarial</strong> e mais cinco áreas complementares.</div></details>
+      <details class="q"><summary>Em quais áreas o escritório atua?</summary><div class="q-body"><strong>Trabalhista</strong> (foco em causas de alta complexidade), <strong>Previdenciário</strong>, <strong>Cível</strong>, <strong>Família</strong>, <strong>Empresarial</strong>, <strong>Imobiliário</strong>, <strong>Tributário</strong>, <strong>Consumidor</strong>, <strong>Juizados Especiais</strong> e <strong>Criminal</strong> (consultoria estratégica).</div></details>
       <details class="q"><summary>Atende fora de Pernambuco?</summary><div class="q-body">Sim. Presencialmente em Cabo de Santo Agostinho/PE com agendamento, e <strong>100% online</strong> em todo o Brasil via WhatsApp e videoconferência.</div></details>
       <details class="q"><summary>Quanto custa contratar?</summary><div class="q-body">Honorários combinados por escrito antes de qualquer trabalho. Trabalhista e Previdenciário comumente por êxito; demais áreas valor fixo ou percentual conforme a ação.</div></details>
+      <details class="q"><summary>Quanto tempo demora um processo?</summary><div class="q-body">Trabalhistas: 6 a 18 meses · Previdenciários: 6 a 24 meses · Cíveis simples: 6 a 12 meses. No início do caso te passo projeção realista.</div></details>
+      <details class="q"><summary>O escritório atende empresas?</summary><div class="q-body">Sim. Oferecemos consultoria fixa em compliance trabalhista, análise contratual, pareceres técnicos e palestras orientativas. Trabalho preventivo e responsivo.</div></details>
     </div>
   </div>
 </section>
