@@ -1,0 +1,123 @@
+/* ================================================================
+   VejaSeuSIte — Biblioteca compartilhada de animações e utilitários
+   Usado por landing + todos os templates (banner-retrato, personal-brand,
+   high-conversion, quiet-authority). Importar via <link rel="stylesheet"
+   href="../../assets/common.css"> nos templates e "assets/common.css"
+   na landing. Pareado com common.js.
+   ================================================================ */
+
+/* ---------- KEYFRAMES CORE ---------- */
+@keyframes vs-fadeUp{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
+@keyframes vs-fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes vs-fadeScale{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:scale(1)}}
+@keyframes vs-fadeLeft{from{opacity:0;transform:translateX(-32px)}to{opacity:1;transform:translateX(0)}}
+@keyframes vs-fadeRight{from{opacity:0;transform:translateX(32px)}to{opacity:1;transform:translateX(0)}}
+@keyframes vs-floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes vs-floatySlow{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
+@keyframes vs-breathe{0%,100%{transform:scale(1)}50%{transform:scale(1.012)}}
+@keyframes vs-tilt{0%,100%{transform:rotate(-1deg)}50%{transform:rotate(1deg)}}
+@keyframes vs-shimmer{0%{transform:translateX(-120%) skewX(-20deg)}100%{transform:translateX(320%) skewX(-20deg)}}
+@keyframes vs-slowSpin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+@keyframes vs-conicSweep{from{--p:0%}to{--p:100%}}
+@keyframes vs-drift{
+  0%{opacity:0;transform:translate(0,0) scale(.4)}
+  20%{opacity:.35}
+  80%{opacity:.35}
+  100%{opacity:0;transform:translate(var(--dx,20px),-120px) scale(1)}
+}
+@keyframes vs-pulseDot{0%,100%{box-shadow:0 0 0 0 rgba(37,211,102,.5)}50%{box-shadow:0 0 0 10px rgba(37,211,102,0)}}
+@keyframes vs-pulseGlow{0%,100%{box-shadow:0 12px 32px rgba(37,211,102,.45)}50%{box-shadow:0 16px 44px rgba(37,211,102,.75)}}
+@keyframes vs-textShine{
+  0%{background-position:-100% 0}
+  60%{background-position:200% 0}
+  100%{background-position:200% 0}
+}
+@keyframes vs-strokeDraw{from{stroke-dashoffset:var(--dash,400)}to{stroke-dashoffset:0}}
+@keyframes vs-wordIn{from{opacity:0;transform:translateY(14px) rotateX(10deg)}to{opacity:1;transform:translateY(0) rotateX(0)}}
+
+/* ---------- REVEAL ON SCROLL ---------- */
+[data-reveal]{opacity:0;transition:opacity .9s cubic-bezier(.22,.8,.24,1),transform .9s cubic-bezier(.22,.8,.24,1);will-change:opacity,transform}
+[data-reveal="up"]{transform:translateY(32px)}
+[data-reveal="down"]{transform:translateY(-24px)}
+[data-reveal="left"]{transform:translateX(-36px)}
+[data-reveal="right"]{transform:translateX(36px)}
+[data-reveal="scale"]{transform:scale(.94)}
+[data-reveal="fade"]{transform:none}
+[data-reveal][data-in]{opacity:1;transform:none}
+
+/* Generic stagger: pai com data-stagger, filhos ficam escondidos até receberem data-in via JS */
+[data-stagger] > *{opacity:0;transform:translateY(24px);transition:opacity .7s cubic-bezier(.22,.8,.24,1),transform .7s cubic-bezier(.22,.8,.24,1);will-change:opacity,transform}
+[data-stagger] > *[data-in]{opacity:1;transform:none}
+
+/* ---------- WORD BY WORD REVEAL ---------- */
+.vs-split-word{display:inline-block;opacity:0;transform:translateY(14px) rotateX(8deg);transition:opacity .7s cubic-bezier(.2,.8,.2,1),transform .7s cubic-bezier(.2,.8,.2,1);will-change:opacity,transform}
+.vs-split[data-in] .vs-split-word{opacity:1;transform:none}
+
+/* ---------- DUST PARTICLES (decorativo no hero) ---------- */
+.vs-dust{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:1}
+.vs-dust i{position:absolute;bottom:-8px;width:6px;height:6px;border-radius:50%;background:radial-gradient(circle,rgba(200,165,116,.6),rgba(200,165,116,0) 70%);animation:vs-drift var(--d,12s) linear infinite;animation-delay:var(--ad,0s)}
+
+/* ---------- 3D TILT ---------- */
+[data-tilt]{transform-style:preserve-3d;transition:transform .45s cubic-bezier(.22,.8,.24,1);will-change:transform}
+[data-tilt-inner]{transform:translateZ(var(--z,20px));transition:transform .45s cubic-bezier(.22,.8,.24,1)}
+
+/* ---------- MAGNETIC BUTTON ---------- */
+[data-magnetic]{transition:transform .25s cubic-bezier(.22,.8,.24,1);will-change:transform}
+
+/* ---------- SCROLL PROGRESS BAR ---------- */
+.vs-scroll-progress{position:fixed;top:0;left:0;right:0;height:3px;background:rgba(0,0,0,.06);z-index:100;pointer-events:none}
+.vs-scroll-progress::after{content:"";position:absolute;top:0;left:0;bottom:0;width:100%;background:linear-gradient(90deg,var(--vs-accent,#9b5a3e),var(--vs-accent-2,#c8a574));transform-origin:left;transform:scaleX(var(--p,0));transition:transform .12s linear}
+
+/* ---------- NOISE OVERLAY ---------- */
+.vs-noise{position:relative}
+.vs-noise::after{content:"";position:absolute;inset:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .3 0 0 0 0 .18 0 0 0 0 .08 0 0 0 .4 0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='.35'/%3E%3C/svg%3E");opacity:.035;pointer-events:none;mix-blend-mode:multiply;z-index:1}
+
+/* ---------- DROP CAP ---------- */
+.vs-drop-cap::first-letter{font-family:'Playfair Display',serif;font-size:4.2em;float:left;line-height:.92;padding:6px 12px 0 0;color:var(--vs-accent,#9b5a3e);font-weight:600}
+
+/* ---------- SHIMMER ON BUTTONS ---------- */
+.vs-shimmer{position:relative;overflow:hidden;isolation:isolate}
+.vs-shimmer::before{content:"";position:absolute;top:0;left:0;width:60%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.32),transparent);transform:translateX(-120%) skewX(-20deg);z-index:1;pointer-events:none}
+.vs-shimmer:hover::before{animation:vs-shimmer .9s cubic-bezier(.22,.8,.24,1) forwards}
+
+/* ---------- STATUS LIVE DOT ---------- */
+.vs-live-dot{display:inline-flex;align-items:center;gap:8px}
+.vs-live-dot::before{content:"";width:9px;height:9px;border-radius:50%;background:#25d366;animation:vs-pulseDot 2s ease-in-out infinite}
+.vs-live-dot.off::before{background:#bbb;animation:none}
+
+/* ---------- TEXT SHINE (para headlines em CTA escuro) ---------- */
+.vs-text-shine{background:linear-gradient(90deg,#fff 0%,#fff 30%,var(--vs-gold,#e4c59a) 50%,#fff 70%,#fff 100%);background-size:200% 100%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:vs-textShine 6s linear infinite}
+
+/* ---------- LINE DRAW UNDERLINE (para links nav) ---------- */
+.vs-underline{position:relative}
+.vs-underline::after{content:"";position:absolute;left:0;right:0;bottom:-4px;height:1.5px;background:currentColor;transform:scaleX(0);transform-origin:right;transition:transform .35s cubic-bezier(.22,.8,.24,1)}
+.vs-underline:hover::after{transform-origin:left;transform:scaleX(1)}
+
+/* ---------- CONIC PROGRESS RING (nos números de steps) ---------- */
+.vs-ring{--p:0%;--ring-color:var(--vs-accent,#9b5a3e);position:relative}
+.vs-ring::before{content:"";position:absolute;inset:-4px;border-radius:inherit;background:conic-gradient(var(--ring-color) var(--p),transparent var(--p));-webkit-mask:radial-gradient(transparent 60%,#000 61%);mask:radial-gradient(transparent 60%,#000 61%);pointer-events:none;transition:--p .8s ease;z-index:-1}
+@property --p{syntax:'<percentage>';initial-value:0%;inherits:false}
+
+/* ---------- SECTION FLOURISH (ornamento dourado entre seções) ---------- */
+.vs-flourish{display:flex;align-items:center;justify-content:center;gap:16px;margin:0 auto;max-width:200px;color:var(--vs-gold,#c8a574);opacity:.6}
+.vs-flourish::before,.vs-flourish::after{content:"";flex:1;height:1px;background:currentColor;opacity:.5}
+.vs-flourish svg{width:18px;height:18px;flex-shrink:0;fill:currentColor}
+
+/* ---------- CTA CURSOR-FOLLOWING GRADIENT ---------- */
+.vs-gradient-follow{position:relative;isolation:isolate;overflow:hidden}
+.vs-gradient-follow::before{content:"";position:absolute;inset:0;background:radial-gradient(circle 500px at var(--mx,50%) var(--my,50%),rgba(200,165,116,.25),transparent 60%);pointer-events:none;z-index:0;transition:background .4s}
+
+/* ---------- SCROLL TIMELINE LINE PROGRESS ---------- */
+.vs-timeline{position:relative}
+.vs-timeline-track{position:absolute;height:2px;background:rgba(0,0,0,.08);z-index:0}
+.vs-timeline-fill{position:absolute;height:2px;background:linear-gradient(90deg,var(--vs-accent,#9b5a3e),var(--vs-gold,#c8a574));transform-origin:left;transform:scaleX(var(--tp,0));transition:transform .25s linear;z-index:1}
+
+/* ---------- RESPECT REDUCED MOTION ---------- */
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001s!important;animation-iteration-count:1!important;transition-duration:.12s!important;scroll-behavior:auto!important}
+  [data-reveal]{opacity:1!important;transform:none!important}
+  .vs-split-word{opacity:1!important;transform:none!important}
+  .vs-dust,.vs-noise::after{display:none!important}
+  .vs-shimmer::before{display:none!important}
+  .vs-text-shine{animation:none!important;-webkit-text-fill-color:inherit;color:#fff}
+}
