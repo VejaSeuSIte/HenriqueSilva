@@ -4,7 +4,7 @@ slug: bem-vindos-ao-blog
 excerpt: "A partir de hoje, o escritório passa a publicar regularmente conteúdo prático sobre as áreas em que atuamos — começando pelo Trabalhista."
 category: geral
 tags: [boas-vindas, advocacia, conteudo]
-cover: ""
+cover: "/HenriqueSilva/blog/images/post-bem-vindos.jpg"
 date: 2026-05-05
 updated: 2026-05-05
 ---
@@ -16,6 +16,8 @@ Este é o primeiro post do blog do **Henrique Silva Advocacia**. A ideia aqui é
 Em quase 14 anos de prática, percebi que muito do meu tempo é gasto explicando o **óbvio para quem nunca lidou com o Judiciário**: o que é prescrição, como funciona o cálculo de horas extras, quando vale a pena fazer um inventário extrajudicial. Esse blog é, antes de tudo, uma tentativa de antecipar essas conversas.
 
 > *"Conhecimento jurídico não é privilégio de juristas. É um direito do cidadão informado."*
+
+![Mesa de trabalho do escritório com livros de Direito](/HenriqueSilva/blog/images/post-bem-vindos-inline.jpg)
 
 ## Sobre o que vou escrever
 
