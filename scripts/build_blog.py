@@ -1,14 +1,17 @@
 """
 Build estatico do blog Henrique Silva Advocacia.
-Le _posts/*.md, gera dist/ com:
+Le _posts/*.md, gera output com:
   - blog/index.html (listagem)
   - blog/<slug>/index.html (cada post)
   - blog/categoria/<cat>/index.html
   - blog/posts.json (metadata)
   - blog/rss.xml
-Copia tudo do site (index.html + assets/ + admin/) pra dist/.
+
+Modos:
+  python build_blog.py             -> gera em dist/ (Action / preview)
+  python build_blog.py --inplace   -> gera direto em blog/ (commit no main)
 """
-import os, re, json, shutil, datetime, html
+import os, re, json, shutil, datetime, html, argparse
 from pathlib import Path
 import yaml
 import markdown
@@ -90,7 +93,7 @@ def fmt_date_pt(iso):
     except Exception:
         return iso
 
-def build():
+def build(inplace=False):
     if not POSTS_DIR.exists():
         print(f'WARN: {POSTS_DIR} nao existe; criando vazio')
         POSTS_DIR.mkdir(parents=True, exist_ok=True)
@@ -104,26 +107,41 @@ def build():
     posts.sort(key=lambda p: p['date'], reverse=True)
 
     # Setup output
-    if DIST.exists():
-        shutil.rmtree(DIST)
-    DIST.mkdir(parents=True)
-
-    # Copia o site principal
-    for item in ['index.html', 'assets', 'admin', '.nojekyll', 'LICENSE', 'README.md']:
-        src = ROOT / item
-        if src.exists():
-            if src.is_dir():
-                shutil.copytree(src, DIST / item)
-            else:
-                shutil.copy2(src, DIST / item)
-    # Copia imagens do blog
-    blog_images = SRC_BLOG / 'images'
-    if blog_images.exists():
-        target = DIST / 'blog' / 'images'
-        target.mkdir(parents=True, exist_ok=True)
-        for img in blog_images.iterdir():
-            if img.is_file():
-                shutil.copy2(img, target / img.name)
+    global DIST
+    if inplace:
+        DIST = ROOT
+        # Limpa apenas arquivos gerados anteriormente em /blog/
+        blog_out = DIST / 'blog'
+        blog_out.mkdir(parents=True, exist_ok=True)
+        for f in ['index.html', 'posts.json', 'rss.xml']:
+            p = blog_out / f
+            if p.exists(): p.unlink()
+        if (blog_out / 'categoria').exists():
+            shutil.rmtree(blog_out / 'categoria')
+        # Remove subdirs de slug antigos (qualquer pasta com index.html, exceto _posts/_layouts/images)
+        for sub in blog_out.iterdir():
+            if sub.is_dir() and sub.name not in ('_posts', '_layouts', 'images') and (sub / 'index.html').exists():
+                shutil.rmtree(sub)
+    else:
+        if DIST.exists():
+            shutil.rmtree(DIST)
+        DIST.mkdir(parents=True)
+        # Copia o site principal
+        for item in ['index.html', 'assets', 'admin', '.nojekyll', 'LICENSE', 'README.md']:
+            src = ROOT / item
+            if src.exists():
+                if src.is_dir():
+                    shutil.copytree(src, DIST / item)
+                else:
+                    shutil.copy2(src, DIST / item)
+        # Copia imagens do blog
+        blog_images = SRC_BLOG / 'images'
+        if blog_images.exists():
+            target = DIST / 'blog' / 'images'
+            target.mkdir(parents=True, exist_ok=True)
+            for img in blog_images.iterdir():
+                if img.is_file():
+                    shutil.copy2(img, target / img.name)
 
     # Jinja env
     env = Environment(
@@ -241,4 +259,7 @@ def build():
     print(f'\nDone. Output: {DIST}')
 
 if __name__ == '__main__':
-    build()
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--inplace', action='store_true', help='Escreve direto em blog/ na raiz (sem dist/)')
+    args = parser.parse_args()
+    build(inplace=args.inplace)

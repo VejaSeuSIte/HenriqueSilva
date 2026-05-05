@@ -1,0 +1,397 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Bem-vindos ao blog do escritório · Henrique Silva Advocacia</title>
+<meta name="description" content="A partir de hoje, o escritório passa a publicar regularmente conteúdo prático sobre as áreas em que atuamos — começando pelo Trabalhista." />
+<meta name="theme-color" content="#0a0a0a" />
+<link rel="canonical" href="https://vejaseusite.github.io/HenriqueSilva/blog/bem-vindos-ao-blog/" />
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="Henrique Silva Advocacia" />
+<meta property="og:locale" content="pt_BR" />
+<meta property="og:url" content="https://vejaseusite.github.io/HenriqueSilva/blog/bem-vindos-ao-blog/" />
+<meta property="og:title" content="Bem-vindos ao blog do escritório · Henrique Silva Advocacia" />
+<meta property="og:description" content="A partir de hoje, o escritório passa a publicar regularmente conteúdo prático sobre as áreas em que atuamos — começando pelo Trabalhista." />
+<meta property="og:image" content="https://vejaseusite.github.io/HenriqueSilva/assets/og-banner.jpg" />
+<meta name="twitter:card" content="summary_large_image" />
+<link rel="icon" type="image/png" href="/HenriqueSilva/assets/favicon-hsa.png" />
+<link rel="apple-touch-icon" href="/HenriqueSilva/assets/favicon-hsa.png" />
+<link rel="alternate" type="application/rss+xml" title="Henrique Silva Advocacia · Blog" href="/HenriqueSilva/blog/rss.xml" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,300;1,9..144,400;1,9..144,500&family=Inter+Tight:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --black:#0a0a0a;--black-2:#141414;--black-3:#1c1c1c;
+    --gold:#d4af37;--gold-light:#e6c869;--gold-deep:#a88a2c;
+    --off-white:#f5f5f5;--gray-100:#e8e8e8;
+    --gray-300:#a8a8a8;--gray-500:#6a6a6a;--gray-700:#3a3a3a;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:'Inter Tight',system-ui,sans-serif;background:var(--black);color:var(--off-white);font-weight:300;line-height:1.65;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+  a{color:inherit;text-decoration:none}
+  img{max-width:100%;display:block}
+  em{color:var(--gold-light);font-style:italic;font-weight:300}
+  .wrap{max-width:1240px;margin:0 auto;padding:0 32px}
+  .narrow{max-width:760px;margin:0 auto;padding:0 32px}
+
+  /* ═════ NAV ═════ */
+  .nav{position:fixed;top:0;left:0;right:0;z-index:50;padding:16px 0;transition:all .35s}
+  .nav-inner{max-width:1320px;margin:0 auto;padding:0 36px;display:flex;align-items:center;justify-content:space-between;gap:24px}
+  .nav.scrolled{background:rgba(10,10,10,.95);backdrop-filter:blur(16px);border-bottom:1px solid rgba(212,175,55,.12);padding:10px 0}
+  .brand{display:flex;align-items:center;gap:14px}
+  .brand-seal{height:46px;width:46px;object-fit:contain}
+  .wordmark-text{display:inline-flex;flex-direction:column;line-height:1;font-family:'Fraunces',serif;color:var(--off-white);font-size:18px;font-weight:400}
+  .wordmark-text small{font-size:8px;color:var(--gold);letter-spacing:.42em;margin-top:2px;font-family:'Inter Tight',sans-serif;text-transform:uppercase}
+  .nav-links{display:flex;gap:34px;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:#fff;font-weight:500;font-family:'Inter Tight',sans-serif}
+  .nav-links a{position:relative;opacity:.85;transition:all .25s}
+  .nav-links a:hover,.nav-links a.active{opacity:1;color:var(--gold-light)}
+  .nav-cta{border:1px solid rgba(212,175,55,.5);color:var(--gold-light);padding:11px 22px;font-size:10.5px;letter-spacing:.22em;font-weight:500;text-transform:uppercase;transition:all .3s;font-family:'Inter Tight',sans-serif;display:inline-flex;align-items:center;gap:10px}
+  .nav-cta:hover{background:var(--gold);color:var(--black);border-color:var(--gold)}
+  .nav-cta svg{width:14px;height:14px;fill:currentColor}
+  .nav-burger{display:none;background:transparent;border:0;padding:10px;cursor:pointer}
+  .nav-burger svg{width:26px;height:26px;stroke:var(--gold-light);fill:none;stroke-width:1.6}
+  @media(max-width:1020px){
+    .nav-burger{display:inline-flex}
+    .nav-links{display:none;flex-direction:column;gap:0;position:absolute;top:calc(100% + 14px);left:24px;right:24px;background:rgba(10,10,10,.96);backdrop-filter:blur(20px);border:1px solid rgba(212,175,55,.18);padding:8px 0}
+    .nav.nav-open .nav-links{display:flex}
+    .nav-links a{padding:18px 28px;border-top:1px solid rgba(212,175,55,.12)}
+    .nav-links a:first-child{border-top:0}
+  }
+
+  /* ═════ FOOTER ═════ */
+  .footer{background:var(--black);border-top:1px solid rgba(212,175,55,.15);color:var(--gray-300);padding:80px 0 36px;margin-top:80px}
+  .footer-grid{display:grid;grid-template-columns:1fr 1fr;gap:64px;margin-bottom:60px}
+  .footer-brand{display:flex;align-items:center;gap:16px;margin-bottom:24px}
+  .footer-brand img{height:54px;width:54px}
+  .footer-tag{font-family:'Fraunces',serif;font-style:italic;font-size:14px;color:var(--gray-300);max-width:340px;line-height:1.6}
+  .footer h4{font-family:'Inter Tight',sans-serif;color:var(--gold);font-size:11px;letter-spacing:.32em;text-transform:uppercase;margin-bottom:18px;font-weight:500}
+  .footer-contact{font-family:'Fraunces',serif;font-style:italic;font-size:14px;color:var(--gray-300);line-height:1.7}
+  .footer-contact strong{font-family:'Inter Tight',sans-serif;color:var(--off-white);font-size:12px;letter-spacing:.04em;text-transform:uppercase;display:block;margin-top:14px;margin-bottom:4px;font-style:normal;font-weight:500}
+  .footer-contact strong:first-child{margin-top:0}
+  .footer-contact a:hover{color:var(--gold-light)}
+  .social-icons{display:flex;gap:12px;margin-top:18px}
+  .social-icons a{width:38px;height:38px;border:1px solid rgba(212,175,55,.3);color:var(--gold);display:flex;align-items:center;justify-content:center;transition:all .3s}
+  .social-icons a:hover{background:var(--gold);color:var(--black);border-color:var(--gold);transform:translateY(-2px)}
+  .social-icons svg{width:16px;height:16px}
+  .footer-bottom{border-top:1px solid rgba(212,175,55,.15);padding-top:24px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:18px;font-size:12px}
+  .footer-bottom-left{font-family:'Fraunces',serif;font-style:italic;color:var(--gray-500)}
+  .footer-bottom-right{font-family:'Inter Tight',sans-serif;color:var(--gray-500);font-size:10px;letter-spacing:.28em;text-transform:uppercase}
+  @media(max-width:780px){.footer-grid{grid-template-columns:1fr;gap:36px}.footer-bottom{flex-direction:column;text-align:center}}
+
+  /* ═════ WA FAB ═════ */
+  .wa-fab{position:fixed;bottom:28px;right:28px;width:56px;height:56px;background:#25d366;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;box-shadow:0 14px 32px rgba(37,211,102,.4);z-index:60;transition:transform .3s}
+  .wa-fab:hover{transform:scale(1.06)}
+  .wa-fab svg{width:30px;height:30px;fill:currentColor}
+
+  .post-page{padding-top:130px;min-height:60vh}
+  .post-header{padding:60px 0 50px;border-bottom:1px solid rgba(212,175,55,.1)}
+  .post-header .narrow{text-align:center}
+  .post-cat{display:inline-block;font-family:'Inter Tight',sans-serif;font-size:11px;letter-spacing:.42em;text-transform:uppercase;color:var(--gold);margin-bottom:24px;font-weight:500;padding:7px 16px;border:1px solid rgba(212,175,55,.4)}
+  .post-cat:hover{background:var(--gold);color:var(--black)}
+  .post-title{font-family:'Fraunces',serif;font-size:clamp(36px,5vw,64px);line-height:1.06;letter-spacing:-.022em;color:var(--off-white);font-weight:300;margin-bottom:24px}
+  .post-title em{color:var(--gold-light)}
+  .post-excerpt{font-family:'Fraunces',serif;font-style:italic;font-size:21px;color:var(--gray-300);line-height:1.5;font-weight:300;max-width:680px;margin:0 auto 36px}
+  .post-meta{display:flex;align-items:center;justify-content:center;gap:24px;font-family:'Inter Tight',sans-serif;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--gray-500);font-weight:500;flex-wrap:wrap}
+  .post-meta span.gold{color:var(--gold)}
+  .post-meta .dot{color:var(--gray-700)}
+  .post-cover{margin:60px auto 0;max-width:1100px;padding:0 32px}
+  .post-cover img{width:100%;height:auto;max-height:560px;object-fit:cover;display:block}
+
+  .post-body{padding:80px 0 60px}
+  .post-body .narrow{font-family:'Fraunces',serif;font-size:18px;line-height:1.78;color:var(--off-white);font-weight:300}
+  .post-body p{margin-bottom:26px}
+  .post-body strong{color:var(--gold-light);font-weight:500}
+  .post-body em{font-style:italic;color:var(--gold-light)}
+  .post-body h2{font-family:'Fraunces',serif;font-size:34px;font-weight:300;letter-spacing:-.018em;color:var(--off-white);margin:60px 0 20px;line-height:1.18}
+  .post-body h2 em{color:var(--gold-light)}
+  .post-body h3{font-family:'Fraunces',serif;font-size:25px;font-weight:400;color:var(--off-white);margin:44px 0 16px;line-height:1.22}
+  .post-body h4{font-family:'Inter Tight',sans-serif;font-size:13px;letter-spacing:.32em;text-transform:uppercase;color:var(--gold);margin:36px 0 14px;font-weight:500}
+  .post-body ul,.post-body ol{margin:0 0 26px;padding-left:24px}
+  .post-body li{margin-bottom:10px}
+  .post-body a{color:var(--gold-light);border-bottom:1px solid rgba(212,175,55,.35);transition:all .25s}
+  .post-body a:hover{border-bottom-color:var(--gold-light);color:var(--gold)}
+  .post-body blockquote{margin:40px 0;padding:24px 32px;border-left:3px solid var(--gold);background:var(--black-2);font-family:'Fraunces',serif;font-style:italic;font-size:20px;color:var(--gray-300);line-height:1.55}
+  .post-body blockquote p:last-child{margin-bottom:0}
+  .post-body code{font-family:Consolas,monospace;background:var(--black-2);padding:2px 8px;border-radius:2px;color:var(--gold-light);font-size:.92em}
+  .post-body pre{background:var(--black-2);padding:24px 28px;border:1px solid rgba(212,175,55,.15);overflow-x:auto;margin:30px 0;border-radius:2px}
+  .post-body pre code{background:transparent;padding:0;color:var(--off-white);font-size:14px}
+  .post-body table{width:100%;border-collapse:collapse;margin:30px 0;font-family:'Inter Tight',sans-serif;font-size:14px}
+  .post-body th,.post-body td{padding:14px 18px;text-align:left;border-bottom:1px solid rgba(212,175,55,.18)}
+  .post-body th{font-family:'Inter Tight',sans-serif;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);font-weight:500;background:var(--black-2)}
+  .post-body img{margin:30px auto;max-width:100%;height:auto;display:block;border:1px solid rgba(212,175,55,.15)}
+  .post-body hr{border:0;border-top:1px solid rgba(212,175,55,.15);margin:48px 0}
+  .post-body .footnote{font-size:14px;color:var(--gray-500);font-style:italic}
+
+  /* CTA + share */
+  .post-cta{margin:60px 0 30px;padding:48px 44px;background:var(--black-2);border:1px solid rgba(212,175,55,.25);text-align:center}
+  .post-cta h3{font-family:'Fraunces',serif;font-size:28px;color:var(--off-white);font-weight:300;margin-bottom:14px;letter-spacing:-.012em}
+  .post-cta h3 em{color:var(--gold-light)}
+  .post-cta p{color:var(--gray-300);font-family:'Fraunces',serif;font-style:italic;margin-bottom:28px;font-size:16px}
+  .post-cta-btn{display:inline-flex;align-items:center;gap:14px;background:var(--gold);color:var(--black);padding:18px 36px;font-family:'Inter Tight',sans-serif;font-size:11px;letter-spacing:.32em;text-transform:uppercase;font-weight:600;transition:all .35s}
+  .post-cta-btn:hover{background:var(--gold-light);transform:translateY(-2px);box-shadow:0 18px 36px rgba(212,175,55,.32)}
+  .post-cta-btn svg{width:18px;height:18px;fill:currentColor}
+
+  .post-share{margin:30px 0;padding:24px 0;border-top:1px solid rgba(212,175,55,.15);border-bottom:1px solid rgba(212,175,55,.15);display:flex;align-items:center;justify-content:center;gap:18px;flex-wrap:wrap}
+  .post-share-label{font-family:'Inter Tight',sans-serif;font-size:11px;letter-spacing:.32em;text-transform:uppercase;color:var(--gray-500);font-weight:500}
+  .post-share-btn{display:inline-flex;align-items:center;gap:10px;background:transparent;border:1px solid rgba(212,175,55,.3);color:var(--gold-light);padding:9px 18px;font-family:'Inter Tight',sans-serif;font-size:11px;letter-spacing:.18em;text-transform:uppercase;font-weight:500;cursor:pointer;transition:all .25s}
+  .post-share-btn:hover{background:var(--gold);color:var(--black);border-color:var(--gold)}
+  .post-share-btn svg{width:14px;height:14px;fill:currentColor}
+
+  /* Disclaimer */
+  .post-disclaimer{margin:30px 0;padding:20px 28px;background:transparent;border:1px dashed rgba(212,175,55,.25);font-family:'Fraunces',serif;font-style:italic;font-size:14px;color:var(--gray-500);line-height:1.6;text-align:center}
+
+  /* Author + Tags */
+  .post-author{margin:50px 0;padding:36px 32px;background:var(--black-2);display:flex;align-items:center;gap:24px;border:1px solid rgba(212,175,55,.15)}
+  .post-author-avatar{width:80px;height:80px;border-radius:50%;background:rgba(212,175,55,.15);display:flex;align-items:center;justify-content:center;color:var(--gold);font-family:'Fraunces',serif;font-style:italic;font-size:36px;font-weight:300;flex-shrink:0}
+  .post-author-meta{flex:1}
+  .post-author-name{font-family:'Fraunces',serif;font-size:22px;color:var(--off-white);margin-bottom:4px;font-weight:400}
+  .post-author-role{font-family:'Inter Tight',sans-serif;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:10px;font-weight:500}
+  .post-author-bio{font-family:'Inter Tight',sans-serif;font-size:14px;color:var(--gray-300);line-height:1.6;font-weight:300}
+
+  .post-tags{margin:30px 0;display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+  .post-tag{font-family:'Inter Tight',sans-serif;font-size:10.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold-light);padding:6px 14px;border:1px solid rgba(212,175,55,.35);font-weight:500;background:rgba(212,175,55,.05)}
+
+  /* Prev/Next */
+  .post-nav{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin:60px 0 40px}
+  .post-nav a{padding:30px 28px;background:var(--black-2);border:1px solid rgba(212,175,55,.15);transition:all .35s}
+  .post-nav a:hover{border-color:var(--gold);transform:translateY(-3px)}
+  .post-nav-label{font-family:'Inter Tight',sans-serif;font-size:10px;letter-spacing:.32em;text-transform:uppercase;color:var(--gray-500);margin-bottom:8px;font-weight:500}
+  .post-nav-title{font-family:'Fraunces',serif;font-size:18px;color:var(--off-white);line-height:1.3;font-weight:400}
+  .post-nav .next{text-align:right}
+  @media(max-width:780px){.post-nav{grid-template-columns:1fr}}
+
+  /* Related */
+  .post-related{padding:60px 0;border-top:1px solid rgba(212,175,55,.15);background:var(--black)}
+  .post-related h3{font-family:'Fraunces',serif;font-size:32px;color:var(--off-white);font-weight:300;margin-bottom:36px;text-align:center;letter-spacing:-.012em}
+  .post-related h3 em{color:var(--gold-light)}
+  .post-related-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;max-width:1240px;margin:0 auto;padding:0 32px}
+  @media(max-width:980px){.post-related-grid{grid-template-columns:1fr}}
+
+  @media(max-width:780px){
+    .post-page{padding-top:100px}
+    .post-header{padding:30px 0}
+    .post-cover{margin:30px auto 0}
+    .post-body{padding:48px 0}
+    .post-body h2{font-size:26px}
+    .post-cta{padding:32px 24px}
+    .post-author{flex-direction:column;text-align:center}
+  }
+</style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "Bem-vindos ao blog do escritório",
+  "description": "A partir de hoje, o escritório passa a publicar regularmente conteúdo prático sobre as áreas em que atuamos — começando pelo Trabalhista.",
+  "image": "https://vejaseusite.github.io/HenriqueSilva/assets/og-banner.jpg",
+  "datePublished": "2026-05-05",
+  "dateModified": "2026-05-05",
+  "author": {
+    "@type": "Person",
+    "name": "Dr. José Henrique da Silva",
+    "url": "https://vejaseusite.github.io/HenriqueSilva/#sobre",
+    "jobTitle": "Advogado",
+    "identifier": "OAB/PE 31.742"
+  },
+  "publisher": {
+    "@type": "LegalService",
+    "name": "Henrique Silva Advocacia",
+    "logo": { "@type": "ImageObject", "url": "https://vejaseusite.github.io/HenriqueSilva/assets/seal-hsa.png" }
+  },
+  "mainEntityOfPage": "https://vejaseusite.github.io/HenriqueSilva/blog/bem-vindos-ao-blog/",
+  "articleSection": "Geral",
+  "keywords": "boas-vindas, advocacia, conteudo"
+}
+</script>
+</head>
+<body>
+
+<nav class="nav" id="nav">
+  <div class="nav-inner">
+    <a href="/HenriqueSilva/" class="brand">
+      <img class="brand-seal" src="/HenriqueSilva/assets/seal-hsa.png" alt="HSA" />
+      <span class="wordmark-text">Henrique Silva<small>Advocacia</small></span>
+    </a>
+    <button class="nav-burger" id="navBurger" aria-label="Menu" aria-expanded="false">
+      <svg viewBox="0 0 26 26"><line x1="3" y1="6" x2="23" y2="6"/><line x1="3" y1="13" x2="23" y2="13"/><line x1="3" y1="20" x2="23" y2="20"/></svg>
+    </button>
+    <div class="nav-links" id="navLinks">
+      <a href="/HenriqueSilva/#escritorio">Escritório</a>
+      <a href="/HenriqueSilva/#areas">Áreas</a>
+      <a href="/HenriqueSilva/#sobre">Quem Sou</a>
+      <a href="/HenriqueSilva/blog/" class="active">Blog</a>
+      <a href="/HenriqueSilva/#contato">Contato</a>
+    </div>
+    <a class="nav-cta" href="https://wa.me/5581987134878?text=Ol%C3%A1%2C%20Dr.%20Henrique." target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24"><path d="M17.5 14.4c-.3-.1-1.6-.8-1.9-.9-.3-.1-.4-.1-.6.1s-.7.9-.9 1.1c-.2.2-.3.2-.6.1-.3-.1-1.2-.5-2.3-1.4-.8-.7-1.4-1.6-1.6-1.9-.2-.3 0-.4.1-.6.1-.1.3-.3.4-.5.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5 0-.1-.6-1.5-.9-2.1-.2-.5-.5-.5-.6-.5h-.5c-.2 0-.5.1-.7.4-.2.3-.9 1-.9 2.4 0 1.4 1 2.8 1.1 3 .1.2 1.9 3 4.7 4.2.7.3 1.2.4 1.6.6.7.2 1.3.2 1.8.1.5-.1 1.6-.7 1.9-1.3.2-.6.2-1.2.2-1.3 0-.1-.2-.2-.5-.3M12 21.7c-1.7 0-3.3-.4-4.7-1.3l-.3-.2-3.5.9.9-3.4-.2-.4c-.9-1.5-1.4-3.2-1.4-4.9 0-5.1 4.2-9.3 9.2-9.3 2.5 0 4.8 1 6.6 2.7 1.7 1.8 2.7 4.1 2.7 6.6-.1 5.1-4.2 9.3-9.3 9.3M20 4c-2.1-2.1-5-3.3-8-3.3-6.2 0-11.3 5.1-11.3 11.3 0 2 .5 3.9 1.5 5.6L.6 23.4l5.9-1.5c1.6.9 3.5 1.4 5.4 1.4 6.2 0 11.3-5.1 11.3-11.3 0-3-1.2-5.9-3.2-8z"/></svg>
+      WhatsApp
+    </a>
+  </div>
+</nav>
+
+<article class="post-page">
+  <header class="post-header">
+    <div class="narrow">
+      <a class="post-cat" href="/HenriqueSilva/blog/categoria/geral/">Geral</a>
+      <h1 class="post-title">Bem-vindos ao blog do escritório</h1>
+<p class="post-excerpt">A partir de hoje, o escritório passa a publicar regularmente conteúdo prático sobre as áreas em que atuamos — começando pelo Trabalhista.</p>      <div class="post-meta">
+        <span class="gold">5 de maio de 2026</span>
+        <span class="dot">·</span>
+        <span>1 min de leitura</span>
+        <span class="dot">·</span>
+        <span>Dr. Henrique Silva</span>
+      </div>
+    </div>
+  </header>
+
+
+  <div class="post-body">
+    <div class="narrow">
+      <p>Este é o primeiro post do blog do <strong>Henrique Silva Advocacia</strong>. A ideia aqui é simples: traduzir, em linguagem direta, as dúvidas que mais aparecem no dia a dia do escritório.</p>
+<h2 id="por-que-um-blog">Por que um blog</h2>
+<p>Em quase 14 anos de prática, percebi que muito do meu tempo é gasto explicando o <strong>óbvio para quem nunca lidou com o Judiciário</strong>: o que é prescrição, como funciona o cálculo de horas extras, quando vale a pena fazer um inventário extrajudicial. Esse blog é, antes de tudo, uma tentativa de antecipar essas conversas.</p>
+<blockquote>
+<p><em>&ldquo;Conhecimento jurídico não é privilégio de juristas. É um direito do cidadão informado.&rdquo;</em></p>
+</blockquote>
+<h2 id="sobre-o-que-vou-escrever">Sobre o que vou escrever</h2>
+<p>A ordem dos primeiros posts vai seguir as áreas em que o escritório mais atua:</p>
+<ol>
+<li><strong>Direito Trabalhista</strong> — execuções, horas extras, assédio moral, rescisão indireta</li>
+<li><strong>Direito Previdenciário</strong> — INSS, BPC/LOAS, revisões, aposentadoria especial</li>
+<li><strong>Direito de Família</strong> — divórcio consensual, alimentos, partilha</li>
+<li><strong>Direito Empresarial</strong> — compliance trabalhista, consultoria fixa, palestras</li>
+</ol>
+<p>Cada artigo terá:</p>
+<ul>
+<li>Linguagem <strong>acessível</strong>, sem juridiquês desnecessário</li>
+<li>Exemplos práticos baseados em casos reais (anonimizados)</li>
+<li>Referência expressa às leis, súmulas e teses citadas</li>
+<li>Espaço para você fazer <strong>perguntas pelo WhatsApp</strong></li>
+</ul>
+<h2 id="o-que-esse-blog-nao-e">O que esse blog NÃO é</h2>
+<p>Não é consulta jurídica. Cada caso tem suas particularidades, e nenhum artigo aqui substitui a análise individualizada do seu processo. Quando o tema permitir, vou sempre indicar <strong>quando vale a pena procurar um advogado</strong> — incluindo casos em que talvez nem precise.</p>
+<h2 id="como-acompanhar">Como acompanhar</h2>
+<ul>
+<li>Compartilhe os artigos pelo WhatsApp ou LinkedIn</li>
+<li>Me siga no <a href="https://www.instagram.com/henriquesilva.adv2023/">Instagram</a> para chamadas dos novos posts</li>
+<li>Inscreva-se no canal <a href="https://www.youtube.com/@guiatrabalhistademocratiza1594">Guia Trabalhista</a> no YouTube — onde os mesmos temas viram vídeos</li>
+</ul>
+<p>Volte aqui daqui a alguns dias. O próximo post já está no forno: <strong>&ldquo;Como provar horas extras na Justiça do Trabalho — o que vale e o que não vale como prova&rdquo;</strong>.</p>
+<p>Boa leitura.</p>
+
+      <div class="post-disclaimer">
+        Conteúdo informativo. <strong>Não substitui consulta jurídica.</strong> Para análise do seu caso específico, fale com o escritório.
+      </div>
+
+      <div class="post-tags">
+<span class="post-tag">#boas-vindas</span><span class="post-tag">#advocacia</span><span class="post-tag">#conteudo</span>      </div>
+
+      <div class="post-share">
+        <span class="post-share-label">Compartilhar</span>
+        <a class="post-share-btn" href="https://wa.me/?text=Bem-vindos ao blog do escritório%20https://vejaseusite.github.io/HenriqueSilva/blog/bem-vindos-ao-blog/" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24"><path d="M17.5 14.4c-.3-.1-1.6-.8-1.9-.9-.3-.1-.4-.1-.6.1s-.7.9-.9 1.1c-.2.2-.3.2-.6.1-.3-.1-1.2-.5-2.3-1.4-.8-.7-1.4-1.6-1.6-1.9-.2-.3 0-.4.1-.6.1-.1.3-.3.4-.5.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5 0-.1-.6-1.5-.9-2.1-.2-.5-.5-.5-.6-.5h-.5c-.2 0-.5.1-.7.4-.2.3-.9 1-.9 2.4 0 1.4 1 2.8 1.1 3 .1.2 1.9 3 4.7 4.2.7.3 1.2.4 1.6.6.7.2 1.3.2 1.8.1.5-.1 1.6-.7 1.9-1.3.2-.6.2-1.2.2-1.3 0-.1-.2-.2-.5-.3M12 21.7c-1.7 0-3.3-.4-4.7-1.3l-.3-.2-3.5.9.9-3.4-.2-.4c-.9-1.5-1.4-3.2-1.4-4.9 0-5.1 4.2-9.3 9.2-9.3 2.5 0 4.8 1 6.6 2.7 1.7 1.8 2.7 4.1 2.7 6.6-.1 5.1-4.2 9.3-9.3 9.3M20 4c-2.1-2.1-5-3.3-8-3.3-6.2 0-11.3 5.1-11.3 11.3 0 2 .5 3.9 1.5 5.6L.6 23.4l5.9-1.5c1.6.9 3.5 1.4 5.4 1.4 6.2 0 11.3-5.1 11.3-11.3 0-3-1.2-5.9-3.2-8z"/></svg>
+          WhatsApp
+        </a>
+        <a class="post-share-btn" href="https://www.linkedin.com/sharing/share-offsite/?url=https://vejaseusite.github.io/HenriqueSilva/blog/bem-vindos-ao-blog/" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H6.5v-7H9v7zM7.7 8.7c-.8 0-1.5-.7-1.5-1.5s.7-1.5 1.5-1.5 1.5.7 1.5 1.5-.6 1.5-1.5 1.5zM18 17h-2.5v-3.6c0-.9 0-2-1.2-2s-1.4 1-1.4 2V17H10.4v-7h2.4v1c.3-.6 1.1-1.2 2.3-1.2 2.5 0 2.9 1.6 2.9 3.7V17z"/></svg>
+          LinkedIn
+        </a>
+        <button class="post-share-btn" id="copyLink">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+          Copiar link
+        </button>
+      </div>
+
+      <div class="post-cta">
+        <h3>Tem caso parecido? <em>Análise gratuita.</em></h3>
+        <p>Conte sua situação pelo WhatsApp — leio, retorno e digo se posso ajudar.</p>
+        <a class="post-cta-btn" href="https://wa.me/5581987134878?text=Ol%C3%A1%2C%20Dr.%20Henrique.%20Li%20o%20artigo%20%22Bem-vindos%20ao%20blog%20do%20escrit%C3%B3rio%22%20e%20gostaria%20de%20conversar." target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24"><path d="M17.5 14.4c-.3-.1-1.6-.8-1.9-.9-.3-.1-.4-.1-.6.1s-.7.9-.9 1.1c-.2.2-.3.2-.6.1-.3-.1-1.2-.5-2.3-1.4-.8-.7-1.4-1.6-1.6-1.9-.2-.3 0-.4.1-.6.1-.1.3-.3.4-.5.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5 0-.1-.6-1.5-.9-2.1-.2-.5-.5-.5-.6-.5h-.5c-.2 0-.5.1-.7.4-.2.3-.9 1-.9 2.4 0 1.4 1 2.8 1.1 3 .1.2 1.9 3 4.7 4.2.7.3 1.2.4 1.6.6.7.2 1.3.2 1.8.1.5-.1 1.6-.7 1.9-1.3.2-.6.2-1.2.2-1.3 0-.1-.2-.2-.5-.3M12 21.7c-1.7 0-3.3-.4-4.7-1.3l-.3-.2-3.5.9.9-3.4-.2-.4c-.9-1.5-1.4-3.2-1.4-4.9 0-5.1 4.2-9.3 9.2-9.3 2.5 0 4.8 1 6.6 2.7 1.7 1.8 2.7 4.1 2.7 6.6-.1 5.1-4.2 9.3-9.3 9.3M20 4c-2.1-2.1-5-3.3-8-3.3-6.2 0-11.3 5.1-11.3 11.3 0 2 .5 3.9 1.5 5.6L.6 23.4l5.9-1.5c1.6.9 3.5 1.4 5.4 1.4 6.2 0 11.3-5.1 11.3-11.3 0-3-1.2-5.9-3.2-8z"/></svg>
+          Falar pelo WhatsApp
+        </a>
+      </div>
+
+      <div class="post-author">
+        <div class="post-author-avatar">H</div>
+        <div class="post-author-meta">
+          <div class="post-author-name">Dr. José Henrique da Silva</div>
+          <div class="post-author-role">Advogado · OAB/PE 31.742</div>
+          <div class="post-author-bio">14 anos de atuação multidisciplinar, com foco em Direito Trabalhista de alta complexidade e Assessoria Empresarial. Atende em Cabo de Santo Agostinho/PE e online em todo o Brasil.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</article>
+
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-brand">
+          <img src="/HenriqueSilva/assets/seal-hsa.png" alt="HSA" />
+          <span class="wordmark-text">Henrique Silva<small>Advocacia</small></span>
+        </div>
+        <div class="footer-tag">14 anos de atuação multidisciplinar — Direito Trabalhista, Previdenciário, Cível, de Família, Empresarial e Tributário, com pareceres técnicos, palestras e consultoria preventiva.</div>
+        <div class="social-icons">
+          <a href="https://www.instagram.com/henriquesilva.adv2023/" target="_blank" rel="noopener" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg></a>
+          <a href="https://www.facebook.com/HsaHenriqueSilvaAdvocacia" target="_blank" rel="noopener" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 9h3V5h-3c-2.2 0-4 1.8-4 4v2H7v4h3v8h4v-8h3l1-4h-4V9c0-.6.4-1 1-1z"/></svg></a>
+          <a href="https://www.linkedin.com/in/henrique-silva-444b3758/" target="_blank" rel="noopener" aria-label="LinkedIn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H6.5v-7H9v7zM7.7 8.7c-.8 0-1.5-.7-1.5-1.5s.7-1.5 1.5-1.5 1.5.7 1.5 1.5-.6 1.5-1.5 1.5zM18 17h-2.5v-3.6c0-.9 0-2-1.2-2s-1.4 1-1.4 2V17H10.4v-7h2.4v1c.3-.6 1.1-1.2 2.3-1.2 2.5 0 2.9 1.6 2.9 3.7V17z"/></svg></a>
+        </div>
+      </div>
+      <div>
+        <h4>Contato</h4>
+        <div class="footer-contact">
+          <strong>WhatsApp</strong>
+          <a href="https://wa.me/5581987134878">(81) 9 8713-4878</a>
+          <strong>E-mail</strong>
+          <a href="mailto:henriquesilva.adv@gmail.com">henriquesilva.adv@gmail.com</a>
+          <strong>Sede</strong>
+          Cond. Novo Mundo Empresarial<br/>
+          Torre 05, Sala 318 · Av. A, 4165<br/>
+          Reserva do Paiva · Cabo de Santo Agostinho/PE
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-bottom-left">© <span id="year">2026</span> Henrique Silva Advocacia · OAB/PE 31.742</div>
+      <div class="footer-bottom-right"><a href="https://vejaseusite.github.io/AdvogadoTemplates/" target="_blank" rel="noopener">Site por VejaSeuSIte</a></div>
+    </div>
+  </div>
+</footer>
+
+<a class="wa-fab" href="https://wa.me/5581987134878?text=Ol%C3%A1%2C%20Dr.%20Henrique." target="_blank" rel="noopener" aria-label="WhatsApp">
+  <svg viewBox="0 0 24 24"><path d="M17.5 14.4c-.3-.1-1.6-.8-1.9-.9-.3-.1-.4-.1-.6.1s-.7.9-.9 1.1c-.2.2-.3.2-.6.1-.3-.1-1.2-.5-2.3-1.4-.8-.7-1.4-1.6-1.6-1.9-.2-.3 0-.4.1-.6.1-.1.3-.3.4-.5.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5 0-.1-.6-1.5-.9-2.1-.2-.5-.5-.5-.6-.5h-.5c-.2 0-.5.1-.7.4-.2.3-.9 1-.9 2.4 0 1.4 1 2.8 1.1 3 .1.2 1.9 3 4.7 4.2.7.3 1.2.4 1.6.6.7.2 1.3.2 1.8.1.5-.1 1.6-.7 1.9-1.3.2-.6.2-1.2.2-1.3 0-.1-.2-.2-.5-.3M12 21.7c-1.7 0-3.3-.4-4.7-1.3l-.3-.2-3.5.9.9-3.4-.2-.4c-.9-1.5-1.4-3.2-1.4-4.9 0-5.1 4.2-9.3 9.2-9.3 2.5 0 4.8 1 6.6 2.7 1.7 1.8 2.7 4.1 2.7 6.6-.1 5.1-4.2 9.3-9.3 9.3M20 4c-2.1-2.1-5-3.3-8-3.3-6.2 0-11.3 5.1-11.3 11.3 0 2 .5 3.9 1.5 5.6L.6 23.4l5.9-1.5c1.6.9 3.5 1.4 5.4 1.4 6.2 0 11.3-5.1 11.3-11.3 0-3-1.2-5.9-3.2-8z"/></svg>
+</a>
+
+<script>
+  document.getElementById('year').textContent = new Date().getFullYear();
+  (function(){
+    var nav = document.getElementById('nav');
+    window.addEventListener('scroll', function(){
+      if (window.scrollY > 60) nav.classList.add('scrolled'); else nav.classList.remove('scrolled');
+    }, {passive:true});
+    var burger = document.getElementById('navBurger');
+    if (burger){
+      burger.addEventListener('click', function(){ nav.classList.toggle('nav-open'); });
+      document.addEventListener('keydown', function(e){ if (e.key==='Escape') nav.classList.remove('nav-open'); });
+    }
+  })();
+</script>
+<script>
+  document.getElementById('copyLink').addEventListener('click', function(){
+    navigator.clipboard.writeText(window.location.href).then(function(){
+      var btn = document.getElementById('copyLink');
+      var orig = btn.innerHTML;
+      btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Copiado';
+      setTimeout(function(){ btn.innerHTML = orig; }, 1800);
+    });
+  });
+</script>
+
+</body>
+</html>

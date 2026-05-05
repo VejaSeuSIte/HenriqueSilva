@@ -2784,6 +2784,76 @@
   </div>
 </section>
 
+<!-- ============= LATEST POSTS (home) ============= -->
+<section class="latest-posts" id="artigos">
+  <div class="wrap">
+    <div class="shead" data-reveal="up">
+      <div class="shead-eye"><span>Blog · Henrique Silva</span></div>
+      <h2>Últimos <em>artigos</em>.</h2>
+      <p class="shead-sub">Direito Trabalhista, Previdenciário, Empresarial e mais — explicados de forma direta.</p>
+    </div>
+    <div class="latest-grid" id="latestPosts" data-reveal="up" data-delay="120">
+      <!-- preenchido via JS após fetch /blog/posts.json -->
+    </div>
+    <div class="latest-cta" data-reveal="up" data-delay="240">
+      <a class="ghost-btn-dark" href="blog/">
+        Ver todos os artigos
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 10 L17 10"/><path d="M11 4 L17 10 L11 16"/></svg>
+      </a>
+    </div>
+  </div>
+</section>
+<style>
+  .latest-posts{padding:120px 0;background:var(--black) !important;color:var(--off-white) !important}
+  .latest-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;max-width:1200px;margin:0 auto}
+  .latest-empty{grid-column:1/-1;text-align:center;padding:60px 20px;color:var(--gray-300);font-family:'Fraunces',serif;font-style:italic;font-size:18px}
+  .latest-card{background:var(--black-2,#141414);border:1px solid rgba(212,175,55,.12);transition:all .45s cubic-bezier(.22,.8,.24,1);text-decoration:none;color:inherit;display:flex;flex-direction:column;overflow:hidden}
+  .latest-card:hover{border-color:#d4af37;transform:translateY(-4px);box-shadow:0 22px 48px rgba(0,0,0,.5)}
+  .latest-card-cover{width:100%;aspect-ratio:16/10;background:#080808 center/cover no-repeat}
+  .latest-card-cover.no-image{background:linear-gradient(135deg,#1a1a1a 0%,#0a0a0a 100%);display:flex;align-items:center;justify-content:center}
+  .latest-card-cover.no-image::after{content:"H";font-family:'Fraunces',serif;font-style:italic;font-size:80px;color:rgba(212,175,55,.18);font-weight:300}
+  .latest-card-body{padding:26px 24px 28px;display:flex;flex-direction:column;gap:12px;flex:1}
+  .latest-card-meta{display:flex;align-items:center;gap:12px;font-family:'Inter Tight',sans-serif !important;font-size:10.5px;letter-spacing:.22em;text-transform:uppercase;color:#d4af37 !important;font-weight:500}
+  .latest-card-meta .dot{color:#3a3a3a}
+  .latest-card-meta .read{color:#a8a8a8 !important}
+  .latest-card h3{font-family:'Fraunces',serif !important;font-size:21px !important;font-weight:400 !important;color:#f5f5f5 !important;line-height:1.22;letter-spacing:-.012em;margin:0}
+  .latest-card h3 em{color:#e6c869 !important;font-style:italic}
+  .latest-card-excerpt{font-family:'Fraunces',serif !important;font-size:14.5px;color:#a8a8a8 !important;line-height:1.6;font-weight:300;flex:1}
+  .latest-cta{text-align:center;margin-top:50px}
+  .ghost-btn-dark{display:inline-flex;align-items:center;gap:14px;font-family:'Inter Tight',sans-serif !important;font-size:11px;letter-spacing:.32em;color:#e6c869 !important;text-transform:uppercase;font-weight:500;border:1px solid rgba(212,175,55,.5);padding:18px 40px;transition:all .35s;background:transparent !important}
+  .ghost-btn-dark:hover{background:#d4af37 !important;color:#0a0a0a !important;border-color:#d4af37 !important;transform:translateY(-2px);box-shadow:0 16px 36px rgba(212,175,55,.32)}
+  .ghost-btn-dark svg{width:14px;height:14px}
+  @media(max-width:980px){.latest-grid{grid-template-columns:1fr}}
+</style>
+<script>
+  (function(){
+    var grid = document.getElementById('latestPosts');
+    if (!grid) return;
+    fetch('blog/posts.json').then(r => r.ok ? r.json() : []).then(posts => {
+      if (!posts || !posts.length){
+        grid.innerHTML = '<div class="latest-empty">Em breve, novos artigos sobre Direito.</div>';
+        return;
+      }
+      var months = ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+      function fmtDate(iso){
+        try { var p = iso.split('-'); return parseInt(p[2],10)+' '+months[parseInt(p[1],10)-1]+' '+p[0]; } catch(e){ return iso; }
+      }
+      grid.innerHTML = posts.slice(0, 3).map(function(p){
+        var cover = p.cover ? '<div class="latest-card-cover" style="background-image:url(\''+p.cover+'\')"></div>' : '<div class="latest-card-cover no-image"></div>';
+        return '<a class="latest-card" href="'+p.url+'">'+
+          cover+
+          '<div class="latest-card-body">'+
+            '<div class="latest-card-meta"><span>'+(p.category_label||'')+'</span><span class="dot">·</span><span class="read">'+(p.read_min||1)+' min</span></div>'+
+            '<h3>'+p.title+'</h3>'+
+            '<p class="latest-card-excerpt">'+(p.excerpt||'')+'</p>'+
+            '<div style="font-family:Inter Tight,sans-serif;font-size:11px;color:#6a6a6a;margin-top:auto">'+fmtDate(p.date||'')+'</div>'+
+          '</div>'+
+        '</a>';
+      }).join('');
+    }).catch(function(){ grid.innerHTML = '<div class="latest-empty">Em breve.</div>'; });
+  })();
+</script>
+
 <!-- ============= FAQ ============= -->
 <section class="faq-section" id="faq">
   <img class="faq-watermark" src="assets/seal-hsa.png?v=1" alt="" aria-hidden="true" />
