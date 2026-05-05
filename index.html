@@ -2213,6 +2213,181 @@
     .hero-wordmark.wordmark-text.wordmark-hero{font-size:34px !important}
   }
 
+
+  /* ═══════════════════════════════════════════════════════════
+     BREAKER PARALLAX entre seções
+     ═══════════════════════════════════════════════════════════ */
+  .breaker{
+    position:relative;
+    padding:160px 0;
+    overflow:hidden;
+    background:var(--black);
+    color:var(--off-white);
+  }
+  .breaker-bg{
+    position:absolute;inset:0;
+    background-image:url('assets/team-meeting.jpg');
+    background-size:cover;
+    background-position:center;
+    background-attachment:fixed;
+    z-index:0;
+    transform:scale(1.05);
+  }
+  .breaker-overlay{
+    position:absolute;inset:0;
+    background:linear-gradient(180deg,rgba(0,0,0,.78) 0%,rgba(0,0,0,.85) 50%,rgba(0,0,0,.92) 100%);
+    z-index:1;
+  }
+  .breaker .wrap{position:relative;z-index:2;text-align:center}
+  .breaker-content{max-width:820px;margin:0 auto}
+  .breaker-eye{
+    font-family:'Inter Tight', sans-serif;
+    font-size:11px;letter-spacing:.55em;
+    text-transform:uppercase;color:var(--gold);
+    margin-bottom:30px;font-weight:500;
+  }
+  .breaker-quote{
+    font-family:'Fraunces', serif;
+    font-size:clamp(28px, 3.6vw, 44px);
+    line-height:1.32;
+    color:var(--off-white);
+    font-weight:300;
+    font-style:italic;
+    letter-spacing:-.012em;
+    margin-bottom:30px;
+  }
+  .breaker-quote em{color:var(--gold-light)}
+  .breaker-attrib{
+    font-family:'Inter Tight', sans-serif;
+    font-size:11px;letter-spacing:.42em;
+    text-transform:uppercase;color:var(--gray-300);
+    font-weight:500;
+  }
+  @media(max-width:780px){
+    .breaker{padding:96px 0}
+    .breaker-bg{background-attachment:scroll}
+    .breaker-quote{font-size:24px;line-height:1.4}
+  }
+
+  /* ═══════════════════════════════════════════════════════════
+     CONTACT-CTA estilo Frutuoso (bg image + form clean)
+     ═══════════════════════════════════════════════════════════ */
+  .contact-cta{
+    position:relative;
+    padding:140px 0;
+    overflow:hidden;
+    background:var(--black);
+    color:var(--off-white);
+  }
+  .contact-cta-bg{
+    position:absolute;inset:0;
+    background-image:url('assets/team-meeting.jpg');
+    background-size:cover;
+    background-position:center;
+    z-index:0;
+  }
+  .contact-cta-overlay{
+    position:absolute;inset:0;
+    background:linear-gradient(180deg,rgba(0,0,0,.7) 0%,rgba(0,0,0,.85) 50%,rgba(0,0,0,.92) 100%);
+    z-index:1;
+  }
+  .contact-cta .wrap{position:relative;z-index:2}
+  .contact-cta-head{text-align:center;max-width:720px;margin:0 auto 50px}
+  .contact-cta-head h2{
+    font-family:'Fraunces', serif;
+    font-size:clamp(34px, 4.4vw, 54px);
+    color:var(--gold-light);
+    font-weight:300;
+    line-height:1.12;
+    letter-spacing:-.022em;
+    margin-bottom:18px;
+  }
+  .contact-cta-head h2 em{color:var(--gold);font-style:italic}
+  .contact-cta-head p{
+    font-family:'Inter Tight', sans-serif;
+    font-size:16px;color:var(--off-white);
+    font-weight:300;line-height:1.55;
+    opacity:.85;
+  }
+
+  .contact-cta-form{
+    max-width:680px;margin:0 auto;
+    background:rgba(0,0,0,.55);
+    backdrop-filter:blur(8px);
+    border:1px solid rgba(212,175,55,.2);
+    padding:48px 44px;
+  }
+  .contact-cta-form .form-grid{
+    display:grid;grid-template-columns:1fr 1fr;
+    gap:18px;margin-bottom:18px;
+  }
+  .contact-cta-form .form-row{margin-bottom:18px}
+  .contact-cta-form label{
+    display:block;
+    font-family:'Inter Tight', sans-serif;
+    font-size:13px;color:var(--off-white);
+    margin-bottom:8px;font-weight:500;
+    text-transform:none;letter-spacing:0;
+  }
+  .contact-cta-form input,
+  .contact-cta-form select,
+  .contact-cta-form textarea{
+    width:100%;
+    background:transparent;
+    border:0;border-bottom:1px solid rgba(255,255,255,.4);
+    padding:10px 0;
+    font-family:'Inter Tight', sans-serif;
+    font-size:15px;color:var(--off-white);
+    outline:none;
+    transition:border-color .25s;
+    border-radius:0;
+  }
+  .contact-cta-form input:focus,
+  .contact-cta-form select:focus,
+  .contact-cta-form textarea:focus{border-bottom-color:var(--gold)}
+  .contact-cta-form textarea{
+    border:1px solid rgba(255,255,255,.4);
+    padding:14px 16px;min-height:110px;resize:vertical;
+  }
+  .contact-cta-form textarea:focus{border-color:var(--gold)}
+  .contact-cta-form select{appearance:none;cursor:pointer;color:var(--gray-300)}
+  .contact-cta-form select option{background:var(--black);color:var(--off-white)}
+
+  .contact-cta-submit{
+    margin-top:24px;width:100%;
+    background:var(--gold);
+    color:var(--black);
+    border:0;padding:18px 32px;
+    font-family:'Inter Tight', sans-serif;
+    font-size:13px;letter-spacing:.18em;
+    text-transform:uppercase;font-weight:600;
+    cursor:pointer;
+    transition:all .3s cubic-bezier(.22,.8,.24,1);
+  }
+  .contact-cta-submit:hover{
+    background:var(--gold-light);
+    transform:translateY(-2px);
+    box-shadow:0 18px 36px rgba(212,175,55,.35);
+  }
+  .contact-cta-disclaimer{
+    margin-top:18px;text-align:center;
+    font-family:'Inter Tight', sans-serif;
+    font-size:12px;color:var(--gray-300);
+    font-weight:300;line-height:1.55;
+  }
+
+  @media(max-width:780px){
+    .contact-cta{padding:96px 0}
+    .contact-cta-form{padding:30px 24px}
+    .contact-cta-form .form-grid{grid-template-columns:1fr;gap:0}
+  }
+
+  /* ═══════════════════════════════════════════════════════════
+     SIMPLIFICACOES — esconder canais redundantes do contato
+     (movidos pro CTA, ficam apenas no footer)
+     ═══════════════════════════════════════════════════════════ */
+  .contact{display:none !important}
+
 </style>
 </head>
 <body data-auto-reveal="all" data-scroll-progress>
@@ -2297,26 +2472,18 @@
         <p>O <strong>Henrique Silva Advocacia</strong> destaca-se por mais de <strong>14 anos de sólida atuação</strong>, com expertise na condução estratégica de execuções e litígios trabalhistas de alta complexidade, oferecendo soluções jurídicas de excelência para pessoas físicas e jurídicas em todo o estado de Pernambuco.</p>
         <p>A atuação da banca <strong>transcende o contencioso</strong>: abrange uma sólida estrutura de assessoria extrajudicial, consultoria preventiva, elaboração de pareceres técnicos aprofundados e palestras orientativas voltadas a trabalhadores e gestores — visando à mitigação de passivos e à disseminação de boas práticas no ambiente laboral.</p>
         <p>Para o setor corporativo, oferecemos <strong>modelos de consultoria fixa</strong>, focados em compliance e na segurança jurídica das operações empresariais diárias — garantindo gestão de riscos eficiente e orgânica.</p>
-        <div class="office-pillars office-pillars--five">
+        <div class="office-pillars">
           <div class="pillar">
-            <div class="pillar-title">14 anos de atuação</div>
-            <div class="pillar-text">Histórico sólido em causas de alta complexidade, desde 2010.</div>
+            <div class="pillar-title">14 anos</div>
+            <div class="pillar-text">Atuação multidisciplinar desde 2010.</div>
           </div>
           <div class="pillar">
-            <div class="pillar-title">Trabalhista de ponta</div>
-            <div class="pillar-text">Execuções e litígios de alta complexidade, judicial e extrajudicial.</div>
+            <div class="pillar-title">10 áreas</div>
+            <div class="pillar-text">Trabalhista, Previdenciário, Empresarial e mais.</div>
           </div>
           <div class="pillar">
-            <div class="pillar-title">Consultoria preventiva</div>
-            <div class="pillar-text">Pareceres técnicos, palestras e mitigação de passivos.</div>
-          </div>
-          <div class="pillar">
-            <div class="pillar-title">Compliance empresarial</div>
-            <div class="pillar-text">Modelos de consultoria fixa para operações do dia a dia.</div>
-          </div>
-          <div class="pillar pillar--full">
-            <div class="pillar-title">Análise inicial sem custo</div>
-            <div class="pillar-text">Você conta o caso pelo WhatsApp e recebe orientação honesta antes de qualquer contrato.</div>
+            <div class="pillar-title">Análise gratuita</div>
+            <div class="pillar-text">Conte o caso pelo WhatsApp sem custo.</div>
           </div>
         </div>
       </div>
@@ -2599,6 +2766,20 @@
 </section>
 
 
+
+<!-- ============= BREAKER PARALLAX ============= -->
+<section class="breaker">
+  <div class="breaker-bg" aria-hidden="true"></div>
+  <div class="breaker-overlay" aria-hidden="true"></div>
+  <div class="wrap">
+    <div class="breaker-content" data-reveal="up">
+      <div class="breaker-eye">Compromisso</div>
+      <h2 class="breaker-quote">"Cada caso é estudado <em>com a profundidade<br/>que ele exige</em> — antes de qualquer peça."</h2>
+      <div class="breaker-attrib">— Dr. Henrique Silva</div>
+    </div>
+  </div>
+</section>
+
 <!-- ============= QUEM SOU ============= -->
 <section class="about" id="sobre">
   <img class="about-watermark" src="assets/seal-hsa.png?v=1" alt="" aria-hidden="true" />
@@ -2754,106 +2935,54 @@
     </div>
 
     <div class="faq" data-reveal="fade" data-stagger="> .q" data-stagger-step="80">
-      <details class="q"><summary>A primeira análise do caso é realmente gratuita?</summary><div class="q-body">Sim. A análise inicial pelo WhatsApp, telefone ou videoconferência não tem custo. Você me conta o caso, eu verifico documentos e digo, com honestidade, se há fundamento jurídico para agir. Você só contrata se quiser avançar, com proposta de honorários formal antes de qualquer assinatura.</div></details>
-      <details class="q"><summary>Em quais áreas o escritório atua?</summary><div class="q-body">O escritório é multidisciplinar: <strong>Trabalhista</strong> (judicial e extrajudicial, foco em causas de alta complexidade), <strong>Previdenciário</strong> (ações contra o INSS), <strong>Cível</strong>, <strong>Família</strong>, <strong>Consumidor</strong>, <strong>Imobiliário</strong>, <strong>Juizados Especiais</strong>, <strong>Tributário</strong>, <strong>Criminal</strong> (consultoria estratégica) e <strong>Assessoria Empresarial</strong> (consultoria fixa, compliance e pareceres). Se seu caso encaixa em alguma dessas frentes, posso analisar.</div></details>
-      <details class="q"><summary>O escritório atende empresas?</summary><div class="q-body">Sim. Oferecemos modelos de <strong>consultoria fixa</strong> focados em compliance trabalhista, análise contratual, pareceres técnicos, palestras orientativas e gestão de riscos. É um trabalho preventivo — evitar passivos antes que virem processo — e também responsivo, atuando em demandas que já chegaram ao escritório.</div></details>
-      <details class="q"><summary>Você ministra palestras orientativas?</summary><div class="q-body">Sim. Atuo com palestras voltadas a <strong>trabalhadores e gestores</strong>, sobre direitos e deveres no ambiente laboral, mitigação de passivos e boas práticas. É parte da estrutura de assessoria preventiva oferecida pelo escritório para empresas.</div></details>
-      <details class="q"><summary>Quanto custa contratar o escritório?</summary><div class="q-body">Os honorários são sempre combinados por escrito, antes de qualquer trabalho. Para causas trabalhistas e previdenciárias, é comum contrato por êxito (percentual sobre o que você receber). Para cível, família, imobiliário e empresarial, costuma ser valor fixo ou percentual conforme a ação. Sempre te apresento as opções antes de assinar.</div></details>
-      <details class="q"><summary>Você atende fora de Pernambuco?</summary><div class="q-body">Sim. Atendo presencialmente em Pernambuco com agendamento prévio, e <strong>100% online</strong> em todo o Brasil via WhatsApp, videoconferência e envio de documentos por PDF — com a mesma qualidade do presencial. Sigilo absoluto e cronograma claro de cada etapa.</div></details>
-      <details class="q"><summary>Quanto tempo demora um processo?</summary><div class="q-body">Depende muito da área e da complexidade. Trabalhistas: 6 a 18 meses. Previdenciários: 6 a 24 meses. Cíveis simples: 6 a 12 meses. Inventários extrajudiciais podem ser concluídos em semanas, judiciais em meses. No início de cada caso te passo projeção realista com base no que a Vara competente costuma entregar.</div></details>
-      <details class="q"><summary>O escritório atende causas criminais?</summary><div class="q-body">Atuo na esfera criminal de forma <strong>seletiva e estratégica</strong>, mediante análise técnica criteriosa, priorizando o atendimento a clientes já integrados ao portfólio da banca em outros segmentos do Direito. Caso não seja possível atender, posso indicar advogados de confiança especializados.</div></details>
-      <details class="q"><summary>Quais documentos preciso para a primeira conversa?</summary><div class="q-body">Pode começar só contando a história pelo WhatsApp — a gente identifica juntos os documentos importantes durante a conversa. Se já tiver à mão contratos, cobranças, carteira de trabalho, holerites, CNIS, certidões, decisões anteriores, prints — ótimo, traga.</div></details>
-      <details class="q"><summary>Atende sub-condições: prazo de prescrição?</summary><div class="q-body">Sim, e é algo que verifico antes de qualquer outra coisa. Cada tipo de caso tem prazo próprio: trabalhista é 5 anos retroativos com limite de 2 anos após o fim do contrato; cível varia de 3 a 10 anos; previdenciário depende do benefício. Mande as datas pelo WhatsApp e em <strong>2 horas úteis</strong><sup class="aster">*</sup> te digo se ainda há prazo.</div></details>
+      <details class="q"><summary>A primeira análise é gratuita?</summary><div class="q-body">Sim. A análise inicial pelo WhatsApp ou videoconferência não tem custo. Você só contrata se quiser avançar, com proposta de honorários formal antes de qualquer assinatura.</div></details>
+      <details class="q"><summary>Em quais áreas o escritório atua?</summary><div class="q-body"><strong>Trabalhista</strong> (foco em causas de alta complexidade), <strong>Previdenciário</strong>, <strong>Cível</strong>, <strong>Família</strong>, <strong>Imobiliário</strong>, <strong>Tributário</strong>, <strong>Empresarial</strong>, <strong>Consumidor</strong>, <strong>Juizados Especiais</strong> e <strong>Criminal</strong> (consultoria estratégica).</div></details>
+      <details class="q"><summary>O escritório atende empresas?</summary><div class="q-body">Sim. Oferecemos consultoria fixa em compliance trabalhista, análise contratual, pareceres técnicos e palestras orientativas. Trabalho preventivo e responsivo.</div></details>
+      <details class="q"><summary>Quanto custa contratar?</summary><div class="q-body">Honorários combinados por escrito antes de qualquer trabalho. Trabalhista e Previdenciário comumente por êxito; demais áreas valor fixo ou percentual conforme a ação.</div></details>
+      <details class="q"><summary>Atende fora de Pernambuco?</summary><div class="q-body">Sim. Presencialmente em Cabo de Santo Agostinho/PE com agendamento, e <strong>100% online</strong> em todo o Brasil via WhatsApp e videoconferência.</div></details>
+      <details class="q"><summary>Quanto tempo demora um processo?</summary><div class="q-body">Trabalhistas: 6 a 18 meses · Previdenciários: 6 a 24 meses · Cíveis simples: 6 a 12 meses. No início do caso te passo projeção realista.</div></details>
     </div>
   </div>
 </section>
 
 <!-- ============= CONTATO ============= -->
-<section class="contact" id="contato">
+<section class="contact-cta" id="contato">
+  <div class="contact-cta-bg" aria-hidden="true"></div>
+  <div class="contact-cta-overlay" aria-hidden="true"></div>
   <div class="wrap">
-    <div class="shead" data-reveal="up">
-      <div class="shead-eye"><span>Contato · Atendimento</span></div>
-      <h2>Comece pela <em>conversa</em>.</h2>
-      <p class="shead-sub">A análise inicial pelo WhatsApp é sempre gratuita. Conte o que aconteceu — eu leio, retorno e digo, com honestidade, se posso ajudar.</p>
-      <div class="flourish"><svg viewBox="0 0 20 20"><path d="M10 2 L11 8 L17 9 L11 10 L10 16 L9 10 L3 9 L9 8 Z"/></svg></div>
+    <div class="contact-cta-head" data-reveal="up">
+      <h2>Receba a ligação <em>de um especialista</em></h2>
+      <p>Preencha o formulário abaixo que entraremos em contato o mais breve possível.</p>
     </div>
-    <div class="contact-grid">
-      <div class="contact-info" data-reveal="left">
-        <h3>Três caminhos <em>para começar</em>.</h3>
-        <p>WhatsApp para urgência. E-mail para documentos. Formulário ao lado, se preferir um contato mais formal antes da primeira conversa. Qualquer porta funciona.</p>
-        <div class="contact-channels">
-          <a class="channel" href="https://wa.me/5581987134878?text=Ol%C3%A1%2C%20Dr.%20Henrique.%20Vim%20pelo%20site." target="_blank" rel="noopener">
-            <div class="channel-icon"><svg viewBox="0 0 24 24"><path d="M17.5 14.4c-.3-.1-1.6-.8-1.9-.9-.3-.1-.4-.1-.6.1s-.7.9-.9 1.1c-.2.2-.3.2-.6.1-.3-.1-1.2-.5-2.3-1.4-.8-.7-1.4-1.6-1.6-1.9-.2-.3 0-.4.1-.6.1-.1.3-.3.4-.5.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5 0-.1-.6-1.5-.9-2.1-.2-.5-.5-.5-.6-.5h-.5c-.2 0-.5.1-.7.4-.2.3-.9 1-.9 2.4 0 1.4 1 2.8 1.1 3 .1.2 1.9 3 4.7 4.2.7.3 1.2.4 1.6.6.7.2 1.3.2 1.8.1.5-.1 1.6-.7 1.9-1.3.2-.6.2-1.2.2-1.3 0-.1-.2-.2-.5-.3M12 21.7c-1.7 0-3.3-.4-4.7-1.3l-.3-.2-3.5.9.9-3.4-.2-.4c-.9-1.5-1.4-3.2-1.4-4.9 0-5.1 4.2-9.3 9.2-9.3 2.5 0 4.8 1 6.6 2.7 1.7 1.8 2.7 4.1 2.7 6.6-.1 5.1-4.2 9.3-9.3 9.3M20 4c-2.1-2.1-5-3.3-8-3.3-6.2 0-11.3 5.1-11.3 11.3 0 2 .5 3.9 1.5 5.6L.6 23.4l5.9-1.5c1.6.9 3.5 1.4 5.4 1.4 6.2 0 11.3-5.1 11.3-11.3 0-3-1.2-5.9-3.2-8z" fill="currentColor" stroke="none"/></svg></div>
-            <div class="channel-meta">
-              <div class="channel-label">WhatsApp · Análise gratuita</div>
-              <div class="channel-value">(81) 9 8713-4878 <em>· resposta em até 2h úteis<sup class="aster">*</sup></em></div>
-            </div>
-          </a>
-          <a class="channel" href="mailto:henriquesilva.adv@gmail.com">
-            <div class="channel-icon"><svg viewBox="0 0 24 24"><path d="M3 6 L21 6 L21 18 L3 18 Z"/><path d="M3 6 L12 14 L21 6"/></svg></div>
-            <div class="channel-meta">
-              <div class="channel-label">E-mail</div>
-              <div class="channel-value">henriquesilva.adv@gmail.com</div>
-            </div>
-          </a>
-          <a class="channel" href="https://www.google.com/maps/search/?api=1&query=Cond.+Novo+Mundo+Empresarial+Av+A+4165+Reserva+do+Paiva+Cabo+de+Santo+Agostinho" target="_blank" rel="noopener">
-            <div class="channel-icon"><svg viewBox="0 0 24 24"><path d="M12 2 C7 2 4 5 4 10 C4 15 12 22 12 22 C12 22 20 15 20 10 C20 5 17 2 12 2 Z"/><circle cx="12" cy="10" r="3"/></svg></div>
-            <div class="channel-meta">
-              <div class="channel-label">Sede · Atendimento Presencial</div>
-              <div class="channel-value">Cond. Novo Mundo Empresarial · Torre 05, Sala 318 <em>· Av. A, 4165 · Reserva do Paiva · Cabo de Santo Agostinho/PE · CEP 54522-005</em></div>
-            </div>
-          </a>
-          <div class="channel">
-            <div class="channel-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M2 12 L22 12"/><path d="M12 2 C15 6 15 18 12 22 C9 18 9 6 12 2"/></svg></div>
-            <div class="channel-meta">
-              <div class="channel-label">Atendimento Online</div>
-              <div class="channel-value">Vídeochamada e WhatsApp <em>· para todo o Brasil</em></div>
-            </div>
-          </div>
-          <div class="channel">
-            <div class="channel-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7 L12 12 L15.5 14"/></svg></div>
-            <div class="channel-meta">
-              <div class="channel-label">Horário de atendimento</div>
-              <div class="channel-value">Seg–Sex · 08h–12h e 14h–19h <em>· resposta em até 2h úteis<sup class="aster">*</sup></em></div>
-            </div>
-          </div>
+    <form class="contact-cta-form" data-reveal="up" data-delay="160" id="contactForm" onsubmit="return sendWhats(event)">
+      <div class="form-grid">
+        <div class="form-row">
+          <label for="cf-name">Nome</label>
+          <input type="text" id="cf-name" name="name" required autocomplete="name" />
+        </div>
+        <div class="form-row">
+          <label for="cf-phone">Telefone</label>
+          <input type="tel" id="cf-phone" name="phone" required autocomplete="tel" />
         </div>
       </div>
-      <form class="contact-form" data-reveal="right" data-delay="180" id="contactForm" onsubmit="return sendWhats(event)">
-        <h3>Mande uma <em>mensagem</em>.</h3>
-        <div class="contact-form-sub">Preferiu o caminho formal? Preencha — abre direto no seu WhatsApp para envio.</div>
-        <div class="form-grid">
-          <div class="form-row">
-            <label for="cf-name">Nome</label>
-            <input type="text" id="cf-name" name="name" required autocomplete="name" placeholder="Seu nome completo" />
-          </div>
-          <div class="form-row">
-            <label for="cf-phone">Telefone</label>
-            <input type="tel" id="cf-phone" name="phone" required autocomplete="tel" placeholder="(81) 9 0000-0000" />
-          </div>
-        </div>
-        <div class="form-row">
-          <label for="cf-area">Área de interesse</label>
-          <select id="cf-area" name="area" required>
-            <option value="">Selecione…</option>
-            <option>Direito Cível</option>
-            <option>Direito Previdenciário</option>
-            <option>Direito Trabalhista</option>
-            <option>Sucessões e Herança</option>
-            <option>Outro / Não tenho certeza</option>
-          </select>
-        </div>
-        <div class="form-row">
-          <label for="cf-msg">Mensagem</label>
-          <textarea id="cf-msg" name="message" required placeholder="Descreva, em poucas linhas, o que aconteceu — datas, partes envolvidas e o que você gostaria de saber." rows="5"></textarea>
-        </div>
-        <button class="form-submit vs-shimmer" type="submit">
-          Enviar pelo WhatsApp
-          <svg viewBox="0 0 20 20"><path d="M3 10 L17 10"/><path d="M11 4 L17 10 L11 16"/></svg>
-        </button>
-        <div class="form-disclaimer">Ao enviar, você concorda em receber retorno pelo número informado. Nenhuma informação é armazenada neste site.</div>
-      </form>
-    </div>
+      <div class="form-row">
+        <label for="cf-area">Área de interesse</label>
+        <select id="cf-area" name="area" required>
+          <option value="">Selecione…</option>
+          <option>Trabalhista</option>
+          <option>Previdenciário</option>
+          <option>Cível / Família</option>
+          <option>Empresarial / Tributário</option>
+          <option>Outro</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label for="cf-msg">Mensagem</label>
+        <textarea id="cf-msg" name="message" required rows="4"></textarea>
+      </div>
+      <button class="contact-cta-submit" type="submit">Enviar Mensagem</button>
+      <div class="contact-cta-disclaimer">Ao enviar, você concorda em receber retorno pelo número informado. Resposta em até 2h úteis.</div>
+    </form>
   </div>
 </section>
 
