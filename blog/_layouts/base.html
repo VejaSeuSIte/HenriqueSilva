@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>{{ page_title }}</title>
+<meta name="description" content="{{ page_description }}" />
+<meta name="theme-color" content="#0a0a0a" />
+<link rel="canonical" href="{{ canonical }}" />
+<meta property="og:type" content="{% block og_type %}website{% endblock %}" />
+<meta property="og:site_name" content="Henrique Silva Advocacia" />
+<meta property="og:locale" content="pt_BR" />
+<meta property="og:url" content="{{ canonical }}" />
+<meta property="og:title" content="{{ page_title }}" />
+<meta property="og:description" content="{{ page_description }}" />
+<meta property="og:image" content="{{ og_image }}" />
+<meta name="twitter:card" content="summary_large_image" />
+<link rel="icon" type="image/png" href="/HenriqueSilva/assets/favicon-hsa.png" />
+<link rel="apple-touch-icon" href="/HenriqueSilva/assets/favicon-hsa.png" />
+<link rel="alternate" type="application/rss+xml" title="Henrique Silva Advocacia · Blog" href="/HenriqueSilva/blog/rss.xml" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,300;1,9..144,400;1,9..144,500&family=Inter+Tight:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --black:#0a0a0a;--black-2:#141414;--black-3:#1c1c1c;
+    --gold:#d4af37;--gold-light:#e6c869;--gold-deep:#a88a2c;
+    --off-white:#f5f5f5;--gray-100:#e8e8e8;
+    --gray-300:#a8a8a8;--gray-500:#6a6a6a;--gray-700:#3a3a3a;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:'Inter Tight',system-ui,sans-serif;background:var(--black);color:var(--off-white);font-weight:300;line-height:1.65;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+  a{color:inherit;text-decoration:none}
+  img{max-width:100%;display:block}
+  em{color:var(--gold-light);font-style:italic;font-weight:300}
+  .wrap{max-width:1240px;margin:0 auto;padding:0 32px}
+  .narrow{max-width:760px;margin:0 auto;padding:0 32px}
+
+  /* ═════ NAV ═════ */
+  .nav{position:fixed;top:0;left:0;right:0;z-index:50;padding:16px 0;transition:all .35s}
+  .nav-inner{max-width:1320px;margin:0 auto;padding:0 36px;display:flex;align-items:center;justify-content:space-between;gap:24px}
+  .nav.scrolled{background:rgba(10,10,10,.95);backdrop-filter:blur(16px);border-bottom:1px solid rgba(212,175,55,.12);padding:10px 0}
+  .brand{display:flex;align-items:center;gap:14px}
+  .brand-seal{height:46px;width:46px;object-fit:contain}
+  .wordmark-text{display:inline-flex;flex-direction:column;line-height:1;font-family:'Fraunces',serif;color:var(--off-white);font-size:18px;font-weight:400}
+  .wordmark-text small{font-size:8px;color:var(--gold);letter-spacing:.42em;margin-top:2px;font-family:'Inter Tight',sans-serif;text-transform:uppercase}
+  .nav-links{display:flex;gap:34px;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:#fff;font-weight:500;font-family:'Inter Tight',sans-serif}
+  .nav-links a{position:relative;opacity:.85;transition:all .25s}
+  .nav-links a:hover,.nav-links a.active{opacity:1;color:var(--gold-light)}
+  .nav-cta{border:1px solid rgba(212,175,55,.5);color:var(--gold-light);padding:11px 22px;font-size:10.5px;letter-spacing:.22em;font-weight:500;text-transform:uppercase;transition:all .3s;font-family:'Inter Tight',sans-serif;display:inline-flex;align-items:center;gap:10px}
+  .nav-cta:hover{background:var(--gold);color:var(--black);border-color:var(--gold)}
+  .nav-cta svg{width:14px;height:14px;fill:currentColor}
+  .nav-burger{display:none;background:transparent;border:0;padding:10px;cursor:pointer}
+  .nav-burger svg{width:26px;height:26px;stroke:var(--gold-light);fill:none;stroke-width:1.6}
+  @media(max-width:1020px){
+    .nav-burger{display:inline-flex}
+    .nav-links{display:none;flex-direction:column;gap:0;position:absolute;top:calc(100% + 14px);left:24px;right:24px;background:rgba(10,10,10,.96);backdrop-filter:blur(20px);border:1px solid rgba(212,175,55,.18);padding:8px 0}
+    .nav.nav-open .nav-links{display:flex}
+    .nav-links a{padding:18px 28px;border-top:1px solid rgba(212,175,55,.12)}
+    .nav-links a:first-child{border-top:0}
+  }
+
+  /* ═════ FOOTER ═════ */
+  .footer{background:var(--black);border-top:1px solid rgba(212,175,55,.15);color:var(--gray-300);padding:80px 0 36px;margin-top:80px}
+  .footer-grid{display:grid;grid-template-columns:1fr 1fr;gap:64px;margin-bottom:60px}
+  .footer-brand{display:flex;align-items:center;gap:16px;margin-bottom:24px}
+  .footer-brand img{height:54px;width:54px}
+  .footer-tag{font-family:'Fraunces',serif;font-style:italic;font-size:14px;color:var(--gray-300);max-width:340px;line-height:1.6}
+  .footer h4{font-family:'Inter Tight',sans-serif;color:var(--gold);font-size:11px;letter-spacing:.32em;text-transform:uppercase;margin-bottom:18px;font-weight:500}
+  .footer-contact{font-family:'Fraunces',serif;font-style:italic;font-size:14px;color:var(--gray-300);line-height:1.7}
+  .footer-contact strong{font-family:'Inter Tight',sans-serif;color:var(--off-white);font-size:12px;letter-spacing:.04em;text-transform:uppercase;display:block;margin-top:14px;margin-bottom:4px;font-style:normal;font-weight:500}
+  .footer-contact strong:first-child{margin-top:0}
+  .footer-contact a:hover{color:var(--gold-light)}
+  .social-icons{display:flex;gap:12px;margin-top:18px}
+  .social-icons a{width:38px;height:38px;border:1px solid rgba(212,175,55,.3);color:var(--gold);display:flex;align-items:center;justify-content:center;transition:all .3s}
+  .social-icons a:hover{background:var(--gold);color:var(--black);border-color:var(--gold);transform:translateY(-2px)}
+  .social-icons svg{width:16px;height:16px}
+  .footer-bottom{border-top:1px solid rgba(212,175,55,.15);padding-top:24px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:18px;font-size:12px}
+  .footer-bottom-left{font-family:'Fraunces',serif;font-style:italic;color:var(--gray-500)}
+  .footer-bottom-right{font-family:'Inter Tight',sans-serif;color:var(--gray-500);font-size:10px;letter-spacing:.28em;text-transform:uppercase}
+  @media(max-width:780px){.footer-grid{grid-template-columns:1fr;gap:36px}.footer-bottom{flex-direction:column;text-align:center}}
+
+  /* ═════ WA FAB ═════ */
+  .wa-fab{position:fixed;bottom:28px;right:28px;width:56px;height:56px;background:#25d366;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;box-shadow:0 14px 32px rgba(37,211,102,.4);z-index:60;transition:transform .3s}
+  .wa-fab:hover{transform:scale(1.06)}
+  .wa-fab svg{width:30px;height:30px;fill:currentColor}
+
+  {% block extra_css %}{% endblock %}
+</style>
+{% block head_extra %}{% endblock %}
+</head>
+<body>
+
+<nav class="nav" id="nav">
+  <div class="nav-inner">
+    <a href="/HenriqueSilva/" class="brand">
+      <img class="brand-seal" src="/HenriqueSilva/assets/seal-hsa.png" alt="HSA" />
+      <span class="wordmark-text">Henrique Silva<small>Advocacia</small></span>
+    </a>
+    <button class="nav-burger" id="navBurger" aria-label="Menu" aria-expanded="false">
+      <svg viewBox="0 0 26 26"><line x1="3" y1="6" x2="23" y2="6"/><line x1="3" y1="13" x2="23" y2="13"/><line x1="3" y1="20" x2="23" y2="20"/></svg>
+    </button>
+    <div class="nav-links" id="navLinks">
+      <a href="/HenriqueSilva/#escritorio">Escritório</a>
+      <a href="/HenriqueSilva/#areas">Áreas</a>
+      <a href="/HenriqueSilva/#sobre">Quem Sou</a>
+      <a href="/HenriqueSilva/blog/" class="{% if active == 'blog' %}active{% endif %}">Blog</a>
+      <a href="/HenriqueSilva/#contato">Contato</a>
+    </div>
+    <a class="nav-cta" href="https://wa.me/5581987134878?text=Ol%C3%A1%2C%20Dr.%20Henrique." target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24"><path d="M17.5 14.4c-.3-.1-1.6-.8-1.9-.9-.3-.1-.4-.1-.6.1s-.7.9-.9 1.1c-.2.2-.3.2-.6.1-.3-.1-1.2-.5-2.3-1.4-.8-.7-1.4-1.6-1.6-1.9-.2-.3 0-.4.1-.6.1-.1.3-.3.4-.5.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5 0-.1-.6-1.5-.9-2.1-.2-.5-.5-.5-.6-.5h-.5c-.2 0-.5.1-.7.4-.2.3-.9 1-.9 2.4 0 1.4 1 2.8 1.1 3 .1.2 1.9 3 4.7 4.2.7.3 1.2.4 1.6.6.7.2 1.3.2 1.8.1.5-.1 1.6-.7 1.9-1.3.2-.6.2-1.2.2-1.3 0-.1-.2-.2-.5-.3M12 21.7c-1.7 0-3.3-.4-4.7-1.3l-.3-.2-3.5.9.9-3.4-.2-.4c-.9-1.5-1.4-3.2-1.4-4.9 0-5.1 4.2-9.3 9.2-9.3 2.5 0 4.8 1 6.6 2.7 1.7 1.8 2.7 4.1 2.7 6.6-.1 5.1-4.2 9.3-9.3 9.3M20 4c-2.1-2.1-5-3.3-8-3.3-6.2 0-11.3 5.1-11.3 11.3 0 2 .5 3.9 1.5 5.6L.6 23.4l5.9-1.5c1.6.9 3.5 1.4 5.4 1.4 6.2 0 11.3-5.1 11.3-11.3 0-3-1.2-5.9-3.2-8z"/></svg>
+      WhatsApp
+    </a>
+  </div>
+</nav>
+
+{% block content %}{% endblock %}
+
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-brand">
+          <img src="/HenriqueSilva/assets/seal-hsa.png" alt="HSA" />
+          <span class="wordmark-text">Henrique Silva<small>Advocacia</small></span>
+        </div>
+        <div class="footer-tag">14 anos de atuação multidisciplinar — Direito Trabalhista, Previdenciário, Cível, de Família, Empresarial e Tributário, com pareceres técnicos, palestras e consultoria preventiva.</div>
+        <div class="social-icons">
+          <a href="https://www.instagram.com/henriquesilva.adv2023/" target="_blank" rel="noopener" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg></a>
+          <a href="https://www.facebook.com/HsaHenriqueSilvaAdvocacia" target="_blank" rel="noopener" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 9h3V5h-3c-2.2 0-4 1.8-4 4v2H7v4h3v8h4v-8h3l1-4h-4V9c0-.6.4-1 1-1z"/></svg></a>
+          <a href="https://www.linkedin.com/in/henrique-silva-444b3758/" target="_blank" rel="noopener" aria-label="LinkedIn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H6.5v-7H9v7zM7.7 8.7c-.8 0-1.5-.7-1.5-1.5s.7-1.5 1.5-1.5 1.5.7 1.5 1.5-.6 1.5-1.5 1.5zM18 17h-2.5v-3.6c0-.9 0-2-1.2-2s-1.4 1-1.4 2V17H10.4v-7h2.4v1c.3-.6 1.1-1.2 2.3-1.2 2.5 0 2.9 1.6 2.9 3.7V17z"/></svg></a>
+        </div>
+      </div>
+      <div>
+        <h4>Contato</h4>
+        <div class="footer-contact">
+          <strong>WhatsApp</strong>
+          <a href="https://wa.me/5581987134878">(81) 9 8713-4878</a>
+          <strong>E-mail</strong>
+          <a href="mailto:henriquesilva.adv@gmail.com">henriquesilva.adv@gmail.com</a>
+          <strong>Sede</strong>
+          Cond. Novo Mundo Empresarial<br/>
+          Torre 05, Sala 318 · Av. A, 4165<br/>
+          Reserva do Paiva · Cabo de Santo Agostinho/PE
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-bottom-left">© <span id="year">2026</span> Henrique Silva Advocacia · OAB/PE 31.742</div>
+      <div class="footer-bottom-right"><a href="https://vejaseusite.github.io/AdvogadoTemplates/" target="_blank" rel="noopener">Site por VejaSeuSIte</a></div>
+    </div>
+  </div>
+</footer>
+
+<a class="wa-fab" href="https://wa.me/5581987134878?text=Ol%C3%A1%2C%20Dr.%20Henrique." target="_blank" rel="noopener" aria-label="WhatsApp">
+  <svg viewBox="0 0 24 24"><path d="M17.5 14.4c-.3-.1-1.6-.8-1.9-.9-.3-.1-.4-.1-.6.1s-.7.9-.9 1.1c-.2.2-.3.2-.6.1-.3-.1-1.2-.5-2.3-1.4-.8-.7-1.4-1.6-1.6-1.9-.2-.3 0-.4.1-.6.1-.1.3-.3.4-.5.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5 0-.1-.6-1.5-.9-2.1-.2-.5-.5-.5-.6-.5h-.5c-.2 0-.5.1-.7.4-.2.3-.9 1-.9 2.4 0 1.4 1 2.8 1.1 3 .1.2 1.9 3 4.7 4.2.7.3 1.2.4 1.6.6.7.2 1.3.2 1.8.1.5-.1 1.6-.7 1.9-1.3.2-.6.2-1.2.2-1.3 0-.1-.2-.2-.5-.3M12 21.7c-1.7 0-3.3-.4-4.7-1.3l-.3-.2-3.5.9.9-3.4-.2-.4c-.9-1.5-1.4-3.2-1.4-4.9 0-5.1 4.2-9.3 9.2-9.3 2.5 0 4.8 1 6.6 2.7 1.7 1.8 2.7 4.1 2.7 6.6-.1 5.1-4.2 9.3-9.3 9.3M20 4c-2.1-2.1-5-3.3-8-3.3-6.2 0-11.3 5.1-11.3 11.3 0 2 .5 3.9 1.5 5.6L.6 23.4l5.9-1.5c1.6.9 3.5 1.4 5.4 1.4 6.2 0 11.3-5.1 11.3-11.3 0-3-1.2-5.9-3.2-8z"/></svg>
+</a>
+
+<script>
+  document.getElementById('year').textContent = new Date().getFullYear();
+  (function(){
+    var nav = document.getElementById('nav');
+    window.addEventListener('scroll', function(){
+      if (window.scrollY > 60) nav.classList.add('scrolled'); else nav.classList.remove('scrolled');
+    }, {passive:true});
+    var burger = document.getElementById('navBurger');
+    if (burger){
+      burger.addEventListener('click', function(){ nav.classList.toggle('nav-open'); });
+      document.addEventListener('keydown', function(e){ if (e.key==='Escape') nav.classList.remove('nav-open'); });
+    }
+  })();
+</script>
+{% block scripts %}{% endblock %}
+
+</body>
+</html>

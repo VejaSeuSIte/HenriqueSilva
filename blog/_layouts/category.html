@@ -1,0 +1,39 @@
+{% extends "list.html" %}
+{% block extra_css %}
+{{ super() }}
+{% endblock %}
+{% block content %}
+<header class="blog-hero">
+  <div class="wrap">
+    <div class="blog-hero-eye">Categoria</div>
+    <h1>{{ category_label }}</h1>
+    <p>Artigos sobre Direito {{ category_label }} no blog do Dr. José Henrique da Silva.</p>
+    <p style="margin-top:24px"><a href="/HenriqueSilva/blog/" style="color:var(--gold-light);font-family:'Inter Tight',sans-serif;font-size:11px;letter-spacing:.32em;text-transform:uppercase;border-bottom:1px solid rgba(212,175,55,.4);padding-bottom:4px">← Todas as áreas</a></p>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="blog-grid">
+    {% for post in posts %}
+    <article class="post-card">
+      <a href="{{ post.url }}" class="post-card-cover {% if not post.cover %}no-image{% endif %}">
+        {% if post.cover %}<img src="{{ post.cover }}" alt="{{ post.title }}" loading="lazy" />{% endif %}
+      </a>
+      <div class="post-card-body">
+        <div class="post-card-meta">
+          <span>{{ post.category_label }}</span>
+          <span class="dot">·</span>
+          <span class="read">{{ post.read_min }} min</span>
+        </div>
+        <h2><a href="{{ post.url }}">{{ post.title|safe }}</a></h2>
+        <p class="post-card-excerpt">{{ post.excerpt }}</p>
+        <div class="post-card-foot">
+          <span>{{ post.date | date_pt }}</span>
+          <span class="post-card-arrow"><svg viewBox="0 0 20 20"><path d="M3 10 L17 10"/><path d="M11 4 L17 10 L11 16"/></svg></span>
+        </div>
+      </div>
+    </article>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}
