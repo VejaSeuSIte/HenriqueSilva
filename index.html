@@ -2944,6 +2944,178 @@
   .ghost-btn-dark:hover{background:#d4af37 !important;color:#0a0a0a !important;border-color:#d4af37 !important;transform:translateY(-2px);box-shadow:0 16px 36px rgba(212,175,55,.32)}
   .ghost-btn-dark svg{width:14px;height:14px}
   @media(max-width:980px){.latest-grid{grid-template-columns:1fr}}
+
+  /* ═══════════════════════════════════════════════════════════
+     MOBILE OPTIMIZATION v9 — passada cuidadosa por seção
+     ═══════════════════════════════════════════════════════════ */
+  @media(max-width:780px){
+    /* Nav brand: garante 1 linha + escudo+texto compactos */
+    .brand{gap:10px !important}
+    .brand-seal{height:38px !important; width:38px !important}
+    .wordmark-text.brand-wordmark{
+      font-size:14px !important;
+      white-space:nowrap !important;
+    }
+    .wordmark-text.brand-wordmark .wm-line1{font-size:14px !important; white-space:nowrap !important}
+    .wordmark-text.brand-wordmark .wm-line2,
+    .wordmark-text.brand-wordmark small{
+      font-size:7px !important;
+      letter-spacing:.4em !important;
+      margin-top:2px !important;
+    }
+    .nav-cta{padding:9px 14px !important; font-size:9.5px !important; letter-spacing:.18em !important; gap:6px !important}
+    .nav-cta svg{width:12px !important; height:12px !important}
+
+    /* Hero mobile */
+    .hero-logo{gap:24px !important; padding:0 28px !important}
+    .hero-seal{width:130px !important; height:130px !important}
+    .hero-wordmark.wordmark-text.wordmark-hero{font-size:32px !important; text-align:center !important; align-items:center !important}
+    .hero-wordmark.wordmark-text.wordmark-hero .wm-line1{font-size:1em !important}
+    .hero-wordmark.wordmark-text.wordmark-hero .wm-line2{font-size:.22em !important; letter-spacing:.6em !important; margin-top:.6em !important}
+    .hero-tagline{position:static !important; transform:none !important; margin:30px auto 0 !important; padding:0 28px !important; bottom:auto !important}
+    .hero-tagline-quote{font-size:17px !important; line-height:1.5 !important}
+    .hero-actions{position:static !important; transform:none !important; margin:30px auto 30px !important; padding:0 28px !important; bottom:auto !important; flex-direction:column !important; gap:12px !important; align-items:stretch !important}
+    .hero-cta-primary{width:100% !important; justify-content:center !important; padding:17px 24px !important; font-size:10.5px !important; letter-spacing:.26em !important}
+    .hero-cta-secondary{display:none !important}
+
+    /* Office: foto sem altura fixa, antes do texto pra mobile */
+    .office-grid{grid-template-columns:1fr !important; gap:36px !important}
+    .office-photo-img{height:auto !important; max-height:320px !important; width:100% !important}
+    .office-pillars{grid-template-columns:1fr !important; gap:0 !important; margin-top:32px !important}
+    .office-pillars .pillar{padding:18px 0 !important; border-top:1px solid rgba(212,175,55,.15) !important}
+    .office-pillars .pillar:first-child{border-top:0 !important}
+
+    /* Áreas: 1 col em ambas as fileiras */
+    .areas-featured, .areas-secondary{grid-template-columns:1fr !important; gap:14px !important; max-width:100% !important}
+    .area-card.featured{padding:34px 26px !important}
+    .area-card.featured h3{font-size:24px !important}
+    .area-card.compact{padding:26px 22px !important}
+    .area-card.compact h3{font-size:18px !important}
+    .area-card.compact p{font-size:13px !important; line-height:1.55 !important}
+
+    /* Reviews carrossel ja funciona — só ajustar o card width */
+    .reviews-scroll{padding:8px 22px 28px !important; margin:0 -22px !important}
+    .reviews-scroll .review-card{flex-basis:84% !important; min-width:0 !important; padding:24px 22px !important}
+    .reviews-banner{flex-direction:column !important; gap:14px !important; padding:24px 28px !important; text-align:center !important; margin:0 auto 36px !important}
+    .reviews-banner-num{font-size:48px !important}
+    .reviews-banner-meta{font-size:14px !important}
+
+    /* About: portrait empilhado e visível */
+    .about-grid.portrait-layout{grid-template-columns:1fr !important; gap:32px !important; justify-items:center !important}
+    .about-portrait{margin-right:0 !important; margin-bottom:0 !important; width:100% !important}
+    .portrait-frame{width:280px !important; max-width:100% !important; margin:0 auto !important}
+    .portrait-photo{width:100% !important; height:auto !important; aspect-ratio:3/4 !important; object-fit:cover !important}
+    .about-text.about-text-integrated{padding-left:0 !important; text-align:left !important}
+    .about-text h2{font-size:30px !important; line-height:1.12 !important}
+    .about-text .lead{font-size:17px !important; padding-left:18px !important}
+    .about-text p{font-size:14.5px !important}
+    .about-credentials{grid-template-columns:1fr !important; gap:0 !important; padding-top:24px !important; margin-top:32px !important}
+    .credential{padding:18px 0 !important; border-right:0 !important; border-bottom:1px solid rgba(212,175,55,.15) !important; text-align:left !important}
+    .credential:last-child{border-bottom:0 !important}
+    .credential-num{font-size:36px !important}
+
+    /* FAQ */
+    .faq-search input{padding:14px 18px 14px 46px !important; font-size:14px !important}
+    .q summary{padding:18px 50px 18px 22px !important; font-size:16px !important; line-height:1.32 !important}
+    .q-body{padding:0 22px 22px !important; font-size:13.5px !important; line-height:1.7 !important}
+
+    /* Latest posts: 1 col, fonte e padding ajustados */
+    .latest-posts{padding:80px 0 !important}
+    .latest-grid{grid-template-columns:1fr !important; gap:18px !important; padding:0 24px !important}
+    .latest-card-cover{aspect-ratio:16/9 !important}
+    .latest-card-body{padding:22px 22px 26px !important}
+    .latest-card h3{font-size:18px !important}
+
+    /* Contact CTA: form padding mobile + headline mobile */
+    .contact-cta{padding:80px 0 !important}
+    .contact-cta-head h2{font-size:30px !important}
+    .contact-cta-head p{font-size:14.5px !important}
+    .contact-cta-form{padding:30px 22px !important; max-width:100% !important; margin:0 22px !important}
+    .contact-cta-form .form-grid{grid-template-columns:1fr !important; gap:0 !important; margin-bottom:0 !important}
+    .contact-cta-form .form-row{margin-bottom:18px !important}
+    .contact-cta-submit{padding:16px 24px !important; font-size:11px !important}
+
+    /* Footer */
+    .footer{padding:50px 0 30px !important}
+    .footer-grid{grid-template-columns:1fr !important; gap:36px !important; margin-bottom:36px !important}
+    .footer-tag{font-size:14px !important; max-width:100% !important}
+    .footer-bottom{flex-direction:column !important; text-align:center !important; gap:12px !important; padding-top:22px !important}
+    .footer-social{margin-top:24px !important; padding-top:24px !important}
+    .social-icons{justify-content:flex-start !important}
+
+    /* WhatsApp FAB menor */
+    .wa-fab{width:48px !important; height:48px !important; bottom:18px !important; right:18px !important; box-shadow:0 8px 22px rgba(37,211,102,.45) !important}
+    .wa-fab svg{width:22px !important; height:22px !important}
+
+    /* Wrap padding */
+    .wrap{padding:0 22px !important}
+    .nav-inner{padding:0 22px !important; gap:10px !important}
+
+    /* Section paddings */
+    .office, .areas, .reviews, .youtube-section, .diagnostic, .contact, .faq-section{padding:80px 0 !important}
+    .shead{margin-bottom:40px !important}
+    .shead h2{font-size:32px !important; line-height:1.12 !important}
+    .shead-sub{font-size:14.5px !important}
+  }
+
+  /* ===== ≤480px (mobile padrão) ===== */
+  @media(max-width:480px){
+    .wrap{padding:0 18px !important}
+    .nav-inner{padding:0 14px !important}
+    .nav.scrolled{padding:8px 0 !important}
+    .nav-cta{padding:8px 12px !important; font-size:9px !important; letter-spacing:.14em !important}
+    .nav-cta svg{width:11px !important; height:11px !important}
+    .brand-seal{height:34px !important; width:34px !important}
+    .wordmark-text.brand-wordmark{font-size:13px !important}
+    .wordmark-text.brand-wordmark .wm-line1{font-size:13px !important}
+    .wordmark-text.brand-wordmark .wm-line2,
+    .wordmark-text.brand-wordmark small{font-size:6.5px !important}
+
+    .hero-seal{width:110px !important; height:110px !important}
+    .hero-wordmark.wordmark-text.wordmark-hero{font-size:28px !important}
+    .hero-tagline-quote{font-size:15.5px !important}
+
+    /* Reduzir paddings de cards e seções */
+    .office-text h2, .about-text h2, .contact-cta-head h2, .latest-posts .shead h2, .reviews .shead h2, .faq-section .shead h2{font-size:28px !important; line-height:1.14 !important}
+    .area-card.featured h3{font-size:22px !important}
+    .area-card.compact{padding:22px 20px !important}
+    .area-card.featured{padding:28px 22px !important}
+    .reviews-scroll .review-card{flex-basis:88% !important}
+    .portrait-frame{width:240px !important}
+
+    .contact-cta-form{padding:24px 18px !important; margin:0 18px !important}
+    .contact-cta-submit{font-size:10px !important; letter-spacing:.22em !important}
+  }
+
+  /* Burger menu — escondido em desktop, mostrado em ≤1020px */
+  @media(max-width:1020px){
+    .nav-burger{display:inline-flex !important}
+    .nav-links{
+      display:none !important;
+      flex-direction:column !important;
+      position:absolute !important;
+      top:calc(100% + 12px) !important;
+      left:14px !important;
+      right:14px !important;
+      background:rgba(10,10,10,.97) !important;
+      backdrop-filter:blur(20px) !important;
+      border:1px solid rgba(212,175,55,.2) !important;
+      padding:8px 0 !important;
+      gap:0 !important;
+    }
+    .nav.nav-open .nav-links{display:flex !important}
+    .nav-links a{
+      padding:14px 24px !important;
+      font-size:11px !important;
+      border-top:1px solid rgba(212,175,55,.1) !important;
+    }
+    .nav-links a:first-child{border-top:0 !important}
+    .nav-links a::after{display:none !important}
+    .nav-drop{display:block !important}
+    .nav-drop-trigger{padding:14px 24px !important; width:100% !important; justify-content:space-between !important}
+    .nav-drop.open .nav-drop-menu{display:block !important; background:rgba(20,20,20,.95) !important; border:0 !important; border-top:1px solid rgba(212,175,55,.1) !important; border-bottom:1px solid rgba(212,175,55,.1) !important; min-width:0 !important; padding:0 !important}
+    .nav-drop-menu a{padding:12px 38px !important; font-size:10.5px !important; background:transparent !important}
+  }
 </style>
 <script>
   (function(){

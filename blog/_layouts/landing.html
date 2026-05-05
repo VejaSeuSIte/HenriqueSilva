@@ -122,8 +122,44 @@
   .ld-cta-final .ld-cta-primary{padding:20px 44px}
 
   @media(max-width:780px){
-    .ld-hero{padding:130px 0 70px}
-    .ld-section{padding:70px 0}
+    .ld-hero{padding:120px 0 60px}
+    .ld-hero h1{font-size:clamp(34px,9vw,48px) !important; line-height:1.06 !important}
+    .ld-hero-sub{font-size:16px !important; line-height:1.55 !important}
+    .ld-hero-actions{flex-direction:column; gap:12px; align-items:stretch}
+    .ld-cta-primary{justify-content:center; padding:16px 26px; font-size:10.5px; letter-spacing:.26em}
+    .ld-cta-secondary{justify-content:center; padding:14px 22px; font-size:10px; letter-spacing:.22em}
+
+    .ld-section{padding:60px 0}
+    .ld-shead{margin-bottom:36px}
+    .ld-shead h2{font-size:28px !important; line-height:1.14 !important}
+    .ld-shead p{font-size:14.5px}
+
+    .ld-intro{grid-template-columns:1fr; gap:24px}
+    .ld-intro h2{font-size:26px !important; line-height:1.16 !important}
+    .ld-intro p{font-size:15px !important; line-height:1.7 !important}
+
+    .ld-bullets{grid-template-columns:1fr; gap:24px; margin-top:36px}
+    .ld-bullet{gap:14px}
+    .ld-bullet-num{font-size:30px; min-width:36px}
+    .ld-bullet h3{font-size:18px}
+    .ld-bullet p{font-size:13.5px; line-height:1.6}
+
+    .ld-faq{margin:0 -2px}
+    .ld-faq summary{padding:18px 50px 18px 22px; font-size:16px; line-height:1.32}
+    .ld-faq .body{padding:0 22px 22px; font-size:13.5px; line-height:1.7}
+
+    .ld-posts-grid{grid-template-columns:1fr; gap:18px}
+
+    .ld-cta-final{padding:80px 0}
+    .ld-cta-final h2{font-size:28px}
+    .ld-cta-final p{font-size:15px}
+    .ld-cta-final .ld-cta-primary{padding:18px 32px; font-size:10.5px}
+  }
+  @media(max-width:480px){
+    .ld-hero{padding:108px 0 50px}
+    .ld-hero h1{font-size:30px !important}
+    .ld-shead h2, .ld-cta-final h2{font-size:24px !important}
+    .ld-bullet h3{font-size:16px}
   }
 
   /* Reveal */
