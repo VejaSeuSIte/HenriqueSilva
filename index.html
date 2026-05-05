@@ -2456,6 +2456,58 @@
     .reviews-scroll .review-card{flex-basis:88% !important; min-width:0 !important}
   }
 
+
+  /* Dropdown nav "Áreas" */
+  .nav-drop{position:relative}
+  .nav-drop-trigger{display:inline-flex !important;align-items:center;gap:6px;cursor:pointer}
+  .nav-drop-caret{font-size:9px;transition:transform .25s;color:var(--gold-light) !important}
+  .nav-drop.open .nav-drop-caret{transform:rotate(180deg)}
+  .nav-drop-menu{
+    position:absolute;top:calc(100% + 18px);left:50%;transform:translateX(-50%) translateY(-4px);
+    background:rgba(10,10,10,.97);backdrop-filter:blur(18px);
+    border:1px solid rgba(212,175,55,.25);
+    min-width:240px;padding:8px 0;
+    opacity:0;visibility:hidden;
+    transition:opacity .22s ease, transform .22s ease, visibility 0s linear .22s;
+    z-index:60;
+    box-shadow:0 22px 44px rgba(0,0,0,.5);
+  }
+  .nav-drop.open .nav-drop-menu{opacity:1;visibility:visible;transform:translateX(-50%) translateY(0);transition:opacity .22s ease, transform .22s ease, visibility 0s linear 0s}
+  .nav-drop-menu a{
+    display:block !important;padding:13px 24px !important;
+    font-family:'Inter Tight',sans-serif !important;
+    font-size:11px !important;letter-spacing:.18em !important;
+    color:var(--off-white) !important;
+    text-transform:uppercase !important;font-weight:500 !important;
+    transition:all .2s !important;
+  }
+  .nav-drop-menu a::after{display:none !important}
+  .nav-drop-menu a:hover{background:rgba(212,175,55,.1) !important;color:var(--gold-light) !important;padding-left:30px !important}
+  .nav-drop-menu hr{border:0;border-top:1px solid rgba(212,175,55,.15);margin:6px 18px}
+  .nav-drop-menu .nav-drop-all{color:var(--gold-light) !important;font-style:italic;font-family:'Fraunces',serif !important;text-transform:none !important;letter-spacing:0 !important}
+  @media(max-width:1020px){
+    .nav-drop-menu{position:static;transform:none;background:transparent;backdrop-filter:none;border:0;box-shadow:none;padding:0;min-width:0;opacity:1;visibility:visible;display:none}
+    .nav-drop.open .nav-drop-menu{display:block;transform:none}
+    .nav-drop-menu a{padding:14px 36px !important;font-size:10.5px !important;border-top:1px solid rgba(212,175,55,.08) !important}
+    .nav-drop-menu hr{display:none}
+  }
+
+  /* "Saiba mais" link e card clicavel */
+  .area-card[data-link]{cursor:pointer}
+  .area-saiba{
+    display:inline-flex;align-items:center;gap:8px;
+    font-family:'Inter Tight', sans-serif;
+    font-size:11px;letter-spacing:.32em;text-transform:uppercase;
+    font-weight:600;color:var(--gold-light);
+    padding:14px 0 0;margin-top:auto;
+    border-top:1px solid rgba(212,175,55,.18);
+    transition:all .35s cubic-bezier(.22,.8,.24,1);
+    width:fit-content;
+  }
+  .area-saiba:hover{color:var(--gold);gap:14px}
+  .area-saiba span{display:inline-block;transition:transform .35s}
+  .area-card[data-link]:hover .area-saiba span{transform:translateX(4px)}
+  .area-card.compact .area-saiba{font-size:9.5px;letter-spacing:.22em;padding:10px 0 0;margin-top:14px}
 </style>
 </head>
 <body data-auto-reveal="all" data-scroll-progress>
@@ -2476,12 +2528,23 @@
     </button>
     <div class="nav-links" id="nav-links-menu">
       <a href="#escritorio">O Escritório</a>
-      <a href="#areas">Áreas</a>
-      <a href="#sobre">Quem Sou</a>
+      <div class="nav-drop" id="navDrop">
+        <a href="#areas" class="nav-drop-trigger" aria-haspopup="true" aria-expanded="false">Áreas <span class="nav-drop-caret" aria-hidden="true">▾</span></a>
+        <div class="nav-drop-menu" role="menu">
+          <a href="trabalhista/">Trabalhista</a>
+          <a href="previdenciario/">Previdenciário</a>
+          <a href="familia/">Família</a>
+          <a href="empresarial/">Empresarial</a>
+          <a href="imobiliario/">Imobiliário</a>
+          <hr/>
+          <a href="#areas" class="nav-drop-all">Ver todas as áreas →</a>
+        </div>
+      </div>
+      <a href="sobre/">Quem Sou</a>
       <a href="#depoimentos">Avaliações</a>
       <a href="blog/">Blog</a>
       <a href="#faq">Dúvidas</a>
-      <a href="#contato">Contato</a>
+      <a href="contato/">Contato</a>
     </div>
     <a class="nav-cta" href="https://wa.me/5581987134878?text=Ol%C3%A1%2C%20Dr.%20Henrique.%20Vim%20pelo%20site." target="_blank" rel="noopener">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.5 14.4c-.3-.1-1.6-.8-1.9-.9-.3-.1-.4-.1-.6.1s-.7.9-.9 1.1c-.2.2-.3.2-.6.1-.3-.1-1.2-.5-2.3-1.4-.8-.7-1.4-1.6-1.6-1.9-.2-.3 0-.4.1-.6.1-.1.3-.3.4-.5.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5 0-.1-.6-1.5-.9-2.1-.2-.5-.5-.5-.6-.5h-.5c-.2 0-.5.1-.7.4-.2.3-.9 1-.9 2.4 0 1.4 1 2.8 1.1 3 .1.2 1.9 3 4.7 4.2.7.3 1.2.4 1.6.6.7.2 1.3.2 1.8.1.5-.1 1.6-.7 1.9-1.3.2-.6.2-1.2.2-1.3 0-.1-.2-.2-.5-.3M12 21.7c-1.7 0-3.3-.4-4.7-1.3l-.3-.2-3.5.9.9-3.4-.2-.4c-.9-1.5-1.4-3.2-1.4-4.9 0-5.1 4.2-9.3 9.2-9.3 2.5 0 4.8 1 6.6 2.7 1.7 1.8 2.7 4.1 2.7 6.6-.1 5.1-4.2 9.3-9.3 9.3M20 4c-2.1-2.1-5-3.3-8-3.3-6.2 0-11.3 5.1-11.3 11.3 0 2 .5 3.9 1.5 5.6L.6 23.4l5.9-1.5c1.6.9 3.5 1.4 5.4 1.4 6.2 0 11.3-5.1 11.3-11.3 0-3-1.2-5.9-3.2-8z"/></svg>
@@ -2572,7 +2635,7 @@
       <div class="flourish"><svg viewBox="0 0 20 20"><path d="M10 2 L11 8 L17 9 L11 10 L10 16 L9 10 L3 9 L9 8 Z"/></svg></div>
     </div>
     <div class="areas-featured" data-stagger="> .area-card" data-stagger-step="200" data-reveal="up">
-      <article class="area-card featured">
+      <article data-link="trabalhista/" class="area-card featured">
         <img class="area-photo" src="assets/area-trabalhista.jpg" alt="" loading="lazy" aria-hidden="true" />
         <div class="area-num">— I —</div>
         <div class="area-icon">
@@ -2581,9 +2644,10 @@
         <h3>Direito <em>Trabalhista</em></h3>
         <p>Execuções e litígios trabalhistas de alta complexidade, judicial e extrajudicial. Verbas rescisórias, horas extras, assédio moral, equiparação salarial, vínculo, adesão a normas coletivas e estabilidades. Atuação para empregados e empregadores.</p>
         <div class="area-tags"><span class="area-tag">Execuções</span><span class="area-tag">Rescisões</span><span class="area-tag">Horas extras</span><span class="area-tag">Assédio</span></div>
+        <a href="trabalhista/" class="area-saiba">Saiba mais <span aria-hidden="true">→</span></a>
         <a href="trabalhista/" class="area-arrow" aria-label="Falar sobre esta área"><svg viewBox="0 0 20 20"><path d="M3 10 L17 10"/><path d="M11 4 L17 10 L11 16"/></svg></a>
       </article>
-      <article class="area-card featured">
+      <article data-link="empresarial/" class="area-card featured">
         <img class="area-photo" src="assets/area-trabalhista.jpg" alt="" loading="lazy" aria-hidden="true" />
         <div class="area-num">— X —</div>
         <div class="area-icon">
@@ -2592,14 +2656,16 @@
         <h3>Assessoria <em>Empresarial</em></h3>
         <p>Consultoria fixa para empresas: compliance trabalhista, análise contratual, pareceres técnicos, palestras orientativas, gestão de riscos e suporte estratégico nas operações do dia a dia.</p>
         <div class="area-tags"><span class="area-tag">Compliance</span><span class="area-tag">Pareceres</span><span class="area-tag">Palestras</span></div>
+        <a href="empresarial/" class="area-saiba">Saiba mais <span aria-hidden="true">→</span></a>
         <a href="empresarial/" class="area-arrow" aria-label="Falar sobre esta área"><svg viewBox="0 0 20 20"><path d="M3 10 L17 10"/><path d="M11 4 L17 10 L11 16"/></svg></a>
       </article>
     </div>
     <div class="areas-secondary" data-stagger="> .area-card" data-stagger-step="80" data-reveal="up">
-      <article class="area-card compact">
+      <article data-link="previdenciario/" class="area-card compact">
         <div class="area-icon"><svg viewBox="0 0 32 32"><path d="M16 4 L26 9 L26 22 C26 26 16 30 16 30 C16 30 6 26 6 22 L6 9 Z"/><path d="M11 16 L15 20 L22 13"/></svg></div>
         <h3>Direito <em>Previdenciário</em></h3>
         <p>Ações contra o INSS: aposentadorias por idade, tempo de contribuição, especial e BPC/LOAS. Auxílios por incapacidade, revisões e conversões.</p>
+        <a href="previdenciario/" class="area-saiba">Saiba mais <span aria-hidden="true">→</span></a>
         <a href="previdenciario/" class="area-arrow" aria-label="Falar"><svg viewBox="0 0 20 20"><path d="M3 10 L17 10"/><path d="M11 4 L17 10 L11 16"/></svg></a>
       </article>
       <article class="area-card compact">
@@ -2608,10 +2674,11 @@
         <p>Contratos, indenizações, responsabilidade civil, danos morais e materiais. Cobranças, despejos, locatício e demais questões patrimoniais.</p>
         <a href="#contato" class="area-arrow" aria-label="Falar"><svg viewBox="0 0 20 20"><path d="M3 10 L17 10"/><path d="M11 4 L17 10 L11 16"/></svg></a>
       </article>
-      <article class="area-card compact">
+      <article data-link="familia/" class="area-card compact">
         <div class="area-icon"><svg viewBox="0 0 32 32"><circle cx="12" cy="10" r="3"/><circle cx="22" cy="11" r="2.5"/><path d="M6 26c0-4 3-7 6-7s6 3 6 7"/><path d="M18 26c0-3 2-5 4-5s4 2 4 5"/></svg></div>
         <h3>Direito de <em>Família</em></h3>
         <p>Divórcios consensuais e litigiosos, alimentos, partilha, guarda, regulamentação de vivência, reconhecimento de paternidade.</p>
+        <a href="familia/" class="area-saiba">Saiba mais <span aria-hidden="true">→</span></a>
         <a href="familia/" class="area-arrow" aria-label="Falar"><svg viewBox="0 0 20 20"><path d="M3 10 L17 10"/><path d="M11 4 L17 10 L11 16"/></svg></a>
       </article>
       <article class="area-card compact">
@@ -2620,10 +2687,11 @@
         <p>Defesa em relações de consumo: cobranças indevidas, bancos, planos de saúde, viagens, telefonia, vícios de produto e serviço.</p>
         <a href="#contato" class="area-arrow" aria-label="Falar"><svg viewBox="0 0 20 20"><path d="M3 10 L17 10"/><path d="M11 4 L17 10 L11 16"/></svg></a>
       </article>
-      <article class="area-card compact">
+      <article data-link="imobiliario/" class="area-card compact">
         <div class="area-icon"><svg viewBox="0 0 32 32"><path d="M5 14 L16 5 L27 14 V27 H5 Z"/><path d="M13 27 V20 H19 V27"/></svg></div>
         <h3>Direito <em>Imobiliário</em></h3>
         <p>Compra e venda, usucapião, regularização de imóvel, condomínio, distratos, despejos, ações possessórias e contratos de locação.</p>
+        <a href="imobiliario/" class="area-saiba">Saiba mais <span aria-hidden="true">→</span></a>
         <a href="imobiliario/" class="area-arrow" aria-label="Falar"><svg viewBox="0 0 20 20"><path d="M3 10 L17 10"/><path d="M11 4 L17 10 L11 16"/></svg></a>
       </article>
       <article class="area-card compact">
@@ -3044,6 +3112,41 @@
     });
   })();
 
+
+  // Cards de areas com data-link viram clicaveis
+  (function(){
+    document.querySelectorAll('.area-card[data-link]').forEach(function(card){
+      card.addEventListener('click', function(e){
+        if (e.target.closest('a,button')) return;
+        window.location.href = card.dataset.link;
+      });
+    });
+  })();
+
+  // Dropdown "Áreas" no nav
+  (function(){
+    var drop = document.getElementById('navDrop');
+    if (!drop) return;
+    var trigger = drop.querySelector('.nav-drop-trigger');
+    function close(){ drop.classList.remove('open'); trigger.setAttribute('aria-expanded','false'); }
+    function open(){ drop.classList.add('open'); trigger.setAttribute('aria-expanded','true'); }
+    trigger.addEventListener('click', function(e){
+      // Em mobile/tablet, abre dropdown ao clicar; desktop com hover, primeiro clique abre tambem
+      e.preventDefault();
+      if (drop.classList.contains('open')) close(); else open();
+    });
+    // Hover em desktop
+    if (window.matchMedia('(min-width:1021px)').matches){
+      drop.addEventListener('mouseenter', open);
+      drop.addEventListener('mouseleave', close);
+    }
+    document.addEventListener('click', function(e){
+      if (!drop.contains(e.target)) close();
+    });
+    document.addEventListener('keydown', function(e){
+      if (e.key === 'Escape') close();
+    });
+  })();
 </script>
 
 </body>
