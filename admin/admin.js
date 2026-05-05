@@ -263,9 +263,12 @@ async function route(){
   }
 
   if (path === '/login') return renderLogin(app);
-  if (path === '/' || path === '/posts') return renderPosts(app);
+  if (path === '/' || path === '/dashboard') return renderDashboard(app);
+  if (path === '/posts') return renderPosts(app);
   if (path === '/new') return renderEditor(app, null);
   if (path.startsWith('/edit/')) return renderEditor(app, decodeURIComponent(path.slice(6)));
+  if (path === '/imagens') return renderGallery(app);
+  if (path === '/config') return renderConfig(app);
 
   app.innerHTML = '<div class="container"><div class="empty"><h3>Página não encontrada</h3><a href="#/" class="btn btn-primary">Voltar</a></div></div>';
 }
@@ -335,8 +338,11 @@ function renderTopbar(active){
         <div class="topbar-brand-text">Henrique Silva<small>Advocacia · Admin</small></div>
       </div>
       <div class="topbar-nav">
+        <a href="#/dashboard" class="${active==='dashboard'?'active':''}">Painel</a>
         <a href="#/posts" class="${active==='posts'?'active':''}">Posts</a>
         <a href="#/new" class="${active==='new'?'active':''}">+ Novo</a>
+        <a href="#/imagens" class="${active==='imagens'?'active':''}">Imagens</a>
+        <a href="#/config" class="${active==='config'?'active':''}">Configurações</a>
         <a href="/HenriqueSilva/blog/" target="_blank">Ver blog ↗</a>
       </div>
       <div class="topbar-actions">
@@ -345,6 +351,327 @@ function renderTopbar(active){
       </div>
     </div>
   `;
+}
+
+/* ===================== DASHBOARD ===================== */
+
+async function renderDashboard(app){
+  app.innerHTML = renderTopbar('dashboard') + `
+    <div class="container">
+      <div class="h1">Painel <em>de controle</em></div>
+      <div class="h-sub">Visão geral do blog e do site</div>
+
+      <div class="dash-grid">
+        <a class="dash-card" href="#/posts">
+          <div class="dash-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          </div>
+          <div class="dash-num" id="dashTotal">…</div>
+          <div class="dash-label">Posts publicados</div>
+        </a>
+        <a class="dash-card" href="#/new">
+          <div class="dash-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </div>
+          <div class="dash-num">+</div>
+          <div class="dash-label">Novo artigo</div>
+        </a>
+        <a class="dash-card" href="#/imagens">
+          <div class="dash-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+          </div>
+          <div class="dash-num" id="dashImages">…</div>
+          <div class="dash-label">Imagens</div>
+        </a>
+        <a class="dash-card" href="#/config">
+          <div class="dash-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          </div>
+          <div class="dash-num">⚙</div>
+          <div class="dash-label">Configurações</div>
+        </a>
+      </div>
+
+      <div class="dash-sections">
+        <div class="card">
+          <h3 class="dash-section-title">Últimos posts</h3>
+          <div id="dashRecent">Carregando…</div>
+        </div>
+        <div class="card">
+          <h3 class="dash-section-title">Atalhos rápidos</h3>
+          <div class="dash-shortcuts">
+            <a class="btn btn-secondary" href="#/new">+ Novo post</a>
+            <a class="btn btn-secondary" href="/HenriqueSilva/" target="_blank">Ver site →</a>
+            <a class="btn btn-secondary" href="/HenriqueSilva/blog/" target="_blank">Ver blog →</a>
+            <a class="btn btn-secondary" href="https://clarity.microsoft.com/" target="_blank">Clarity (heatmap) ↗</a>
+            <a class="btn btn-secondary" href="https://search.google.com/search-console" target="_blank">Search Console ↗</a>
+            <a class="btn btn-secondary" href="#/config">⚙ Configurações</a>
+          </div>
+        </div>
+      </div>
+
+      <style>
+        .dash-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-bottom:32px}
+        .dash-card{background:var(--black-2);border:1px solid rgba(212,175,55,.15);padding:28px 26px;display:flex;flex-direction:column;gap:14px;text-decoration:none;color:inherit;transition:all .35s}
+        .dash-card:hover{border-color:var(--gold);transform:translateY(-3px);background:var(--black-3)}
+        .dash-icon{width:38px;height:38px;color:var(--gold);display:flex;align-items:center;justify-content:center}
+        .dash-icon svg{width:32px;height:32px}
+        .dash-num{font-family:'Fraunces',serif;font-size:46px;font-weight:300;color:var(--off-white);line-height:1;font-style:italic}
+        .dash-label{font-family:'Inter Tight',sans-serif;font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);font-weight:500}
+        .dash-sections{display:grid;grid-template-columns:1.4fr 1fr;gap:18px;margin-top:24px}
+        .dash-section-title{font-family:'Fraunces',serif;font-size:22px;color:var(--off-white);font-weight:300;margin-bottom:18px}
+        .dash-shortcuts{display:flex;flex-direction:column;gap:10px;align-items:flex-start}
+        .dash-shortcuts .btn{width:auto;justify-content:flex-start;padding:10px 16px;font-size:11px}
+        .dash-recent-row{display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid rgba(212,175,55,.1)}
+        .dash-recent-row:last-child{border-bottom:0}
+        .dash-recent-row .when{color:var(--gray-500);font-size:11px;letter-spacing:.18em;text-transform:uppercase;font-weight:500;flex-shrink:0}
+        .dash-recent-row .title{flex:1;color:var(--off-white);font-family:'Fraunces',serif;font-size:16px;line-height:1.3}
+        .dash-recent-row .actions{display:flex;gap:6px}
+        .dash-recent-row .actions a{font-size:9px;letter-spacing:.18em;padding:5px 10px;border:1px solid rgba(212,175,55,.3);color:var(--gold-light);text-transform:uppercase;font-weight:500}
+        .dash-recent-row .actions a:hover{background:var(--gold);color:var(--black);border-color:var(--gold)}
+        @media(max-width:980px){.dash-grid{grid-template-columns:repeat(2,1fr)}.dash-sections{grid-template-columns:1fr}}
+        @media(max-width:480px){.dash-grid{grid-template-columns:1fr}}
+      </style>
+    </div>
+  `;
+  // load posts
+  try {
+    const items = await listDir(POSTS_PATH);
+    const mds = items.filter(x => x.name.endsWith('.md'));
+    $('#dashTotal').textContent = mds.length;
+    const sample = mds.slice(0, 5);
+    const samplePosts = await Promise.all(sample.map(async x => {
+      const f = await getFile(x.path);
+      const { meta } = parseFrontMatter(f.content);
+      return { title: meta.title, date: meta.date, slug: meta.slug, fileBase: fileBaseName(x.path) };
+    }));
+    samplePosts.sort((a,b) => (b.date||'').localeCompare(a.date||''));
+    if (!samplePosts.length) {
+      $('#dashRecent').innerHTML = '<p style="color:var(--gray-300);font-style:italic">Nenhum post ainda. <a href="#/new" style="color:var(--gold-light)">Criar o primeiro</a>.</p>';
+    } else {
+      $('#dashRecent').innerHTML = samplePosts.map(p => `
+        <div class="dash-recent-row">
+          <span class="when">${fmtDate(p.date||'')}</span>
+          <span class="title">${(p.title||'').replace(/<[^>]+>/g,'')}</span>
+          <span class="actions">
+            <a href="#/edit/${encodeURIComponent(p.fileBase)}">Editar</a>
+            <a href="/HenriqueSilva/blog/${p.slug||''}/" target="_blank">Ver</a>
+          </span>
+        </div>
+      `).join('');
+    }
+  } catch(err){
+    $('#dashRecent').innerHTML = `<p style="color:var(--danger)">${err.message}</p>`;
+  }
+  // count images
+  try {
+    const imgs = await listDir(IMAGES_PATH);
+    $('#dashImages').textContent = imgs.filter(x => /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(x.name)).length;
+  } catch(e){ $('#dashImages').textContent = '0'; }
+}
+
+/* ===================== GALLERY ===================== */
+
+async function renderGallery(app){
+  app.innerHTML = renderTopbar('imagens') + `
+    <div class="container">
+      <div class="h1">Galeria <em>de imagens</em></div>
+      <div class="h-sub">Imagens disponíveis para os posts</div>
+
+      <div class="posts-toolbar">
+        <input class="posts-search" id="galSearch" placeholder="Buscar por nome…" />
+        <button class="btn btn-primary" id="btnUpload">+ Enviar imagem</button>
+      </div>
+
+      <div id="galContainer">Carregando…</div>
+
+      <input type="file" id="galFile" accept="image/*" multiple style="display:none" />
+
+      <style>
+        .gal-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+        .gal-item{background:var(--black-2);border:1px solid rgba(212,175,55,.15);padding:8px;transition:all .3s;position:relative}
+        .gal-item:hover{border-color:var(--gold)}
+        .gal-thumb{width:100%;aspect-ratio:1;background:#080808 center/cover no-repeat;border:1px solid rgba(212,175,55,.1);cursor:pointer}
+        .gal-name{font-family:'Inter Tight',sans-serif;font-size:11px;color:var(--gray-300);margin-top:8px;text-overflow:ellipsis;overflow:hidden;white-space:nowrap;font-weight:300}
+        .gal-actions{display:flex;gap:6px;margin-top:8px}
+        .gal-actions button{flex:1;padding:6px 8px;font-size:9px;letter-spacing:.16em;border:1px solid rgba(212,175,55,.3);background:transparent;color:var(--gold-light);text-transform:uppercase;font-weight:500;cursor:pointer;transition:all .25s}
+        .gal-actions button:hover{background:rgba(212,175,55,.1)}
+        .gal-actions .del:hover{background:var(--danger);border-color:var(--danger);color:#fff}
+        @media(max-width:780px){.gal-grid{grid-template-columns:repeat(2,1fr)}}
+      </style>
+    </div>
+  `;
+
+  $('#btnUpload').addEventListener('click', () => $('#galFile').click());
+  $('#galFile').addEventListener('change', async e => {
+    const files = Array.from(e.target.files || []);
+    e.target.value = '';
+    if (!files.length) return;
+    for (const file of files){
+      try {
+        const buf = await file.arrayBuffer();
+        const bytes = new Uint8Array(buf);
+        let bin = '';
+        for (let i=0;i<bytes.length;i++) bin += String.fromCharCode(bytes[i]);
+        const b64 = btoa(bin);
+        const ext = file.name.split('.').pop().toLowerCase();
+        const safeName = slugify(file.name.replace(/\.[^.]+$/, '')) + '-' + Date.now().toString(36) + '.' + ext;
+        const path = `${IMAGES_PATH}/${safeName}`;
+        toast(`Enviando ${file.name}…`);
+        await putBinaryFile(path, b64, `Upload imagem: ${safeName}`);
+      } catch(err){ toast(err.message, 'error'); }
+    }
+    toast('Upload concluído ✓');
+    renderGallery(app);
+  });
+
+  try {
+    const imgs = (await listDir(IMAGES_PATH)).filter(x => /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(x.name));
+    if (!imgs.length){
+      $('#galContainer').innerHTML = '<div class="empty"><h3>Nenhuma imagem ainda</h3><p>Use o botão acima para enviar a primeira</p></div>';
+      return;
+    }
+    const renderList = (filter='') => {
+      const filtered = filter ? imgs.filter(i => i.name.toLowerCase().includes(filter.toLowerCase())) : imgs;
+      $('#galContainer').innerHTML = `<div class="gal-grid">` + filtered.map(img => {
+        const url = `/HenriqueSilva/${img.path}`;
+        return `<div class="gal-item">
+          <div class="gal-thumb" style="background-image:url('${url}')" onclick="window.open('${url}', '_blank')"></div>
+          <div class="gal-name" title="${img.name}">${img.name}</div>
+          <div class="gal-actions">
+            <button onclick="navigator.clipboard.writeText('${url}').then(()=>this.textContent='✓ COPIADO');" title="Copiar URL">URL</button>
+            <button onclick="navigator.clipboard.writeText('![${img.name.replace(/\\.[^.]+$/,'')}](${url})').then(()=>this.textContent='✓ MD');" title="Copiar markdown">MD</button>
+            <button class="del" data-path="${img.path}" data-sha="${img.sha}" title="Excluir">✕</button>
+          </div>
+        </div>`;
+      }).join('') + `</div>`;
+      $$('.del[data-path]').forEach(b => b.addEventListener('click', async () => {
+        if (!confirm('Excluir essa imagem?')) return;
+        try {
+          await deleteFile(b.dataset.path, b.dataset.sha, `Delete imagem: ${b.dataset.path.split('/').pop()}`);
+          toast('Imagem excluída');
+          renderGallery(app);
+        } catch(err){ toast(err.message, 'error'); }
+      }));
+    };
+    renderList();
+    $('#galSearch').addEventListener('input', e => renderList(e.target.value));
+  } catch(err){
+    $('#galContainer').innerHTML = `<p style="color:var(--danger)">${err.message}</p>`;
+  }
+}
+
+/* ===================== CONFIG ===================== */
+
+async function renderConfig(app){
+  app.innerHTML = renderTopbar('config') + `
+    <div class="container">
+      <div class="h1">Configurações <em>do site</em></div>
+      <div class="h-sub">Edite contato, redes sociais e analytics — refletem em todo o site instantaneamente</div>
+      <div id="cfgContainer">Carregando…</div>
+    </div>
+  `;
+  let cfgFile = null;
+  try {
+    cfgFile = await getFile('assets/site-config.json');
+    if (!cfgFile) throw new Error('Arquivo não encontrado');
+  } catch(err){
+    $('#cfgContainer').innerHTML = `<p style="color:var(--danger)">${err.message}</p>`;
+    return;
+  }
+  let cfg;
+  try { cfg = JSON.parse(cfgFile.content); }
+  catch(e){ $('#cfgContainer').innerHTML = `<p style="color:var(--danger)">JSON inválido em site-config.json</p>`; return; }
+
+  $('#cfgContainer').innerHTML = `
+    <div class="card">
+      <h3 style="font-family:'Fraunces',serif;font-size:22px;color:var(--off-white);font-weight:300;margin-bottom:18px">Contato</h3>
+      <div class="field-row">
+        <div class="field"><label>Telefone formatado</label><input id="cfg-phone" value="${cfg.phone||''}" /></div>
+        <div class="field"><label>Telefone internacional (digits)</label><input id="cfg-phone_intl" value="${cfg.phone_intl||''}" /></div>
+      </div>
+      <div class="field"><label>E-mail</label><input id="cfg-email" value="${cfg.email||''}" /></div>
+      <div class="field"><label>Horário de atendimento</label><input id="cfg-schedule" value="${cfg.schedule||''}" /></div>
+    </div>
+
+    <div class="card" style="margin-top:18px">
+      <h3 style="font-family:'Fraunces',serif;font-size:22px;color:var(--off-white);font-weight:300;margin-bottom:18px">Endereço</h3>
+      <div class="field-row">
+        <div class="field"><label>Nome (cond/edifício)</label><input id="cfg-addr-name" value="${cfg.address?.name||''}" /></div>
+        <div class="field"><label>Rua</label><input id="cfg-addr-street" value="${cfg.address?.street||''}" /></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Complemento</label><input id="cfg-addr-complement" value="${cfg.address?.complement||''}" /></div>
+        <div class="field"><label>Bairro</label><input id="cfg-addr-neighborhood" value="${cfg.address?.neighborhood||''}" /></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Cidade</label><input id="cfg-addr-city" value="${cfg.address?.city||''}" /></div>
+        <div class="field"><label>Estado</label><input id="cfg-addr-state" value="${cfg.address?.state||''}" /></div>
+      </div>
+      <div class="field"><label>CEP</label><input id="cfg-addr-cep" value="${cfg.address?.cep||''}" /></div>
+    </div>
+
+    <div class="card" style="margin-top:18px">
+      <h3 style="font-family:'Fraunces',serif;font-size:22px;color:var(--off-white);font-weight:300;margin-bottom:18px">Redes sociais</h3>
+      <div class="field"><label>Instagram</label><input id="cfg-soc-instagram" value="${cfg.social?.instagram||''}" /></div>
+      <div class="field"><label>Facebook</label><input id="cfg-soc-facebook" value="${cfg.social?.facebook||''}" /></div>
+      <div class="field"><label>LinkedIn</label><input id="cfg-soc-linkedin" value="${cfg.social?.linkedin||''}" /></div>
+      <div class="field"><label>YouTube</label><input id="cfg-soc-youtube" value="${cfg.social?.youtube||''}" /></div>
+      <div class="field"><label>TikTok</label><input id="cfg-soc-tiktok" value="${cfg.social?.tiktok||''}" /></div>
+    </div>
+
+    <div class="card" style="margin-top:18px">
+      <h3 style="font-family:'Fraunces',serif;font-size:22px;color:var(--off-white);font-weight:300;margin-bottom:18px">Analytics & SEO</h3>
+      <p style="color:var(--gray-300);font-family:'Fraunces',serif;font-style:italic;font-size:14px;margin-bottom:18px;line-height:1.6">Cole os IDs das ferramentas. Os scripts são carregados automaticamente em todo o site quando preenchidos.</p>
+      <div class="field"><label>Microsoft Clarity ID</label><input id="cfg-clarity" value="${cfg.clarity_id||''}" placeholder="ex: abc1234567" /><div class="field-help">Obtenha em <a href="https://clarity.microsoft.com/" target="_blank">clarity.microsoft.com</a> (grátis ilimitado)</div></div>
+      <div class="field"><label>Plausible Domain</label><input id="cfg-plausible" value="${cfg.plausible_domain||''}" placeholder="ex: henriquesilvaadv.com.br" /><div class="field-help">Obtenha em <a href="https://plausible.io" target="_blank">plausible.io</a> (\$9/mês)</div></div>
+      <div class="field"><label>Google Analytics 4 ID</label><input id="cfg-ga4" value="${cfg.ga4_id||''}" placeholder="ex: G-XXXXXXXXXX" /><div class="field-help">Obtenha em <a href="https://analytics.google.com/" target="_blank">analytics.google.com</a> (grátis)</div></div>
+    </div>
+
+    <div class="card" style="margin-top:18px;display:flex;gap:14px;justify-content:flex-end">
+      <a href="#/dashboard" class="btn btn-secondary">← Voltar</a>
+      <button class="btn btn-primary" id="cfgSave">Salvar configurações</button>
+    </div>
+  `;
+
+  $('#cfgSave').addEventListener('click', async () => {
+    const newCfg = {
+      clarity_id: $('#cfg-clarity').value.trim(),
+      plausible_domain: $('#cfg-plausible').value.trim(),
+      ga4_id: $('#cfg-ga4').value.trim(),
+      phone: $('#cfg-phone').value.trim(),
+      phone_intl: $('#cfg-phone_intl').value.trim(),
+      email: $('#cfg-email').value.trim(),
+      schedule: $('#cfg-schedule').value.trim(),
+      address: {
+        name: $('#cfg-addr-name').value.trim(),
+        street: $('#cfg-addr-street').value.trim(),
+        complement: $('#cfg-addr-complement').value.trim(),
+        neighborhood: $('#cfg-addr-neighborhood').value.trim(),
+        city: $('#cfg-addr-city').value.trim(),
+        state: $('#cfg-addr-state').value.trim(),
+        cep: $('#cfg-addr-cep').value.trim(),
+      },
+      social: {
+        instagram: $('#cfg-soc-instagram').value.trim(),
+        facebook: $('#cfg-soc-facebook').value.trim(),
+        linkedin: $('#cfg-soc-linkedin').value.trim(),
+        youtube: $('#cfg-soc-youtube').value.trim(),
+        tiktok: $('#cfg-soc-tiktok').value.trim(),
+      },
+    };
+    try {
+      $('#cfgSave').disabled = true;
+      $('#cfgSave').innerHTML = '<span class="spinner"></span> Salvando…';
+      await putFile('assets/site-config.json', JSON.stringify(newCfg, null, 2), cfgFile.sha, 'Update site config');
+      toast('Configurações salvas ✓');
+      setTimeout(() => { location.hash = '#/dashboard'; }, 1200);
+    } catch(err){
+      toast(err.message, 'error');
+      $('#cfgSave').disabled = false;
+      $('#cfgSave').textContent = 'Salvar configurações';
+    }
+  });
 }
 
 /* ===================== POSTS LIST ===================== */
