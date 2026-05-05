@@ -2508,6 +2508,23 @@
   .area-saiba span{display:inline-block;transition:transform .35s}
   .area-card[data-link]:hover .area-saiba span{transform:translateX(4px)}
   .area-card.compact .area-saiba{font-size:9.5px;letter-spacing:.22em;padding:10px 0 0;margin-top:14px}
+
+  /* Background dinamico nos cards de areas */
+  .area-card{position:relative;overflow:hidden;isolation:isolate}
+  .area-card::after{
+    content:"";position:absolute;inset:0;
+    background-image:var(--card-bg);
+    background-size:cover;background-position:center;
+    opacity:.18;
+    z-index:0;
+    transition:opacity .55s cubic-bezier(.22,.8,.24,1), transform .8s cubic-bezier(.22,.8,.24,1);
+    transform:scale(1.04);
+    -webkit-mask-image:radial-gradient(ellipse 110% 100% at bottom right, #000 30%, transparent 90%);
+    mask-image:radial-gradient(ellipse 110% 100% at bottom right, #000 30%, transparent 90%);
+    pointer-events:none;
+  }
+  .area-card:hover::after{opacity:.32;transform:scale(1.08)}
+  .area-card > *{position:relative;z-index:1}
 </style>
 </head>
 <body data-auto-reveal="all" data-scroll-progress>
@@ -2635,7 +2652,7 @@
       <div class="flourish"><svg viewBox="0 0 20 20"><path d="M10 2 L11 8 L17 9 L11 10 L10 16 L9 10 L3 9 L9 8 Z"/></svg></div>
     </div>
     <div class="areas-featured" data-stagger="> .area-card" data-stagger-step="200" data-reveal="up">
-      <article data-link="trabalhista/" class="area-card featured">
+      <article data-bg="assets/area-trabalhista.jpg" data-link="trabalhista/" class="area-card featured">
         <img class="area-photo" src="assets/area-trabalhista.jpg" alt="" loading="lazy" aria-hidden="true" />
         <div class="area-num">— I —</div>
         <div class="area-icon">
@@ -2647,7 +2664,7 @@
         <a href="trabalhista/" class="area-saiba">Saiba mais <span aria-hidden="true">→</span></a>
         <a href="trabalhista/" class="area-arrow" aria-label="Falar sobre esta área"><svg viewBox="0 0 20 20"><path d="M3 10 L17 10"/><path d="M11 4 L17 10 L11 16"/></svg></a>
       </article>
-      <article data-link="empresarial/" class="area-card featured">
+      <article data-bg="assets/area-empresarial.jpg" data-link="empresarial/" class="area-card featured">
         <img class="area-photo" src="assets/area-trabalhista.jpg" alt="" loading="lazy" aria-hidden="true" />
         <div class="area-num">— X —</div>
         <div class="area-icon">
@@ -2661,56 +2678,61 @@
       </article>
     </div>
     <div class="areas-secondary" data-stagger="> .area-card" data-stagger-step="80" data-reveal="up">
-      <article data-link="previdenciario/" class="area-card compact">
+      <article data-bg="assets/area-previdenciario.jpg" data-link="previdenciario/" class="area-card compact">
         <div class="area-icon"><svg viewBox="0 0 32 32"><path d="M16 4 L26 9 L26 22 C26 26 16 30 16 30 C16 30 6 26 6 22 L6 9 Z"/><path d="M11 16 L15 20 L22 13"/></svg></div>
         <h3>Direito <em>Previdenciário</em></h3>
         <p>Ações contra o INSS: aposentadorias por idade, tempo de contribuição, especial e BPC/LOAS. Auxílios por incapacidade, revisões e conversões.</p>
         <a href="previdenciario/" class="area-saiba">Saiba mais <span aria-hidden="true">→</span></a>
         <a href="previdenciario/" class="area-arrow" aria-label="Falar"><svg viewBox="0 0 20 20"><path d="M3 10 L17 10"/><path d="M11 4 L17 10 L11 16"/></svg></a>
       </article>
-      <article class="area-card compact">
+      <article data-link="civel/" data-bg="assets/area-civel.jpg" class="area-card compact">
         <div class="area-icon"><svg viewBox="0 0 32 32"><path d="M8 4h12l4 4v20H8z"/><path d="M20 4v4h4"/><path d="M12 14h12M12 18h12M12 22h8"/></svg></div>
         <h3>Direito <em>Cível</em></h3>
         <p>Contratos, indenizações, responsabilidade civil, danos morais e materiais. Cobranças, despejos, locatício e demais questões patrimoniais.</p>
-        <a href="#contato" class="area-arrow" aria-label="Falar"><svg viewBox="0 0 20 20"><path d="M3 10 L17 10"/><path d="M11 4 L17 10 L11 16"/></svg></a>
+        <a href="civel/" class="area-saiba">Saiba mais <span aria-hidden="true">→</span></a>
+        <a href="civel/" class="area-arrow" aria-label="Falar"><svg viewBox="0 0 20 20"><path d="M3 10 L17 10"/><path d="M11 4 L17 10 L11 16"/></svg></a>
       </article>
-      <article data-link="familia/" class="area-card compact">
+      <article data-bg="assets/area-familia.jpg" data-link="familia/" class="area-card compact">
         <div class="area-icon"><svg viewBox="0 0 32 32"><circle cx="12" cy="10" r="3"/><circle cx="22" cy="11" r="2.5"/><path d="M6 26c0-4 3-7 6-7s6 3 6 7"/><path d="M18 26c0-3 2-5 4-5s4 2 4 5"/></svg></div>
         <h3>Direito de <em>Família</em></h3>
         <p>Divórcios consensuais e litigiosos, alimentos, partilha, guarda, regulamentação de vivência, reconhecimento de paternidade.</p>
         <a href="familia/" class="area-saiba">Saiba mais <span aria-hidden="true">→</span></a>
         <a href="familia/" class="area-arrow" aria-label="Falar"><svg viewBox="0 0 20 20"><path d="M3 10 L17 10"/><path d="M11 4 L17 10 L11 16"/></svg></a>
       </article>
-      <article class="area-card compact">
+      <article data-link="consumidor/" data-bg="assets/area-consumidor.jpg" class="area-card compact">
         <div class="area-icon"><svg viewBox="0 0 32 32"><path d="M6 8h22l-2 12H10z"/><circle cx="12" cy="26" r="2"/><circle cx="24" cy="26" r="2"/></svg></div>
         <h3>Direito do <em>Consumidor</em></h3>
         <p>Defesa em relações de consumo: cobranças indevidas, bancos, planos de saúde, viagens, telefonia, vícios de produto e serviço.</p>
-        <a href="#contato" class="area-arrow" aria-label="Falar"><svg viewBox="0 0 20 20"><path d="M3 10 L17 10"/><path d="M11 4 L17 10 L11 16"/></svg></a>
+        <a href="consumidor/" class="area-saiba">Saiba mais <span aria-hidden="true">→</span></a>
+        <a href="consumidor/" class="area-arrow" aria-label="Falar"><svg viewBox="0 0 20 20"><path d="M3 10 L17 10"/><path d="M11 4 L17 10 L11 16"/></svg></a>
       </article>
-      <article data-link="imobiliario/" class="area-card compact">
+      <article data-bg="assets/area-imobiliario.jpg" data-link="imobiliario/" class="area-card compact">
         <div class="area-icon"><svg viewBox="0 0 32 32"><path d="M5 14 L16 5 L27 14 V27 H5 Z"/><path d="M13 27 V20 H19 V27"/></svg></div>
         <h3>Direito <em>Imobiliário</em></h3>
         <p>Compra e venda, usucapião, regularização de imóvel, condomínio, distratos, despejos, ações possessórias e contratos de locação.</p>
         <a href="imobiliario/" class="area-saiba">Saiba mais <span aria-hidden="true">→</span></a>
         <a href="imobiliario/" class="area-arrow" aria-label="Falar"><svg viewBox="0 0 20 20"><path d="M3 10 L17 10"/><path d="M11 4 L17 10 L11 16"/></svg></a>
       </article>
-      <article class="area-card compact">
+      <article data-link="juizados/" data-bg="assets/area-juizados.jpg" class="area-card compact">
         <div class="area-icon"><svg viewBox="0 0 32 32"><path d="M6 22 L18 10"/><path d="M14 6 L26 18"/><path d="M4 24 L12 20"/><path d="M16 4 L24 12"/></svg></div>
         <h3>Juizados <em>Especiais</em></h3>
         <p>Ações cíveis até 40 salários mínimos: cobranças, pequenos litígios de consumo, indenizações e demandas de menor complexidade.</p>
-        <a href="#contato" class="area-arrow" aria-label="Falar"><svg viewBox="0 0 20 20"><path d="M3 10 L17 10"/><path d="M11 4 L17 10 L11 16"/></svg></a>
+        <a href="juizados/" class="area-saiba">Saiba mais <span aria-hidden="true">→</span></a>
+        <a href="juizados/" class="area-arrow" aria-label="Falar"><svg viewBox="0 0 20 20"><path d="M3 10 L17 10"/><path d="M11 4 L17 10 L11 16"/></svg></a>
       </article>
-      <article class="area-card compact">
+      <article data-link="criminal/" data-bg="assets/area-criminal.jpg" class="area-card compact">
         <div class="area-icon"><svg viewBox="0 0 32 32"><path d="M16 4 V28"/><path d="M6 28 H26"/><path d="M16 8 L8 18"/><path d="M16 8 L24 18"/></svg></div>
         <h3>Direito <em>Criminal</em></h3>
         <p>Consultoria estratégica em matéria criminal mediante análise técnica criteriosa, com prioridade a clientes do portfólio em outros segmentos.</p>
-        <a href="#contato" class="area-arrow" aria-label="Falar"><svg viewBox="0 0 20 20"><path d="M3 10 L17 10"/><path d="M11 4 L17 10 L11 16"/></svg></a>
+        <a href="criminal/" class="area-saiba">Saiba mais <span aria-hidden="true">→</span></a>
+        <a href="criminal/" class="area-arrow" aria-label="Falar"><svg viewBox="0 0 20 20"><path d="M3 10 L17 10"/><path d="M11 4 L17 10 L11 16"/></svg></a>
       </article>
-      <article class="area-card compact">
+      <article data-link="tributario/" data-bg="assets/area-tributario.jpg" class="area-card compact">
         <div class="area-icon"><svg viewBox="0 0 32 32"><circle cx="16" cy="16" r="11"/><path d="M16 8v16"/><path d="M12 12h6c1 0 2 1 2 2s-1 2-2 2h-4c-1 0-2 1-2 2s1 2 2 2h6"/></svg></div>
         <h3>Direito <em>Tributário</em></h3>
         <p>Defesa em execuções fiscais, planejamento tributário, parcelamentos, exclusões de tributos da base de cálculo e repetição de indébito.</p>
-        <a href="#contato" class="area-arrow" aria-label="Falar"><svg viewBox="0 0 20 20"><path d="M3 10 L17 10"/><path d="M11 4 L17 10 L11 16"/></svg></a>
+        <a href="tributario/" class="area-saiba">Saiba mais <span aria-hidden="true">→</span></a>
+        <a href="tributario/" class="area-arrow" aria-label="Falar"><svg viewBox="0 0 20 20"><path d="M3 10 L17 10"/><path d="M11 4 L17 10 L11 16"/></svg></a>
       </article>
     </div>
   </div>
@@ -3145,6 +3167,13 @@
     });
     document.addEventListener('keydown', function(e){
       if (e.key === 'Escape') close();
+    });
+  })();
+
+  // Aplicar bg dinamico nos cards de areas
+  (function(){
+    document.querySelectorAll('.area-card[data-bg]').forEach(function(card){
+      card.style.setProperty('--card-bg', "url('" + card.dataset.bg + "')");
     });
   })();
 </script>
