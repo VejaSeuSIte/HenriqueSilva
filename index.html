@@ -2515,16 +2515,24 @@
     content:"";position:absolute;inset:0;
     background-image:var(--card-bg);
     background-size:cover;background-position:center;
-    opacity:.18;
+    opacity:.38;
     z-index:0;
     transition:opacity .55s cubic-bezier(.22,.8,.24,1), transform .8s cubic-bezier(.22,.8,.24,1);
     transform:scale(1.04);
-    -webkit-mask-image:radial-gradient(ellipse 110% 100% at bottom right, #000 30%, transparent 90%);
-    mask-image:radial-gradient(ellipse 110% 100% at bottom right, #000 30%, transparent 90%);
+    -webkit-mask-image:radial-gradient(ellipse 135% 120% at bottom right, #000 45%, transparent 96%);
+    mask-image:radial-gradient(ellipse 135% 120% at bottom right, #000 45%, transparent 96%);
     pointer-events:none;
   }
-  .area-card:hover::after{opacity:.32;transform:scale(1.08)}
+  .area-card.featured::after{opacity:.46}
+  .area-card:hover::after{opacity:.62;transform:scale(1.08)}
+  .area-card.featured:hover::after{opacity:.72}
   .area-card > *{position:relative;z-index:1}
+  /* Legibilidade do paragrafo sobre a imagem */
+  .area-card p{
+    background:linear-gradient(90deg, rgba(20,20,20,.96) 0%, rgba(20,20,20,.86) 55%, rgba(20,20,20,.55) 100%) !important;
+    padding:4px 10px 4px 0 !important;
+    border-radius:2px;
+  }
 </style>
 </head>
 <body data-auto-reveal="all" data-scroll-progress>
