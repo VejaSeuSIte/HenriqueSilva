@@ -150,6 +150,24 @@ function fmtDate(iso) {
 function escAttr(s) { return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
 function escHtml(s) { return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
+// previewUrl: usa raw.githubusercontent.com (sem cache do Pages CDN, mostra imagens
+// recém-uploadadas imediatamente). Path pode ser tipo "blog/images/foo.jpg" ou
+// "/HenriqueSilva/blog/images/foo.jpg" — normaliza nos dois casos.
+function previewUrl(path) {
+  if (!path) return '';
+  if (/^https?:\/\//.test(path)) return path;
+  if (path.startsWith('data:')) return path;
+  let p = path.replace(/^\//, '').replace(/^HenriqueSilva\//, '');
+  return `https://raw.githubusercontent.com/VejaSeuSIte/HenriqueSilva/main/${p}?t=${Date.now()}`;
+}
+// pasteUrl: caminho que vai pro markdown / HTML do site (sob /HenriqueSilva/)
+function pasteUrl(path) {
+  if (!path) return '';
+  if (/^https?:\/\//.test(path)) return path;
+  let p = path.replace(/^\//, '').replace(/^HenriqueSilva\//, '');
+  return `/HenriqueSilva/${p}`;
+}
+
 function parseFrontMatter(text) {
   if (!text.startsWith('---')) return { meta: {}, body: text };
   const idx = text.indexOf('---', 3);
@@ -560,7 +578,7 @@ async function renderSiteEditor(app) {
         <div class="field">
           <label>${field.label}</label>
           <div class="img-picker" data-section="${sectionId}" data-key="${field.key}">
-            ${isVideo ? '' : `<img class="img-preview" src="/HenriqueSilva/${value || ''}" alt="" onerror="this.style.display='none'" />`}
+            ${isVideo ? '' : `<img class="img-preview" src="${previewUrl(value)}" alt="" onerror="this.style.display='none'" />`}
             <input type="text" id="${id}" value="${escAttr(value)}" placeholder="${isVideo ? 'assets/hero-video.mp4' : 'assets/foto.jpg'}" />
             <button type="button" class="btn btn-secondary btn-pickimg" data-target="${id}" data-section="${sectionId}" data-isvideo="${isVideo}">Trocar</button>
           </div>
@@ -634,7 +652,7 @@ async function renderSiteEditor(app) {
                 <div class="field"><label>Descrição</label><textarea data-akey="description" rows="2">${escHtml(a.description)}</textarea></div>
                 <div class="field"><label>Imagem</label>
                   <div class="img-picker">
-                    <img class="img-preview" src="/HenriqueSilva/${a.image || ''}" alt="" onerror="this.style.display='none'" />
+                    <img class="img-preview" src="${previewUrl(a.image)}" alt="" onerror="this.style.display='none'" />
                     <input type="text" data-akey="image" value="${escAttr(a.image)}" />
                     <button type="button" class="btn btn-secondary btn-pickimg-area" data-idx="${i}">Trocar</button>
                   </div>
@@ -817,12 +835,12 @@ async function renderSiteEditor(app) {
         const inp = document.querySelector(pickerTarget.selector);
         if (inp) inp.value = url;
         const prev = inp && inp.parentElement.querySelector('.img-preview');
-        if (prev) { prev.src = '/HenriqueSilva/' + url; prev.style.display = ''; }
+        if (prev) { prev.src = previewUrl(url); prev.style.display = ''; }
       }
       if (pickerTarget.kind === 'area') {
         pickerTarget.input.value = url;
         const prev = pickerTarget.input.parentElement.querySelector('.img-preview');
-        if (prev) { prev.src = '/HenriqueSilva/' + url; prev.style.display = ''; }
+        if (prev) { prev.src = previewUrl(url); prev.style.display = ''; }
       }
       toast('Imagem enviada ✓');
     } catch (err) { toast(err.message, 'error'); }
@@ -1276,7 +1294,7 @@ async function renderEditor(app, fileBase) {
       const path = `${REPO_PATHS.IMAGES}/${safeName}`;
       toast('Enviando…');
       await putBinaryFile(path, b64, `Upload: ${safeName}`);
-      const url = `/HenriqueSilva/${path}`;
+      const url = pasteUrl(path);
       if (target === 'cover'){ $('#f-cover').value = url; toast('Capa definida ✓'); }
       else { insertAtCursor(ta, `![${file.name.replace(/\.[^.]+$/, '')}](${url})`); updatePreview(); toast('Imagem inserida ✓'); }
     } catch(err){ toast(err.message, 'error'); }
@@ -1398,12 +1416,13 @@ async function renderGallery(app) {
     const renderList = (filter='') => {
       const filtered = filter ? imgs.filter(i => i.name.toLowerCase().includes(filter.toLowerCase())) : imgs;
       $('#galContainer').innerHTML = `<div class="gal-grid">` + filtered.map(img => {
-        const url = `/HenriqueSilva/${img.path}`;
+        const thumb = previewUrl(img.path);
+        const paste = pasteUrl(img.path);
         return `<div class="gal-item">
-          <div class="gal-thumb" style="background-image:url('${url}')" onclick="window.open('${url}', '_blank')"></div>
+          <div class="gal-thumb" style="background-image:url('${thumb}')" onclick="window.open('${thumb}', '_blank')"></div>
           <div class="gal-name" title="${escAttr(img.name)}">${escHtml(img.name)}</div>
           <div class="gal-actions">
-            <button onclick="navigator.clipboard.writeText('${url}').then(()=>this.textContent='✓ COPIADO');" title="Copiar URL">URL</button>
+            <button onclick="navigator.clipboard.writeText('${paste}').then(()=>this.textContent='✓ COPIADO');" title="Copiar URL para colar em post">URL</button>
             <button class="del" data-path="${img.path}" data-sha="${img.sha}" title="Excluir">✕</button>
           </div>
         </div>`;
