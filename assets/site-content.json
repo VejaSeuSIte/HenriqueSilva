@@ -1,0 +1,138 @@
+{
+  "nav": {
+    "brand_text": "Henrique Silva Advocacia",
+    "links": [
+      {"label": "O Escritório", "href": "#escritorio"},
+      {"label": "Áreas", "href": "#areas"},
+      {"label": "Quem Sou", "href": "sobre/"},
+      {"label": "Avaliações", "href": "#depoimentos"},
+      {"label": "Blog", "href": "blog/"},
+      {"label": "Dúvidas", "href": "#faq"},
+      {"label": "Contato", "href": "contato/"}
+    ],
+    "cta_label": "WhatsApp"
+  },
+  "hero": {
+    "tagline_quote": "Mais de 14 anos de atuação multidisciplinar — <br/>do contencioso à consultoria preventiva.",
+    "cta_primary_label": "Análise Gratuita pelo WhatsApp",
+    "cta_secondary_label": "",
+    "video_src": "assets/hero-video.mp4",
+    "poster_src": "assets/og-banner.jpg",
+    "seal_src": "assets/seal-hsa.png?v=1"
+  },
+  "office": {
+    "eyebrow": "Sobre o escritório",
+    "h2": "Advocacia <em>multidisciplinar</em>, técnica e estratégica.",
+    "paragraphs": [
+      "O <strong>Henrique Silva Advocacia</strong> destaca-se por mais de <strong>14 anos de sólida atuação</strong>, com expertise na condução estratégica de execuções e litígios trabalhistas de alta complexidade, oferecendo soluções jurídicas de excelência para pessoas físicas e jurídicas em todo o estado de Pernambuco.",
+      "A atuação da banca <strong>transcende o contencioso</strong>: abrange uma sólida estrutura de assessoria extrajudicial, consultoria preventiva, elaboração de pareceres técnicos aprofundados e palestras orientativas voltadas a trabalhadores e gestores — visando à mitigação de passivos e à disseminação de boas práticas no ambiente laboral.",
+      "Para o setor corporativo, oferecemos <strong>modelos de consultoria fixa</strong>, focados em compliance e na segurança jurídica das operações empresariais diárias — garantindo gestão de riscos eficiente e orgânica."
+    ],
+    "pillars": [
+      {"num": "14 anos", "label": "Atuação multidisciplinar desde 2010."},
+      {"num": "10 áreas", "label": "Trabalhista, Previdenciário, Empresarial e mais."},
+      {"num": "Análise gratuita", "label": "Conte o caso pelo WhatsApp sem custo."}
+    ],
+    "photo_src": "assets/escritorio-1.jpg",
+    "photo_stamp": "Atendo<br/>há mais de<br/>14 anos"
+  },
+  "areas": {
+    "eyebrow": "Áreas de Atuação",
+    "h2": "Dois pilares <em>de destaque</em> e oito frentes complementares.",
+    "sub": "Trabalhista e Assessoria Empresarial são nossas frentes principais. Atendemos ainda em mais oito áreas do Direito — todas com a mesma profundidade técnica.",
+    "items": [
+      {"slug": "trabalhista", "featured": true, "label": "Trabalhista", "h3": "Direito <em>Trabalhista</em>", "description": "Execuções e litígios trabalhistas de alta complexidade, judicial e extrajudicial. Verbas rescisórias, horas extras, assédio moral, equiparação salarial, vínculo, adesão a normas coletivas e estabilidades. Atuação para empregados e empregadores.", "tags": ["Execuções", "Rescisões", "Horas extras", "Assédio"], "image": "assets/area-trabalhista.jpg", "href": "trabalhista/"},
+      {"slug": "empresarial", "featured": true, "label": "Empresarial", "h3": "Assessoria <em>Empresarial</em>", "description": "Consultoria fixa para empresas: compliance trabalhista, análise contratual, pareceres técnicos, palestras orientativas, gestão de riscos e suporte estratégico nas operações do dia a dia.", "tags": ["Compliance", "Pareceres", "Palestras"], "image": "assets/area-empresarial.jpg", "href": "empresarial/"},
+      {"slug": "previdenciario", "featured": false, "label": "Previdenciário", "h3": "Direito <em>Previdenciário</em>", "description": "Ações contra o INSS: aposentadorias por idade, tempo de contribuição, especial e BPC/LOAS. Auxílios por incapacidade, revisões e conversões.", "tags": [], "image": "assets/area-previdenciario.jpg", "href": "previdenciario/"},
+      {"slug": "civel", "featured": false, "label": "Cível", "h3": "Direito <em>Cível</em>", "description": "Contratos, indenizações, responsabilidade civil, danos morais e materiais. Cobranças, despejos, locatício e demais questões patrimoniais.", "tags": [], "image": "assets/area-civel.jpg", "href": "civel/"},
+      {"slug": "familia", "featured": false, "label": "Família", "h3": "Direito de <em>Família</em>", "description": "Divórcios consensuais e litigiosos, alimentos, partilha, guarda, regulamentação de vivência, reconhecimento de paternidade.", "tags": [], "image": "assets/area-familia.jpg", "href": "familia/"},
+      {"slug": "consumidor", "featured": false, "label": "Consumidor", "h3": "Direito do <em>Consumidor</em>", "description": "Defesa em relações de consumo: cobranças indevidas, bancos, planos de saúde, viagens, telefonia, vícios de produto e serviço.", "tags": [], "image": "assets/area-consumidor.jpg", "href": "consumidor/"},
+      {"slug": "imobiliario", "featured": false, "label": "Imobiliário", "h3": "Direito <em>Imobiliário</em>", "description": "Compra e venda, usucapião, regularização de imóvel, condomínio, distratos, despejos, ações possessórias e contratos de locação.", "tags": [], "image": "assets/area-imobiliario.jpg", "href": "imobiliario/"},
+      {"slug": "juizados", "featured": false, "label": "Juizados Especiais", "h3": "Juizados <em>Especiais</em>", "description": "Ações cíveis até 40 salários mínimos: cobranças, pequenos litígios de consumo, indenizações e demandas de menor complexidade.", "tags": [], "image": "assets/area-juizados.jpg", "href": "juizados/"},
+      {"slug": "criminal", "featured": false, "label": "Criminal", "h3": "Direito <em>Criminal</em>", "description": "Consultoria estratégica em matéria criminal mediante análise técnica criteriosa, com prioridade a clientes do portfólio em outros segmentos.", "tags": [], "image": "assets/area-criminal.jpg", "href": "criminal/"},
+      {"slug": "tributario", "featured": false, "label": "Tributário", "h3": "Direito <em>Tributário</em>", "description": "Defesa em execuções fiscais, planejamento tributário, parcelamentos, exclusões de tributos da base de cálculo e repetição de indébito.", "tags": [], "image": "assets/area-tributario.jpg", "href": "tributario/"}
+    ]
+  },
+  "reviews": {
+    "rating_num": "5,0",
+    "rating_stars": "★★★★★",
+    "meta_html": "Excelente · com base em <strong>16 avaliações</strong> no Google",
+    "items": [
+      {"name": "Jefferson Sobral", "date": "há 1 dia · Google", "stars": "★★★★★", "quote": "Ótimo advogado trabalhista, bom atendimento e resultados satisfatórios."},
+      {"name": "Giliard Silva", "date": "há 1 dia · Google", "stars": "★★★★★", "quote": "Recomendo o escritório do Dr. Henrique. Já tive uma causa resolvida pelo mesmo. Suporte e atendimento — super recomendo."},
+      {"name": "Samuel Silva", "date": "há 1 dia · Google", "stars": "★★★★★", "quote": "Excelente profissional. Trabalha com muito empenho e tem respostas rápidas nos processos."},
+      {"name": "Rafael Lima Silva", "date": "há 5 horas · Google", "stars": "★★★★★", "quote": "Profissional excelente, honesto e transparente."},
+      {"name": "Henrique Barbosa", "date": "há 1 dia · Google", "stars": "★★★★★", "quote": "Profissional muito bom, bom atendimento e trabalho excelente."},
+      {"name": "Patrícia Morais", "date": "há 1 ano · Google", "stars": "★★★★★", "quote": "Ótimo advogado."},
+      {"name": "Ismael Silva", "date": "há 1 dia · Google", "stars": "★★★★★", "quote": "Excelente."},
+      {"name": "Ervany Gracyane", "date": "há 1 dia · Google", "stars": "★★★★★", "quote": "Ótimo."}
+    ],
+    "cta_label": "Ver todas as 16 avaliações no Google",
+    "cta_href": "https://www.google.com/search?q=Henrique+Silva+Advocacia+Cabo+de+Santo+Agostinho"
+  },
+  "about": {
+    "eyebrow": "Quem Sou",
+    "h2": "Dr. <em>José Henrique da Silva</em>, advogado.",
+    "lead": "\"Advocacia de excelência não se mede pelo número de ações, mas pela profundidade com que cada caso é estudado e a clareza com que cada decisão é explicada ao cliente.\"",
+    "paragraphs": [
+      "Sou advogado inscrito na <strong>OAB/PE 31.742</strong>, com mais de <strong>14 anos de atuação multidisciplinar</strong> no Direito brasileiro. Minha prática concentra-se em causas trabalhistas de alta complexidade, demandas previdenciárias contra o INSS, litígios cíveis, questões imobiliárias, tributárias e de Direito das Famílias — com atenção especial à condução estratégica e à mitigação de riscos.",
+      "Acredito que advocacia é antes de tudo <strong>escuta técnica</strong>: ler o caso por inteiro, entender o que está em jogo, e devolver ao cliente um diagnóstico honesto antes de qualquer peça processual. Cada cliente é atendido pessoalmente, com sigilo absoluto e relatórios claros do andamento."
+    ],
+    "credentials": [
+      {"num": "14+", "label": "Anos de Atuação"},
+      {"num": "10", "label": "Áreas do Direito"},
+      {"num": "PE", "label": "OAB 31.742"}
+    ],
+    "portrait_src": "assets/henrique-portrait.jpg",
+    "portrait_plaque": "Dr. Henrique Silva · OAB/PE 31.742"
+  },
+  "latest": {
+    "eyebrow": "Blog · Henrique Silva",
+    "h2": "Últimos <em>artigos</em>.",
+    "sub": "Direito Trabalhista, Previdenciário, Empresarial e mais — explicados de forma direta.",
+    "cta_label": "Ver todos os artigos"
+  },
+  "faq": {
+    "eyebrow": "Dúvidas Frequentes",
+    "h2": "As perguntas que <em>sempre recebo</em>.",
+    "sub": "Se a sua dúvida não estiver aqui, mande pelo WhatsApp — respondo pessoalmente em até <strong>2 horas úteis</strong>.",
+    "search_placeholder": "Procurar por palavra-chave (ex: prazo, honorários, inventário)…",
+    "items": [
+      {"q": "A primeira análise é gratuita?", "a": "Sim. A análise inicial pelo WhatsApp ou videoconferência não tem custo. Você só contrata se quiser avançar, com proposta de honorários formal antes de qualquer assinatura."},
+      {"q": "Em quais áreas o escritório atua?", "a": "<strong>Trabalhista</strong> (foco em causas de alta complexidade), <strong>Previdenciário</strong>, <strong>Cível</strong>, <strong>Família</strong>, <strong>Empresarial</strong>, <strong>Imobiliário</strong>, <strong>Tributário</strong>, <strong>Consumidor</strong>, <strong>Juizados Especiais</strong> e <strong>Criminal</strong> (consultoria estratégica)."},
+      {"q": "Atende fora de Pernambuco?", "a": "Sim. Presencialmente em Cabo de Santo Agostinho/PE com agendamento, e <strong>100% online</strong> em todo o Brasil via WhatsApp e videoconferência."},
+      {"q": "Quanto custa contratar?", "a": "Honorários combinados por escrito antes de qualquer trabalho. Trabalhista e Previdenciário comumente por êxito; demais áreas valor fixo ou percentual conforme a ação."},
+      {"q": "Quanto tempo demora um processo?", "a": "Trabalhistas: 6 a 18 meses · Previdenciários: 6 a 24 meses · Cíveis simples: 6 a 12 meses. No início do caso te passo projeção realista."},
+      {"q": "O escritório atende empresas?", "a": "Sim. Oferecemos consultoria fixa em compliance trabalhista, análise contratual, pareceres técnicos e palestras orientativas. Trabalho preventivo e responsivo."}
+    ]
+  },
+  "contact_cta": {
+    "h2": "Receba a ligação <em>de um especialista</em>",
+    "sub": "Preencha o formulário abaixo que entraremos em contato o mais breve possível.",
+    "form": {
+      "name_label": "Nome",
+      "phone_label": "Telefone",
+      "message_label": "Mensagem",
+      "submit_label": "Enviar Mensagem",
+      "disclaimer": "Ao enviar, você concorda em receber retorno pelo número informado. Resposta em até 2h úteis."
+    },
+    "bg_src": "assets/team-meeting.jpg"
+  },
+  "footer": {
+    "tag": "14 anos de atuação multidisciplinar — Direito Trabalhista, Previdenciário, Cível, de Família, Empresarial e Tributário, com pareceres técnicos, palestras e consultoria preventiva.",
+    "contact_heading": "Contato",
+    "address_lines": [
+      "Cond. Novo Mundo Empresarial",
+      "Torre 05, Sala 318 · Av. A, 4165",
+      "Reserva do Paiva · Cabo de Santo Agostinho/PE",
+      "CEP 54522-005"
+    ],
+    "copyright": "© 2026 Henrique Silva Advocacia · OAB/PE 31.742 · Todos os direitos reservados",
+    "site_credit_label": "Site por VejaSeuSIte",
+    "site_credit_href": "https://vejaseusite.github.io/AdvogadoTemplates/"
+  },
+  "wa_fab": {
+    "label": "Falar agora",
+    "wa_text": "Olá, Dr. Henrique. Vim pelo site."
+  }
+}

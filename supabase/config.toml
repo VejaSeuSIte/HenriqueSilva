@@ -1,0 +1,7 @@
+project_id = "vejaseusite"
+
+[api]
+enabled = true
+
+[functions.github-proxy]
+verify_jwt = false

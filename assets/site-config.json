@@ -1,4 +1,7 @@
 {
+  "auth_email": "cliente@henriquesilva.app",
+  "supabase_url": "https://zrpirpdspltxdyniqogq.supabase.co",
+  "supabase_anon_key": "sb_publishable_c9mS3bHFBowvv03e3KjHPA_0CbFU4af",
   "clarity_id": "",
   "plausible_domain": "",
   "ga4_id": "",
