@@ -204,10 +204,15 @@ function buildFrontMatter(meta) {
 function toast(message, kind = 'success') {
   const el = document.createElement('div');
   el.className = `toast ${kind}`;
+  el.setAttribute('role', kind === 'error' ? 'alert' : 'status');
+  el.setAttribute('aria-live', kind === 'error' ? 'assertive' : 'polite');
   const icon = kind === 'success'
     ? '<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>'
     : '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>';
-  el.innerHTML = icon + '<span>' + message + '</span>';
+  const span = document.createElement('span');
+  span.textContent = String(message ?? '');
+  el.innerHTML = icon;
+  el.appendChild(span);
   document.body.appendChild(el);
   setTimeout(() => { el.style.opacity = '0'; el.style.transform = 'translateY(10px)'; }, 2400);
   setTimeout(() => el.remove(), 2800);
@@ -218,12 +223,28 @@ function toast(message, kind = 'success') {
 const richInstances = new Map();
 function clearRichInstances() { richInstances.clear(); }
 
-// Sanitiza o HTML produzido pelo contenteditable: só deixa <strong>, <em>, <a>, <br>
+// Sanitiza o HTML produzido pelo contenteditable: só deixa <strong>, <em>, <a>, <br>.
+// Bloqueia explicitamente javascript:, data:, vbscript:, file:, blob: em href.
 function sanitizeRichHtml(html, opts = {}) {
   const div = document.createElement('div');
   div.innerHTML = html || '';
+  function safeHref(raw) {
+    let href = String(raw || '').trim();
+    if (!href) return '';
+    // Decode tentativas de obfuscação
+    try { href = decodeURI(href); } catch (_) {}
+    // Bloqueia protocolos perigosos (case-insensitive, com espaços/tabs internos)
+    const stripped = href.replace(/[\s\x00-\x1f]/g, '');
+    if (/^(javascript|data|vbscript|file|blob):/i.test(stripped)) return '';
+    // Aceita apenas http(s), mailto, tel, ou caminhos relativos/anchors
+    if (!/^(https?:\/\/|mailto:|tel:|\/|#)/i.test(stripped)) {
+      // Sem protocolo claro: assume https
+      href = 'https://' + href.replace(/^\/+/, '');
+    }
+    return href.replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
   function walk(node) {
-    if (node.nodeType === 3) return escHtml(node.textContent).replace(/&amp;nbsp;/g, ' ');
+    if (node.nodeType === 3) return escHtml(node.textContent).replace(/\u00a0/g, '&nbsp;');
     if (node.nodeType !== 1) return '';
     const tag = node.nodeName.toLowerCase();
     let inner = '';
@@ -233,17 +254,16 @@ function sanitizeRichHtml(html, opts = {}) {
     if (tag === 'i' || tag === 'em') return `<em>${inner}</em>`;
     if (tag === 'br') return opts.singleLine ? ' ' : '<br/>';
     if (tag === 'a') {
-      let href = node.getAttribute('href') || '';
-      if (!/^(https?:\/\/|mailto:|tel:|\/|#)/i.test(href)) href = 'https://' + href;
-      const safeHref = href.replace(/"/g, '&quot;').replace(/</g, '&lt;');
-      const target = /^https?:/i.test(href) ? ' target="_blank"' : '';
-      return `<a href="${safeHref}"${target}>${inner}</a>`;
+      const href = safeHref(node.getAttribute('href'));
+      if (!href) return inner; // link inválido vira só texto
+      const isExternal = /^https?:/i.test(href);
+      const target = isExternal ? ' target="_blank" rel="noopener noreferrer"' : '';
+      return `<a href="${href}"${target}>${inner}</a>`;
     }
     if (tag === 'p' || tag === 'div') return inner + (opts.singleLine ? '' : '<br/>');
     return inner;
   }
   let out = walk(div);
-  // Limpa <br/> finais sobrando
   out = out.replace(/(<br\/>)+$/g, '');
   return out;
 }
@@ -266,7 +286,9 @@ function makeRichEditor(targetEl, key, initialHtml, opts = {}) {
     </div>
   `;
   const area = targetEl.querySelector('.rich-area');
-  area.innerHTML = initialHtml || '';
+  // Sanitiza no LOAD também — se um valor malicioso chegou no JSON via outro
+  // caminho, não vamos renderizar HTML cru no contenteditable.
+  area.innerHTML = sanitizeRichHtml(initialHtml || '', { singleLine });
 
   // Single-line: previne Enter
   if (singleLine) {
@@ -326,7 +348,7 @@ function makeRichEditor(targetEl, key, initialHtml, opts = {}) {
 
   const inst = {
     getHtml() { return sanitizeRichHtml(area.innerHTML, { singleLine }); },
-    setHtml(h) { area.innerHTML = h || ''; },
+    setHtml(h) { area.innerHTML = sanitizeRichHtml(h || '', { singleLine }); },
     focus() { area.focus(); },
     el: area,
   };
@@ -565,10 +587,20 @@ const I = {
   save: '<svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>',
 };
 
+function mdSafeUrl(u) {
+  const s = String(u || '').trim();
+  if (!s) return '';
+  if (/^(javascript|data|vbscript|file|blob):/i.test(s.replace(/\s/g, ''))) return '';
+  return s.replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
 function mdInline(text) {
   return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-    .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1"/>')
-    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>')
+    .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, (_, alt, src) => {
+      const safe = mdSafeUrl(src); return safe ? `<img src="${safe}" alt="${alt}"/>` : alt;
+    })
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_, txt, href) => {
+      const safe = mdSafeUrl(href); return safe ? `<a href="${safe}">${txt}</a>` : txt;
+    })
     .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
     .replace(/\*(.+?)\*/g, '<em>$1</em>')
     .replace(/`([^`]+)`/g, '<code>$1</code>');
@@ -1459,7 +1491,7 @@ async function renderSiteEditor(app) {
   }
 
   // === Auto-save local + restore
-  dirty.autoKey = `hsa_draft_site`;
+  dirty.autoKey = `hsa_draft_site_${currentSession?.user?.id || 'anon'}`;
   try {
     const draft = localStorage.getItem(dirty.autoKey);
     if (draft) {
@@ -1740,7 +1772,7 @@ async function renderLandingEditor(app, slug) {
   }
 
   // Auto-save draft local
-  dirty.autoKey = `hsa_draft_landing_${slug}`;
+  dirty.autoKey = `hsa_draft_landing_${currentSession?.user?.id || 'anon'}_${slug}`;
   try {
     const draft = localStorage.getItem(dirty.autoKey);
     if (draft) {
@@ -2057,7 +2089,7 @@ async function renderEditor(app, fileBase) {
   }
 
   // Auto-save draft local
-  dirty.autoKey = `hsa_draft_post_${fileBase || 'new'}`;
+  dirty.autoKey = `hsa_draft_post_${currentSession?.user?.id || 'anon'}_${fileBase || 'new'}`;
   try {
     const draft = localStorage.getItem(dirty.autoKey);
     if (draft) {
@@ -2186,16 +2218,20 @@ async function renderGallery(app) {
       const filtered = filter ? imgs.filter(i => i.name.toLowerCase().includes(filter.toLowerCase())) : imgs;
       $('#galContainer').innerHTML = `<div class="gal-grid">` + filtered.map(img => {
         const thumb = previewUrl(img.path);
-        const paste = pasteUrl(img.path);
         return `<div class="gal-item">
-          <div class="gal-thumb" style="background-image:url('${thumb}')" onclick="window.open('${thumb}', '_blank')"></div>
+          <div class="gal-thumb" data-thumb="${escAttr(thumb)}" style="background-image:url('${escAttr(thumb)}')"></div>
           <div class="gal-name" title="${escAttr(img.name)}">${escHtml(img.name)}</div>
           <div class="gal-actions">
-            <button onclick="navigator.clipboard.writeText('${paste}').then(()=>this.textContent='✓ COPIADO');" title="Copiar URL para colar em post">URL</button>
-            <button class="del" data-path="${img.path}" data-sha="${img.sha}" title="Excluir">✕</button>
+            <button class="copy-url" data-paste="${escAttr(pasteUrl(img.path))}" title="Copiar URL para colar em post">URL</button>
+            <button class="del" data-path="${escAttr(img.path)}" data-sha="${escAttr(img.sha)}" title="Excluir">✕</button>
           </div>
         </div>`;
       }).join('') + `</div>`;
+      $$('.gal-thumb[data-thumb]').forEach(t => t.addEventListener('click', () => window.open(t.dataset.thumb, '_blank', 'noopener,noreferrer')));
+      $$('.copy-url[data-paste]').forEach(b => b.addEventListener('click', async () => {
+        try { await navigator.clipboard.writeText(b.dataset.paste); b.textContent = '✓ COPIADO'; setTimeout(() => b.textContent = 'URL', 1500); }
+        catch(_) { toast('Não foi possível copiar', 'error'); }
+      }));
       $$('.del[data-path]').forEach(b => b.addEventListener('click', async () => {
         if (!confirm('Excluir essa imagem?')) return;
         try {
