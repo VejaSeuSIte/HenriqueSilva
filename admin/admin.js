@@ -472,6 +472,75 @@ function showModal({ icon = 'success', title, msg, actions = [] }) {
   document.body.appendChild(bg);
 }
 
+/* ===================== QUICK TOUR ===================== */
+const TOUR_STEPS = [
+  {
+    icon: 'home',
+    title: 'Home',
+    text: 'A página inicial é dividida em <strong>11 seções</strong> (topo, sobre, áreas, avaliações, etc.). Use as abas à esquerda pra navegar entre elas. Cada campo tem uma dica explicando pra que serve.',
+  },
+  {
+    icon: 'pages',
+    title: 'Páginas de áreas',
+    text: 'As 12 páginas dedicadas (Trabalhista, INSS, Família…) também são editáveis: cada uma tem título, texto introdutório, lista de bullets e perguntas frequentes. Cliente cai direto nelas pelo Google.',
+  },
+  {
+    icon: 'posts',
+    title: 'Blog (artigos)',
+    text: 'Escreva artigos sobre seus casos. Use uma linguagem simples — quem está te encontrando ainda não é cliente. Cada artigo bem escrito é uma porta de entrada pelo Google.',
+  },
+  {
+    icon: 'image',
+    title: 'Imagens',
+    text: 'Pra subir foto, <strong>arraste o arquivo</strong> direto pra qualquer campo de imagem ou pra galeria. Funciona em qualquer lugar do painel. Aparece na hora.',
+  },
+  {
+    icon: 'pen',
+    title: 'Negrito e itálico',
+    text: 'Em qualquer texto, <strong>selecione a palavra</strong> e clique no botão <b>B</b> (negrito) ou <i>I</i> (itálico). Funciona igual o Word. Atalhos: <strong>Ctrl+B</strong> / <strong>Ctrl+I</strong>.',
+  },
+  {
+    icon: 'save',
+    title: 'Salvar',
+    text: 'Quando você editar algo, aparece uma <strong>barra dourada no rodapé</strong> dizendo "alterações não salvas". Clica em <strong>Salvar</strong> (ou Ctrl+S) e pronto. Em ~30 segundos a alteração está no ar.',
+  },
+];
+
+function showQuickTour() {
+  let step = 0;
+  function render() {
+    const s = TOUR_STEPS[step];
+    document.querySelector('.modal-bg')?.remove();
+    const bg = document.createElement('div');
+    bg.className = 'modal-bg';
+    bg.innerHTML = `
+      <div class="modal-box" style="max-width:520px">
+        <div class="modal-icon" style="background:var(--gold-faint);color:var(--gold-light)">${I[s.icon] || I.help}</div>
+        <div style="text-align:center;font-family:'Inter Tight',sans-serif;font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);font-weight:500;margin-bottom:8px">Passo ${step+1} de ${TOUR_STEPS.length}</div>
+        <div class="modal-title">${escHtml(s.title)}</div>
+        <div class="modal-msg">${s.text}</div>
+        <div class="modal-actions">
+          ${step > 0 ? '<button class="btn btn-secondary" id="tourPrev">← Anterior</button>' : ''}
+          ${step < TOUR_STEPS.length - 1 ? '<button class="btn btn-primary" id="tourNext">Próximo →</button>' : '<button class="btn btn-primary" id="tourDone">Entendi, vamos lá!</button>'}
+        </div>
+        <div style="display:flex;gap:6px;justify-content:center;margin-top:18px">
+          ${TOUR_STEPS.map((_, i) => `<span style="width:${i===step?'24px':'8px'};height:6px;border-radius:3px;background:${i===step?'var(--gold)':'var(--gold-soft)'};transition:all .25s"></span>`).join('')}
+        </div>
+      </div>
+    `;
+    bg.addEventListener('click', (e) => { if (e.target === bg) bg.remove(); });
+    document.body.appendChild(bg);
+    bg.querySelector('#tourPrev')?.addEventListener('click', () => { step--; render(); });
+    bg.querySelector('#tourNext')?.addEventListener('click', () => { step++; render(); });
+    bg.querySelector('#tourDone')?.addEventListener('click', () => {
+      try { localStorage.setItem('hsa_tour_seen', '1'); } catch(_) {}
+      bg.remove();
+      $('#tourBanner')?.remove();
+    });
+  }
+  render();
+}
+
 /* ===================== ICONS ===================== */
 const I = {
   home: '<svg viewBox="0 0 24 24"><path d="M3 12l9-9 9 9"/><path d="M5 10v10h14V10"/></svg>',
@@ -492,6 +561,8 @@ const I = {
   burger: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>',
   building: '<svg viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20"/><line x1="9" y1="6" x2="9" y2="6"/><line x1="15" y1="6" x2="15" y2="6"/><line x1="9" y1="10" x2="9" y2="10"/><line x1="15" y1="10" x2="15" y2="10"/><line x1="9" y1="14" x2="15" y2="14"/></svg>',
   briefcase: '<svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>',
+  pen: '<svg viewBox="0 0 24 24"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg>',
+  save: '<svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>',
 };
 
 function mdInline(text) {
@@ -617,6 +688,7 @@ function renderTopbar(active) {
         <a href="/HenriqueSilva/" target="_blank" rel="noopener">${I.ext}<span>Ver site</span></a>
       </div>
       <div class="topbar-actions">
+        <button class="btn btn-ghost" id="btnHelp" title="Ver guia rápido" style="padding:8px 12px;color:var(--gold-light)">${I.help}</button>
         <span class="topbar-user">Online</span>
         <button class="topbar-logout" id="btnLogout">Sair</button>
         <button class="burger" id="btnBurger" aria-label="Menu">${I.burger}</button>
@@ -637,6 +709,9 @@ document.addEventListener('click', async (e) => {
   if (t.id === 'btnBurger') {
     document.getElementById('topbar')?.classList.toggle('menu-open');
   }
+  if (t.id === 'btnHelp') {
+    showQuickTour();
+  }
 });
 // Fecha menu ao navegar
 window.addEventListener('hashchange', () => {
@@ -653,10 +728,21 @@ async function renderDashboard(app) {
     if (h < 18) return 'Boa tarde';
     return 'Boa noite';
   })();
+  const tourSeen = localStorage.getItem('hsa_tour_seen') === '1';
   app.innerHTML = renderTopbar('dashboard') + `
     <div class="container">
       <div class="h1">${greeting}, <em>Dr. Henrique</em>.</div>
       <div class="h-sub">O que você gostaria de fazer hoje?</div>
+      ${!tourSeen ? `
+      <div class="card" id="tourBanner" style="margin-bottom:24px;display:flex;align-items:center;gap:18px;background:linear-gradient(135deg, rgba(212,175,55,.08), rgba(20,20,20,.95));border-color:var(--gold-soft)">
+        <div style="width:48px;height:48px;border-radius:50%;background:var(--gold-faint);color:var(--gold);display:flex;align-items:center;justify-content:center;flex-shrink:0">${I.help}</div>
+        <div style="flex:1">
+          <div style="font-family:'Fraunces',serif;font-size:18px;color:var(--off-white);font-weight:400;margin-bottom:4px">Primeira vez por aqui?</div>
+          <div style="font-family:'Fraunces',serif;font-style:italic;font-size:13.5px;color:var(--gray-300)">Veja um guia rápido de 30 segundos sobre como editar seu site.</div>
+        </div>
+        <button class="btn btn-primary" id="btnTour">Ver guia</button>
+        <button class="btn btn-ghost" id="btnTourDismiss" title="Não mostrar mais" style="padding:8px 12px">×</button>
+      </div>` : ''}
       <div class="dash-grid">
         <a class="dash-card" href="#/site">
           <div class="dash-icon">${I.home}</div>
@@ -705,6 +791,13 @@ async function renderDashboard(app) {
     </div>
   `;
   // Carregar dados
+  // Tour
+  $('#btnTour')?.addEventListener('click', showQuickTour);
+  $('#btnTourDismiss')?.addEventListener('click', () => {
+    try { localStorage.setItem('hsa_tour_seen', '1'); } catch(_) {}
+    $('#tourBanner')?.remove();
+  });
+
   try {
     const items = await listDir(REPO_PATHS.POSTS);
     const mds = items.filter(x => x.name.endsWith('.md'));
@@ -761,101 +854,156 @@ async function renderSiteEditor(app) {
 
   const sections = [
     {
-      id: 'hero', title: 'Topo da página', icon: I.hero, hint: 'A primeira coisa que o visitante vê',
+      id: 'hero', title: 'Topo da página', icon: I.hero,
+      hint: 'A primeira coisa que o visitante vê quando entra no site. Tem que dar vontade de continuar.',
       fields: [
-        { key: 'tagline_quote', label: 'Frase principal', type: 'textarea', html: true, hint: 'Aparece em destaque no topo' },
-        { key: 'cta_primary_label', label: 'Botão de WhatsApp' },
-        { key: 'video_src', label: 'Vídeo de fundo', type: 'image', accept: 'video/*' },
-        { key: 'poster_src', label: 'Imagem que aparece antes do vídeo carregar', type: 'image' },
-        { key: 'seal_src', label: 'Selo / Logo do escritório', type: 'image' },
+        { key: 'tagline_quote', label: 'Frase principal', type: 'textarea', html: true,
+          hint: 'Aparece em destaque, em itálico claro, sobre o vídeo. Use 1-2 linhas curtas. Selecione palavras pra deixar em negrito ou itálico dourado.' },
+        { key: 'cta_primary_label', label: 'Texto do botão WhatsApp',
+          hint: 'O botão dourado grande no topo. Curto e direto. Exemplo: "Análise Gratuita pelo WhatsApp".' },
+        { key: 'video_src', label: 'Vídeo de fundo', type: 'image', accept: 'video/*',
+          hint: 'Vídeo curto (5-15 segundos) que toca em loop atrás do texto. MP4 até 5 MB roda bem. Pode arrastar o arquivo aqui.' },
+        { key: 'poster_src', label: 'Imagem que aparece antes do vídeo carregar', type: 'image',
+          hint: 'Foto exibida nos primeiros segundos enquanto o vídeo carrega, e em conexões lentas. Use JPG bem leve.' },
+        { key: 'seal_src', label: 'Selo / Logo do escritório', type: 'image',
+          hint: 'Brasão dourado que aparece centralizado no topo. PNG com fundo transparente fica melhor.' },
       ],
     },
     {
-      id: 'office', title: 'Sobre o Escritório', icon: I.building, hint: 'A apresentação do HSA',
+      id: 'office', title: 'Sobre o Escritório', icon: I.building,
+      hint: 'Apresentação institucional do escritório. Texto que ganha confiança do visitante.',
       fields: [
-        { key: 'eyebrow', label: 'Texto pequeno acima do título' },
-        { key: 'h2', label: 'Título', type: 'text', html: true },
-        { key: 'paragraphs', label: 'Parágrafos do texto', type: 'list', subtype: 'textarea', html: true },
-        { key: 'pillars', label: 'Pilares (3 destaques numerados)', type: 'pillars' },
-        { key: 'photo_src', label: 'Foto do escritório', type: 'image' },
-        { key: 'photo_stamp', label: 'Selo redondo na foto (texto curto)', type: 'text', html: true },
+        { key: 'eyebrow', label: 'Texto pequeno acima do título',
+          hint: 'Aparece em letras pequenas e maiúsculas, na cor dourada. Ex: "Sobre o escritório".' },
+        { key: 'h2', label: 'Título da seção', type: 'text', html: true,
+          hint: 'Título grande em serifa. Selecione uma palavra pra deixá-la em itálico dourado (botão I).' },
+        { key: 'paragraphs', label: 'Parágrafos do texto', type: 'list', subtype: 'textarea', html: true,
+          hint: '2 a 4 parágrafos curtos sobre o escritório. Selecione palavras-chave (anos de atuação, áreas, etc.) e deixe em negrito (B).' },
+        { key: 'pillars', label: 'Três destaques numerados', type: 'pillars',
+          hint: 'Linha com 3 destaques que aparecem em colunas. Cada um tem um número/título grande e uma descrição curta abaixo.' },
+        { key: 'photo_src', label: 'Foto do escritório', type: 'image',
+          hint: 'Foto da sala de espera, mesa de reunião ou fachada. Horizontal funciona melhor. Pode arrastar a foto aqui.' },
+        { key: 'photo_stamp', label: 'Selo redondo dourado sobre a foto', type: 'text', html: true,
+          hint: 'Texto bem curto (3-5 palavras) que aparece em um círculo dourado sobre a foto. Ex: "Atendo há mais de 14 anos".' },
       ],
     },
     {
-      id: 'areas', title: 'Áreas de Atuação', icon: I.briefcase, hint: '10 cards (Trabalhista, INSS, Família…)',
+      id: 'areas', title: 'Áreas de Atuação', icon: I.briefcase,
+      hint: 'Os 10 cards de áreas do direito que você atua. Os 2 primeiros aparecem maiores (em destaque).',
       fields: [
-        { key: 'eyebrow', label: 'Texto pequeno acima do título' },
-        { key: 'h2', label: 'Título', html: true },
-        { key: 'sub', label: 'Subtítulo' },
-        { key: 'items', label: 'Os 10 cards', type: 'areas' },
+        { key: 'eyebrow', label: 'Texto pequeno acima do título',
+          hint: 'Pré-título da seção. Ex: "Áreas de Atuação".' },
+        { key: 'h2', label: 'Título da seção', html: true,
+          hint: 'Título grande sobre os cards. Pode usar negrito/itálico nas palavras importantes.' },
+        { key: 'sub', label: 'Subtítulo',
+          hint: 'Frase curta de explicação abaixo do título principal.' },
+        { key: 'items', label: 'Os 10 cards das áreas', type: 'areas',
+          hint: 'Cada card vira uma página dedicada (Trabalhista, Família, INSS, etc.). Os 2 primeiros são maiores. Pra editar o conteúdo da página completa, use o menu "Páginas".' },
       ],
     },
     {
-      id: 'reviews', title: 'Avaliações Google', icon: I.star, hint: 'Depoimentos dos seus clientes',
+      id: 'reviews', title: 'Avaliações Google', icon: I.star,
+      hint: 'Depoimentos reais dos seus clientes. Aumenta MUITO a confiança de quem nunca te conheceu.',
       fields: [
-        { key: 'rating_num', label: 'Nota geral (ex: 5,0)' },
-        { key: 'meta_html', label: 'Texto do banner (resumo)', html: true },
-        { key: 'items', label: 'Avaliações', type: 'reviews' },
-        { key: 'cta_label', label: 'Texto do botão "ver no Google"' },
-        { key: 'cta_href', label: 'Link do botão' },
+        { key: 'rating_num', label: 'Nota geral',
+          hint: 'A média das suas avaliações. Ex: "5,0" ou "4,9". Aparece grande no banner.' },
+        { key: 'meta_html', label: 'Texto do banner', html: true,
+          hint: 'Frase do banner ao lado da nota. Ex: "Excelente · com base em <b>16 avaliações</b> no Google".' },
+        { key: 'items', label: 'Lista de avaliações', type: 'reviews',
+          hint: 'Copie e cole as avaliações reais que você recebeu (do Google, Instagram, etc). Mantenha o texto original do cliente.' },
+        { key: 'cta_label', label: 'Texto do botão "ver todas"',
+          hint: 'Botão abaixo das avaliações. Ex: "Ver todas as avaliações no Google".' },
+        { key: 'cta_href', label: 'Link do botão',
+          hint: 'URL completa pra onde o botão leva. Geralmente o link do seu perfil no Google Maps.' },
       ],
     },
     {
-      id: 'about', title: 'Quem Sou', icon: I.user, hint: 'Sua apresentação pessoal',
+      id: 'about', title: 'Quem Sou', icon: I.user,
+      hint: 'Sua apresentação pessoal — onde o cliente vê você como pessoa, não só como escritório.',
       fields: [
-        { key: 'eyebrow', label: 'Texto pequeno acima do título' },
-        { key: 'h2', label: 'Título', html: true },
-        { key: 'lead', label: 'Citação em destaque', type: 'textarea' },
-        { key: 'paragraphs', label: 'Parágrafos do texto', type: 'list', subtype: 'textarea', html: true },
-        { key: 'credentials', label: 'Credenciais (3 destaques)', type: 'credentials' },
-        { key: 'portrait_src', label: 'Sua foto (retrato)', type: 'image' },
-        { key: 'portrait_plaque', label: 'Plaqueta (texto sob a foto)' },
+        { key: 'eyebrow', label: 'Texto pequeno acima do título',
+          hint: 'Pré-título da seção. Ex: "Quem Sou".' },
+        { key: 'h2', label: 'Título com seu nome', html: true,
+          hint: 'Inclua seu nome completo. Ex: "Dr. José Henrique da Silva, advogado".' },
+        { key: 'lead', label: 'Citação em destaque', type: 'textarea',
+          hint: 'Frase de impacto sobre sua filosofia ou abordagem. Aparece em letras maiores, em itálico. 1-2 linhas.' },
+        { key: 'paragraphs', label: 'Sua bio (parágrafos)', type: 'list', subtype: 'textarea', html: true,
+          hint: 'Conte sua história. OAB, anos de atuação, áreas, valores. Seja humano e direto. Selecione palavras importantes pra deixar em negrito.' },
+        { key: 'credentials', label: 'Três credenciais em destaque', type: 'credentials',
+          hint: 'Três números/sigilas que aparecem em colunas. Ex: "14+" / "Anos de Atuação". Use seus números reais.' },
+        { key: 'portrait_src', label: 'Sua foto profissional', type: 'image',
+          hint: 'Foto sua olhando pra câmera, fundo neutro. Vertical (retrato) funciona melhor que horizontal.' },
+        { key: 'portrait_plaque', label: 'Plaqueta abaixo da foto',
+          hint: 'Texto da plaqueta dourada sob a foto. Ex: "Dr. Henrique Silva · OAB/PE 31.742".' },
       ],
     },
     {
-      id: 'latest', title: 'Últimos Artigos', icon: I.posts, hint: 'Cabeçalho da seção do blog na home',
+      id: 'latest', title: 'Últimos Artigos', icon: I.posts,
+      hint: 'Cabeçalho da seção que mostra os 3 artigos mais recentes do seu blog.',
       fields: [
-        { key: 'eyebrow', label: 'Texto pequeno acima do título' },
-        { key: 'h2', label: 'Título', html: true },
-        { key: 'sub', label: 'Subtítulo' },
-        { key: 'cta_label', label: 'Texto do botão "ver todos"' },
+        { key: 'eyebrow', label: 'Texto pequeno acima do título',
+          hint: 'Pré-título da seção. Ex: "Blog · Henrique Silva".' },
+        { key: 'h2', label: 'Título da seção', html: true,
+          hint: 'Ex: "Últimos artigos".' },
+        { key: 'sub', label: 'Subtítulo',
+          hint: 'Frase curta de explicação. Ex: "Direito Trabalhista, Previdenciário e mais — explicados de forma direta".' },
+        { key: 'cta_label', label: 'Texto do botão "ver todos"',
+          hint: 'Botão dourado abaixo dos 3 cards. Ex: "Ver todos os artigos".' },
       ],
     },
     {
-      id: 'faq', title: 'Perguntas Frequentes', icon: I.help, hint: 'Dúvidas comuns dos clientes',
+      id: 'faq', title: 'Perguntas Frequentes', icon: I.help,
+      hint: 'Lista das dúvidas mais comuns dos seus clientes. Reduz mensagens repetitivas no WhatsApp.',
       fields: [
-        { key: 'eyebrow', label: 'Texto pequeno acima do título' },
-        { key: 'h2', label: 'Título', html: true },
-        { key: 'sub', label: 'Subtítulo', html: true },
-        { key: 'search_placeholder', label: 'Texto da caixa de busca' },
-        { key: 'items', label: 'Perguntas e respostas', type: 'faq' },
+        { key: 'eyebrow', label: 'Texto pequeno acima do título',
+          hint: 'Pré-título da seção.' },
+        { key: 'h2', label: 'Título da seção', html: true,
+          hint: 'Ex: "As perguntas que sempre recebo".' },
+        { key: 'sub', label: 'Subtítulo', html: true,
+          hint: 'Frase de boas-vindas. Pode mencionar o WhatsApp pra dúvidas que não estão na lista.' },
+        { key: 'search_placeholder', label: 'Texto dentro da caixa de busca',
+          hint: 'Aparece em cinza dentro do campo de busca. Ex: "Procurar por palavra-chave...".' },
+        { key: 'items', label: 'Perguntas e respostas', type: 'faq',
+          hint: 'Suas perguntas reais. Quanto mais perguntas e respostas claras, melhor. Pode usar negrito e links nas respostas.' },
       ],
     },
     {
-      id: 'contact_cta', title: 'Bloco de Contato', icon: I.contact, hint: 'Formulário no fim da página',
+      id: 'contact_cta', title: 'Bloco de Contato', icon: I.contact,
+      hint: 'Última seção da página, com formulário de contato. Última chance de converter o visitante.',
       fields: [
-        { key: 'h2', label: 'Título', html: true },
-        { key: 'sub', label: 'Subtítulo' },
-        { key: 'form', label: 'Textos do formulário', type: 'contact_form' },
-        { key: 'bg_src', label: 'Foto de fundo', type: 'image' },
+        { key: 'h2', label: 'Chamada principal', html: true,
+          hint: 'Frase de impacto. Ex: "Receba a ligação de um especialista".' },
+        { key: 'sub', label: 'Frase de apoio',
+          hint: 'Linha explicativa abaixo da chamada. Ex: "Preencha o formulário que entraremos em contato".' },
+        { key: 'form', label: 'Textos do formulário', type: 'contact_form',
+          hint: 'Apenas os rótulos dos campos do formulário. Os dados do visitante caem direto no seu e-mail.' },
+        { key: 'bg_src', label: 'Foto de fundo da seção', type: 'image',
+          hint: 'Foto que serve de fundo (com escurecimento automático). Reunião, escritório, mesa com documentos funcionam bem.' },
       ],
     },
     {
-      id: 'footer', title: 'Rodapé', icon: I.flag, hint: 'Aparece no fim de toda página',
+      id: 'footer', title: 'Rodapé', icon: I.flag,
+      hint: 'O rodapé aparece em todas as páginas do site (home, blog, áreas).',
       fields: [
-        { key: 'tag', label: 'Descrição do escritório', type: 'textarea' },
-        { key: 'address_lines', label: 'Endereço (uma linha por vez)', type: 'list', subtype: 'text' },
-        { key: 'copyright', label: 'Copyright' },
+        { key: 'tag', label: 'Descrição do escritório', type: 'textarea',
+          hint: 'Resumo curto que aparece no rodapé. 1-2 linhas. Áreas principais e diferenciais.' },
+        { key: 'address_lines', label: 'Endereço (uma linha por vez)', type: 'list', subtype: 'text',
+          hint: 'Quebre o endereço em várias linhas curtas (condomínio, sala, rua, bairro, cidade/UF, CEP). Cliente pode parar a leitura em qualquer linha.' },
+        { key: 'copyright', label: 'Copyright',
+          hint: 'Texto pequeno no fim do rodapé. Atualize o ano todo dia 1º de janeiro.' },
       ],
     },
     {
-      id: 'wa_fab', title: 'Botão flutuante WhatsApp', icon: I.contact, hint: 'O botão verde no canto inferior',
+      id: 'wa_fab', title: 'Botão flutuante WhatsApp', icon: I.contact,
+      hint: 'O botão verde redondo que fica fixo no canto inferior direito de todas as páginas.',
       fields: [
-        { key: 'label', label: 'Texto que aparece ao passar o mouse' },
+        { key: 'label', label: 'Texto que aparece ao passar o mouse',
+          hint: 'Aparece em uma plaquinha quando o visitante passa o mouse no botão. Ex: "Falar agora".' },
       ],
     },
   ];
 
+  const hintHtml = (h) => h ? `<div class="field-help">${h}</div>` : '';
   const renderFieldHtml = (sectionId, field, value) => {
     const id = `f-${sectionId}-${field.key}`;
     if (field.type === 'image') {
@@ -874,16 +1022,17 @@ async function renderSiteEditor(app) {
               </div>
             </div>
           </div>
+          ${hintHtml(field.hint)}
         </div>`;
     }
     if (field.html && (field.type === 'textarea' || field.type === 'text' || !field.type)) {
       // WYSIWYG (negrito/itálico via botões, sem HTML cru)
       const richKey = `site.${sectionId}.${field.key}`;
       const single = field.type === 'text';
-      return `<div class="field"><label>${field.label}</label><div class="js-rich" data-rich-key="${richKey}" data-rich-html="${escAttr(value || '')}" data-rich-single="${single}" data-rich-placeholder="${escAttr(field.hint || '')}"></div></div>`;
+      return `<div class="field"><label>${field.label}</label><div class="js-rich" data-rich-key="${richKey}" data-rich-html="${escAttr(value || '')}" data-rich-single="${single}"></div>${hintHtml(field.hint)}</div>`;
     }
     if (field.type === 'textarea') {
-      return `<div class="field"><label>${field.label}</label><textarea id="${id}" rows="3">${escHtml(value || '')}</textarea></div>`;
+      return `<div class="field"><label>${field.label}</label><textarea id="${id}" rows="3">${escHtml(value || '')}</textarea>${hintHtml(field.hint)}</div>`;
     }
     if (field.type === 'list') {
       const items = Array.isArray(value) ? value : [];
@@ -892,6 +1041,7 @@ async function renderSiteEditor(app) {
       return `
         <div class="field" data-list-field="${sectionId}.${field.key}" data-rich-list="${useRich}" data-rich-base="${richKeyBase}">
           <label>${field.label}</label>
+          ${hintHtml(field.hint)}
           <div class="list-items" data-key="${field.key}">
             ${items.map((v, i) => useRich
               ? `<div class="list-item" data-idx="${i}"><div class="js-rich" style="flex:1" data-rich-key="${richKeyBase}.${i}" data-rich-html="${escAttr(v)}"></div><button type="button" class="btn btn-danger btn-rmitem">×</button></div>`
@@ -906,12 +1056,13 @@ async function renderSiteEditor(app) {
       return `
         <div class="field" data-pillars="${sectionId}.${field.key}">
           <label>${field.label}</label>
+          ${hintHtml(field.hint)}
           <div class="pillars-list">
             ${items.map((p, i) => `
               <div class="card-mini" data-idx="${i}">
                 <div class="field-row">
-                  <div class="field"><label>Número/título</label><input data-pkey="num" value="${escAttr(p.num)}" /></div>
-                  <div class="field"><label>Descrição</label><input data-pkey="label" value="${escAttr(p.label)}" /></div>
+                  <div class="field"><label>Título / número</label><input data-pkey="num" value="${escAttr(p.num)}" /><div class="field-help">Texto curto destacado. Ex: "14 anos" ou "10 áreas".</div></div>
+                  <div class="field"><label>Descrição abaixo</label><input data-pkey="label" value="${escAttr(p.label)}" /><div class="field-help">Frase que explica o número. Ex: "Atuação multidisciplinar desde 2010".</div></div>
                 </div>
               </div>
             `).join('')}
@@ -923,12 +1074,13 @@ async function renderSiteEditor(app) {
       return `
         <div class="field" data-credentials="${sectionId}.${field.key}">
           <label>${field.label}</label>
+          ${hintHtml(field.hint)}
           <div class="credentials-list">
             ${items.map((p, i) => `
               <div class="card-mini" data-idx="${i}">
                 <div class="field-row">
-                  <div class="field"><label>Número</label><input data-pkey="num" value="${escAttr(p.num)}" /></div>
-                  <div class="field"><label>Rótulo</label><input data-pkey="label" value="${escAttr(p.label)}" /></div>
+                  <div class="field"><label>Número / sigla</label><input data-pkey="num" value="${escAttr(p.num)}" /><div class="field-help">Texto destacado em dourado. Ex: "14+", "10", "PE".</div></div>
+                  <div class="field"><label>Rótulo abaixo</label><input data-pkey="label" value="${escAttr(p.label)}" /><div class="field-help">Explicação curta. Ex: "Anos de Atuação", "Áreas do Direito", "OAB 31.742".</div></div>
                 </div>
               </div>
             `).join('')}
@@ -940,14 +1092,15 @@ async function renderSiteEditor(app) {
       return `
         <div class="field" data-areas="${sectionId}.${field.key}">
           <label>${field.label}</label>
+          ${hintHtml(field.hint)}
           <div class="areas-list">
             ${items.map((a, i) => `
               <details class="card-mini" data-idx="${i}" ${i < 2 ? 'open' : ''}>
                 <summary><strong>${escHtml(a.label || a.slug)}</strong> ${a.featured ? '<span style="color:var(--gold);font-size:10px;letter-spacing:.18em">DESTAQUE</span>' : ''}</summary>
-                <div class="field"><label>Nome curto da área</label><input data-akey="label" value="${escAttr(a.label)}" /></div>
-                <div class="field"><label>Título do card</label><div class="js-rich" data-rich-key="site.areas.${i}.h3" data-rich-html="${escAttr(a.h3)}" data-rich-single="true"></div></div>
-                <div class="field"><label>Descrição</label><textarea data-akey="description" rows="2">${escHtml(a.description)}</textarea></div>
-                <div class="field"><label>Imagem</label>
+                <div class="field"><label>Nome curto da área</label><input data-akey="label" value="${escAttr(a.label)}" /><div class="field-help">Aparece como rótulo do card. Ex: "Trabalhista".</div></div>
+                <div class="field"><label>Título do card</label><div class="js-rich" data-rich-key="site.areas.${i}.h3" data-rich-html="${escAttr(a.h3)}" data-rich-single="true"></div><div class="field-help">Título maior dentro do card. Pode usar itálico em uma palavra.</div></div>
+                <div class="field"><label>Descrição</label><textarea data-akey="description" rows="2">${escHtml(a.description)}</textarea><div class="field-help">Frase de 1-2 linhas explicando o que você atende nessa área.</div></div>
+                <div class="field"><label>Imagem do card</label>
                   <div class="img-picker">
                     ${a.image ? `<img class="img-preview" src="${previewUrl(a.image)}" alt="" onerror="this.style.display='none'" />` : `<div class="img-picker-empty">${I.image}</div>`}
                     <div class="img-picker-body">
@@ -958,8 +1111,9 @@ async function renderSiteEditor(app) {
                       </div>
                     </div>
                   </div>
+                  <div class="field-help">Foto temática da área (escura/séria funciona bem). Aparece como fundo do card.</div>
                 </div>
-                ${a.featured ? `<div class="field"><label>Tags (separadas por vírgula)</label><input data-akey="tags" value="${escAttr((a.tags||[]).join(', '))}" /></div>` : ''}
+                ${a.featured ? `<div class="field"><label>Tags (separadas por vírgula)</label><input data-akey="tags" value="${escAttr((a.tags||[]).join(', '))}" /><div class="field-help">Aparecem só nos 2 cards em destaque, como pequenas etiquetas. Ex: "Execuções, Rescisões, Horas extras".</div></div>` : ''}
                 <input type="hidden" data-akey="slug" value="${escAttr(a.slug)}" />
               </details>
             `).join('')}
@@ -971,16 +1125,17 @@ async function renderSiteEditor(app) {
       return `
         <div class="field" data-reviews="${sectionId}.${field.key}">
           <label>${field.label}</label>
+          ${hintHtml(field.hint)}
           <div class="reviews-list">
             ${items.map((r, i) => `
               <details class="card-mini" data-idx="${i}">
                 <summary><strong>${escHtml(r.name)}</strong> · ${escHtml(r.stars)}</summary>
                 <div class="field-row">
-                  <div class="field"><label>Nome</label><input data-rkey="name" value="${escAttr(r.name)}" /></div>
-                  <div class="field"><label>Data/origem</label><input data-rkey="date" value="${escAttr(r.date)}" /></div>
+                  <div class="field"><label>Nome do cliente</label><input data-rkey="name" value="${escAttr(r.name)}" /><div class="field-help">Nome como aparece no Google ou rede social.</div></div>
+                  <div class="field"><label>Data / origem</label><input data-rkey="date" value="${escAttr(r.date)}" /><div class="field-help">Ex: "há 1 mês · Google".</div></div>
                 </div>
-                <div class="field"><label>Estrelas</label><input data-rkey="stars" value="${escAttr(r.stars)}" /></div>
-                <div class="field"><label>Texto da avaliação</label><textarea data-rkey="quote" rows="2">${escHtml(r.quote)}</textarea></div>
+                <div class="field"><label>Estrelas</label><input data-rkey="stars" value="${escAttr(r.stars)}" /><div class="field-help">Cole 5 estrelas pretas: ★★★★★. Pra notas menores, troque algumas por ☆.</div></div>
+                <div class="field"><label>Texto da avaliação</label><textarea data-rkey="quote" rows="2">${escHtml(r.quote)}</textarea><div class="field-help">Texto do cliente. Mantenha exatamente como ele escreveu.</div></div>
                 <button type="button" class="btn btn-danger btn-rmrev" data-idx="${i}">Remover avaliação</button>
               </details>
             `).join('')}
@@ -993,12 +1148,13 @@ async function renderSiteEditor(app) {
       return `
         <div class="field" data-faq="${sectionId}.${field.key}">
           <label>${field.label}</label>
+          ${hintHtml(field.hint)}
           <div class="faq-list">
             ${items.map((q, i) => `
               <details class="card-mini" data-idx="${i}">
                 <summary><strong>${escHtml((q.q||'').slice(0, 60))}</strong></summary>
-                <div class="field"><label>Pergunta</label><input data-qkey="q" value="${escAttr(q.q)}" /></div>
-                <div class="field"><label>Resposta</label><div class="js-rich" data-rich-key="site.faq.${i}.a" data-rich-html="${escAttr(q.a)}"></div></div>
+                <div class="field"><label>Pergunta</label><input data-qkey="q" value="${escAttr(q.q)}" /><div class="field-help">Pergunta exata como o cliente faria. Ex: "Quanto custa contratar?"</div></div>
+                <div class="field"><label>Resposta</label><div class="js-rich" data-rich-key="site.faq.${i}.a" data-rich-html="${escAttr(q.a)}"></div><div class="field-help">Resposta clara e direta. Selecione palavras-chave pra deixar em negrito.</div></div>
                 <button type="button" class="btn btn-danger btn-rmfaq" data-idx="${i}">Remover</button>
               </details>
             `).join('')}
@@ -1011,18 +1167,19 @@ async function renderSiteEditor(app) {
       return `
         <div class="field" data-form="${sectionId}.${field.key}">
           <label>${field.label}</label>
+          ${hintHtml(field.hint)}
           <div class="card-mini">
             <div class="field-row">
-              <div class="field"><label>Label "Nome"</label><input data-fkey="name_label" value="${escAttr(v.name_label)}" /></div>
-              <div class="field"><label>Label "Telefone"</label><input data-fkey="phone_label" value="${escAttr(v.phone_label)}" /></div>
+              <div class="field"><label>Rótulo do campo "Nome"</label><input data-fkey="name_label" value="${escAttr(v.name_label)}" /></div>
+              <div class="field"><label>Rótulo do campo "Telefone"</label><input data-fkey="phone_label" value="${escAttr(v.phone_label)}" /></div>
             </div>
-            <div class="field"><label>Label "Mensagem"</label><input data-fkey="message_label" value="${escAttr(v.message_label)}" /></div>
-            <div class="field"><label>Texto do botão Enviar</label><input data-fkey="submit_label" value="${escAttr(v.submit_label)}" /></div>
-            <div class="field"><label>Disclaimer</label><textarea data-fkey="disclaimer" rows="2">${escHtml(v.disclaimer)}</textarea></div>
+            <div class="field"><label>Rótulo do campo "Mensagem"</label><input data-fkey="message_label" value="${escAttr(v.message_label)}" /></div>
+            <div class="field"><label>Texto do botão "Enviar"</label><input data-fkey="submit_label" value="${escAttr(v.submit_label)}" /></div>
+            <div class="field"><label>Aviso pequeno abaixo do botão</label><textarea data-fkey="disclaimer" rows="2">${escHtml(v.disclaimer)}</textarea><div class="field-help">Linha discreta que aparece sob o botão. Ex: "Resposta em até 2h úteis".</div></div>
           </div>
         </div>`;
     }
-    return `<div class="field"><label>${field.label}</label><input id="${id}" value="${escAttr(value)}" /></div>`;
+    return `<div class="field"><label>${field.label}</label><input id="${id}" value="${escAttr(value)}" />${hintHtml(field.hint)}</div>`;
   };
 
   // Tabs (esquerda) + content (direita)
@@ -1397,22 +1554,22 @@ async function renderLandingEditor(app, slug) {
         <div class="card editor-section" data-section="topo">
           <h3 style="font-family:'Fraunces',serif;font-size:24px;color:var(--off-white);font-weight:300;margin:0 0 4px">Topo da página + SEO</h3>
           <p style="font-family:'Fraunces',serif;font-style:italic;font-size:14px;color:var(--gray-500);margin:0 0 24px">O que aparece em destaque + textos que o Google lê</p>
-          <div class="field"><label>Título da aba <span class="pill">SEO</span></label><input id="l-page_title" value="${escAttr(l.page_title)}" /><div class="field-help">O que aparece na aba do navegador e no Google. Ex: "Advogado Trabalhista em PE — Henrique Silva"</div></div>
-          <div class="field"><label>Descrição para Google <span class="pill">SEO</span></label><textarea id="l-page_description" rows="2">${escHtml(l.page_description||'')}</textarea><div class="field-help">Resumo que aparece embaixo do título nos resultados de busca (até 160 caracteres)</div></div>
+          <div class="field"><label>Título da aba <span class="pill">SEO</span></label><input id="l-page_title" value="${escAttr(l.page_title)}" /><div class="field-help">Aparece na aba do navegador e como título no Google. Inclua a área e a cidade pra ajudar a aparecer em buscas. Ex: "Advogado Trabalhista em Cabo de Santo Agostinho — Henrique Silva".</div></div>
+          <div class="field"><label>Descrição para Google <span class="pill">SEO</span></label><textarea id="l-page_description" rows="2">${escHtml(l.page_description||'')}</textarea><div class="field-help">Resumo de até 160 caracteres que aparece embaixo do título nos resultados do Google. Tem que dar vontade de clicar.</div></div>
           <div class="field-row">
-            <div class="field"><label>Texto pequeno acima do título</label><input id="l-eyebrow" value="${escAttr(l.eyebrow)}" /></div>
-            <div class="field"><label>Texto do botão WhatsApp</label><input id="l-cta_text" value="${escAttr(l.cta_text)}" /></div>
+            <div class="field"><label>Texto pequeno acima do título</label><input id="l-eyebrow" value="${escAttr(l.eyebrow)}" /><div class="field-help">Letrinha em maiúsculas dourada acima do título. Ex: "Direito Trabalhista".</div></div>
+            <div class="field"><label>Texto do botão WhatsApp</label><input id="l-cta_text" value="${escAttr(l.cta_text)}" /><div class="field-help">Texto do botão dourado grande. Curto e direto. Ex: "Análise gratuita pelo WhatsApp".</div></div>
           </div>
-          <div class="field"><label>Título grande</label><div class="js-rich" data-rich-key="land.h1" data-rich-html="${escAttr(l.h1)}" data-rich-single="true"></div><div class="field-help">Selecione qualquer palavra e clique em B (negrito) ou I (itálico) pra destacar.</div></div>
-          <div class="field"><label>Subtítulo</label><textarea id="l-subtitle" rows="2">${escHtml(l.subtitle||'')}</textarea></div>
-          <div class="field"><label>Mensagem pré-preenchida no WhatsApp</label><input id="l-wa_text" value="${escAttr(l.wa_text)}" /></div>
+          <div class="field"><label>Título grande da página</label><div class="js-rich" data-rich-key="land.h1" data-rich-html="${escAttr(l.h1)}" data-rich-single="true"></div><div class="field-help">Frase principal que aparece em letras grandes. Selecione uma palavra e clique em I pra destacar em itálico dourado.</div></div>
+          <div class="field"><label>Subtítulo</label><textarea id="l-subtitle" rows="2">${escHtml(l.subtitle||'')}</textarea><div class="field-help">Frase explicativa abaixo do título. 1-2 linhas explicando o que você atende nessa área.</div></div>
+          <div class="field"><label>Mensagem que abre no WhatsApp</label><input id="l-wa_text" value="${escAttr(l.wa_text)}" /><div class="field-help">Quando o cliente clicar no botão, o WhatsApp abre com essa mensagem já digitada. Ex: "Olá, Dr. Henrique. Tenho uma dúvida trabalhista".</div></div>
         </div>
 
         <div class="card editor-section" data-section="intro" style="display:none">
           <h3 style="font-family:'Fraunces',serif;font-size:24px;color:var(--off-white);font-weight:300;margin:0 0 4px">Introdução</h3>
-          <p style="font-family:'Fraunces',serif;font-style:italic;font-size:14px;color:var(--gray-500);margin:0 0 24px">O texto explicativo da área</p>
-          <div class="field"><label>Título da introdução</label><div class="js-rich" data-rich-key="land.intro_h2" data-rich-html="${escAttr(l.intro?.h2 || '')}" data-rich-single="true"></div></div>
-          <div class="field"><label>Parágrafos</label>
+          <p style="font-family:'Fraunces',serif;font-style:italic;font-size:14px;color:var(--gray-500);margin:0 0 24px">O texto explicativo da área. Aparece logo abaixo do hero.</p>
+          <div class="field"><label>Título da introdução</label><div class="js-rich" data-rich-key="land.intro_h2" data-rich-html="${escAttr(l.intro?.h2 || '')}" data-rich-single="true"></div><div class="field-help">Frase de impacto que abre o texto explicativo. Selecione uma palavra pra destacar em itálico dourado.</div></div>
+          <div class="field"><label>Parágrafos do texto</label><div class="field-help" style="margin-top:0;margin-bottom:10px">Quebre o texto em 2-4 parágrafos curtos. Cada parágrafo é um bloco separado. Selecione palavras-chave e clique em B pra deixar em negrito.</div>
             <div class="list-items" id="introParagraphs">
               ${(l.intro?.paragraphs||[]).map((p,i)=>`<div class="list-item" data-idx="${i}"><div class="js-rich" style="flex:1" data-rich-key="land.intro.${i}" data-rich-html="${escAttr(p)}"></div><button type="button" class="btn btn-danger btn-rmitem">×</button></div>`).join('')}
             </div>
@@ -1422,17 +1579,18 @@ async function renderLandingEditor(app, slug) {
 
         <div class="card editor-section" data-section="bullets" style="display:none">
           <h3 style="font-family:'Fraunces',serif;font-size:24px;color:var(--off-white);font-weight:300;margin:0 0 4px">Bullets — Em que ajudamos</h3>
-          <p style="font-family:'Fraunces',serif;font-style:italic;font-size:14px;color:var(--gray-500);margin:0 0 24px">Lista numerada de serviços ou tópicos</p>
+          <p style="font-family:'Fraunces',serif;font-style:italic;font-size:14px;color:var(--gray-500);margin:0 0 24px">Lista de serviços ou tipos de caso que você atende nessa área.</p>
           <div class="field-row">
-            <div class="field"><label>Texto pequeno acima do título</label><input id="l-bullets_eye" value="${escAttr(l.bullets_eye)}" /></div>
-            <div class="field"><label>Título</label><div class="js-rich" data-rich-key="land.bullets_h2" data-rich-html="${escAttr(l.bullets_h2)}" data-rich-single="true"></div></div>
+            <div class="field"><label>Texto pequeno acima do título</label><input id="l-bullets_eye" value="${escAttr(l.bullets_eye)}" /><div class="field-help">Pré-título da lista. Ex: "Em que ajudamos".</div></div>
+            <div class="field"><label>Título da lista</label><div class="js-rich" data-rich-key="land.bullets_h2" data-rich-html="${escAttr(l.bullets_h2)}" data-rich-single="true"></div><div class="field-help">Frase que apresenta a lista. Selecione palavras pra destacar.</div></div>
           </div>
+          <div class="field-help" style="margin-bottom:14px">Cada item da lista vira um card numerado. Clique em "Adicionar tópico" pra criar mais.</div>
           <div class="bullets-list" id="bulletsList">
             ${(l.bullets||[]).map((b,i)=>`
               <details class="card-mini" data-idx="${i}">
                 <summary><strong>${escHtml(b.title)}</strong></summary>
-                <div class="field"><label>Título</label><input data-bkey="title" value="${escAttr(b.title)}" /></div>
-                <div class="field"><label>Descrição</label><div class="js-rich" data-rich-key="land.bullets.${i}.text" data-rich-html="${escAttr(b.text)}"></div></div>
+                <div class="field"><label>Nome do tópico</label><input data-bkey="title" value="${escAttr(b.title)}" /><div class="field-help">Título curto e direto. Ex: "Verbas rescisórias".</div></div>
+                <div class="field"><label>Descrição</label><div class="js-rich" data-rich-key="land.bullets.${i}.text" data-rich-html="${escAttr(b.text)}"></div><div class="field-help">1-2 frases explicando o que você faz nesse tópico. Pode usar negrito.</div></div>
                 <button type="button" class="btn btn-danger btn-rmbullet">Remover</button>
               </details>
             `).join('')}
@@ -1442,13 +1600,13 @@ async function renderLandingEditor(app, slug) {
 
         <div class="card editor-section" data-section="faq" style="display:none">
           <h3 style="font-family:'Fraunces',serif;font-size:24px;color:var(--off-white);font-weight:300;margin:0 0 4px">Perguntas Frequentes</h3>
-          <p style="font-family:'Fraunces',serif;font-style:italic;font-size:14px;color:var(--gray-500);margin:0 0 24px">Dúvidas comuns dos clientes desta área</p>
+          <p style="font-family:'Fraunces',serif;font-style:italic;font-size:14px;color:var(--gray-500);margin:0 0 24px">Dúvidas comuns dos clientes nessa área. Quanto mais perguntas reais, melhor o SEO e mais o cliente confia.</p>
           <div class="faq-list" id="faqList">
             ${(l.faq||[]).map((q,i)=>`
               <details class="card-mini" data-idx="${i}">
                 <summary><strong>${escHtml(q.q)}</strong></summary>
-                <div class="field"><label>Pergunta</label><input data-qkey="q" value="${escAttr(q.q)}" /></div>
-                <div class="field"><label>Resposta</label><div class="js-rich" data-rich-key="land.faq.${i}.a" data-rich-html="${escAttr(q.a)}"></div></div>
+                <div class="field"><label>Pergunta</label><input data-qkey="q" value="${escAttr(q.q)}" /><div class="field-help">Pergunta exata como o cliente faria. Termine com "?".</div></div>
+                <div class="field"><label>Resposta</label><div class="js-rich" data-rich-key="land.faq.${i}.a" data-rich-html="${escAttr(q.a)}"></div><div class="field-help">Resposta clara e completa. Pode usar negrito em palavras-chave (prazo, valor, lei) e adicionar links.</div></div>
                 <button type="button" class="btn btn-danger btn-rmqq">Remover</button>
               </details>
             `).join('')}
@@ -1707,14 +1865,14 @@ async function renderEditor(app, fileBase) {
       <div class="h1">${fileBase ? 'Editar artigo' : 'Novo <em>artigo</em>'}</div>
       <div class="h-sub">${fileBase ? 'Modifique e salve. O artigo é regenerado em ~30 segundos.' : 'Compartilhe seu conhecimento jurídico. Use uma linguagem que seu cliente entenda.'}</div>
       <div class="card">
-        <div class="field"><label>Título</label><input id="f-title" value="${escAttr(meta.title)}" placeholder="Ex: Como provar horas extras na Justiça do Trabalho" /></div>
+        <div class="field"><label>Título do artigo</label><input id="f-title" value="${escAttr(meta.title)}" placeholder="Ex: Como provar horas extras na Justiça do Trabalho" /><div class="field-help">Aparece grande no topo do artigo e nos resultados do Google. Use uma pergunta ou afirmação que seu cliente faria.</div></div>
         <div class="field-row">
-          <div class="field"><label>Endereço da página <span class="pill">URL</span></label><input id="f-slug" value="${escAttr(meta.slug)}" /><div class="field-help">Deixe em branco que é gerado automaticamente. Aparece como /blog/<i>endereço</i>/.</div></div>
-          <div class="field"><label>Categoria</label><select id="f-category">${Object.entries(CATEGORIES).map(([k,v]) => `<option value="${k}" ${meta.category===k?'selected':''}>${v}</option>`).join('')}</select></div>
+          <div class="field"><label>Endereço da página <span class="pill">URL</span></label><input id="f-slug" value="${escAttr(meta.slug)}" /><div class="field-help">Deixe em branco que é gerado automaticamente a partir do título. Aparece na URL: /blog/<i>endereço</i>/.</div></div>
+          <div class="field"><label>Categoria</label><select id="f-category">${Object.entries(CATEGORIES).map(([k,v]) => `<option value="${k}" ${meta.category===k?'selected':''}>${v}</option>`).join('')}</select><div class="field-help">Em qual área do direito esse artigo se encaixa. Ajuda o cliente filtrar no blog.</div></div>
         </div>
-        <div class="field"><label>Resumo curto</label><textarea id="f-excerpt" rows="2" placeholder="Frase que aparece nos cards e nos resultados de busca (1-2 linhas).">${escHtml(meta.excerpt||'')}</textarea></div>
+        <div class="field"><label>Resumo curto</label><textarea id="f-excerpt" rows="2" placeholder="Frase que aparece nos cards e nos resultados de busca (1-2 linhas).">${escHtml(meta.excerpt||'')}</textarea><div class="field-help">Aparece nos cards do blog, no Google e nas redes sociais quando alguém compartilha. Mantenha em 1-2 linhas que dão vontade de clicar.</div></div>
         <div class="field-row">
-          <div class="field"><label>Tags <span class="pill">opcional</span></label><input id="f-tags" value="${escAttr((meta.tags||[]).join(', '))}" placeholder="horas-extras, prova, CLT" /></div>
+          <div class="field"><label>Tags <span class="pill">opcional</span></label><input id="f-tags" value="${escAttr((meta.tags||[]).join(', '))}" placeholder="horas-extras, prova, CLT" /><div class="field-help">Palavras-chave separadas por vírgula. Ajudam a encontrar artigos relacionados. Use 3-5 tags.</div></div>
           <div class="field"><label>Imagem de capa</label>
             <div class="img-picker" id="coverPicker" data-isvideo="false">
               ${meta.cover ? `<img class="img-preview" src="${previewUrl(meta.cover)}" alt="" onerror="this.style.display='none'" />` : `<div class="img-picker-empty">${I.image}</div>`}
@@ -1726,15 +1884,17 @@ async function renderEditor(app, fileBase) {
                 </div>
               </div>
             </div>
+            <div class="field-help">Foto que aparece no card do blog e em compartilhamentos. Horizontal funciona melhor (1200×630 ideal).</div>
           </div>
         </div>
         <div class="field-row">
-          <div class="field"><label>Data de publicação</label><input type="date" id="f-date" value="${meta.date||todayIso()}" /></div>
-          <div class="field"><label>Última atualização</label><input type="date" id="f-updated" value="${meta.updated||todayIso()}" /></div>
+          <div class="field"><label>Data de publicação</label><input type="date" id="f-date" value="${meta.date||todayIso()}" /><div class="field-help">Quando o artigo foi escrito. Usado pra ordenar do mais recente.</div></div>
+          <div class="field"><label>Última atualização</label><input type="date" id="f-updated" value="${meta.updated||todayIso()}" /><div class="field-help">Atualize ao revisar/corrigir o artigo. Mostra ao Google que o conteúdo é atual.</div></div>
         </div>
       </div>
       <div class="card" style="margin-top:18px">
-        <label style="display:block;font-family:'Inter Tight',sans-serif;font-size:10.5px;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);font-weight:500;margin-bottom:14px">Conteúdo do artigo</label>
+        <label style="display:block;font-family:'Inter Tight',sans-serif;font-size:10.5px;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);font-weight:500;margin-bottom:6px">Conteúdo do artigo</label>
+        <p style="font-family:'Fraunces',serif;font-style:italic;font-size:13.5px;color:var(--gray-500);margin:0 0 14px;line-height:1.5">Escreva à esquerda — o site aparece formatado à direita. Atalhos: <b>Ctrl+B</b> negrito · <b>Ctrl+I</b> itálico. Pode arrastar imagens direto pro texto.</p>
         <div class="editor-toolbar">
           <button type="button" class="editor-tool" data-md="**" title="Negrito (Ctrl+B)"><b>B</b></button>
           <button type="button" class="editor-tool" data-md="*" title="Itálico (Ctrl+I)"><i>I</i></button>
@@ -2070,44 +2230,47 @@ async function renderConfig(app) {
   const sha = file.sha;
   $('#cfgContainer').innerHTML = `
     <div class="card">
-      <h3 style="font-family:'Fraunces',serif;font-size:22px;color:var(--off-white);font-weight:300;margin-bottom:18px">Contato</h3>
+      <h3 style="font-family:'Fraunces',serif;font-size:22px;color:var(--off-white);font-weight:300;margin-bottom:6px">Contato</h3>
+      <p style="font-family:'Fraunces',serif;font-style:italic;font-size:13.5px;color:var(--gray-500);margin-bottom:18px">Aparece no rodapé, no botão de WhatsApp e nas páginas de contato.</p>
       <div class="field-row">
-        <div class="field"><label>Telefone formatado</label><input id="cfg-phone" value="${escAttr(cfg.phone)}" /></div>
-        <div class="field"><label>Telefone (só dígitos, com DDI)</label><input id="cfg-phone_intl" value="${escAttr(cfg.phone_intl)}" /></div>
+        <div class="field"><label>Telefone (formatado)</label><input id="cfg-phone" value="${escAttr(cfg.phone)}" placeholder="(81) 9 8713-4878" /><div class="field-help">Como aparece visualmente nas páginas. Use parênteses, espaços e hífens.</div></div>
+        <div class="field"><label>Telefone (só números, com DDI)</label><input id="cfg-phone_intl" value="${escAttr(cfg.phone_intl)}" placeholder="5581987134878" /><div class="field-help">Usado nos links de WhatsApp. Deve começar com 55 (Brasil) e não ter espaços nem caracteres.</div></div>
       </div>
-      <div class="field"><label>E-mail</label><input id="cfg-email" value="${escAttr(cfg.email)}" /></div>
-      <div class="field"><label>Horário</label><input id="cfg-schedule" value="${escAttr(cfg.schedule)}" /></div>
+      <div class="field"><label>E-mail principal</label><input id="cfg-email" value="${escAttr(cfg.email)}" placeholder="contato@exemplo.com" /><div class="field-help">Onde os e-mails dos visitantes do site vão chegar.</div></div>
+      <div class="field"><label>Horário de atendimento</label><input id="cfg-schedule" value="${escAttr(cfg.schedule)}" placeholder="Seg–Sex · 08h–12h e 14h–19h" /><div class="field-help">Aparece no rodapé. Use barras ou pontos pra separar os blocos.</div></div>
     </div>
     <div class="card" style="margin-top:18px">
-      <h3 style="font-family:'Fraunces',serif;font-size:22px;color:var(--off-white);font-weight:300;margin-bottom:18px">Endereço</h3>
+      <h3 style="font-family:'Fraunces',serif;font-size:22px;color:var(--off-white);font-weight:300;margin-bottom:6px">Endereço do escritório</h3>
+      <p style="font-family:'Fraunces',serif;font-style:italic;font-size:13.5px;color:var(--gray-500);margin-bottom:18px">Aparece no rodapé e na página de contato. Cada campo separado pra ficar bonito ao formatar.</p>
       <div class="field-row">
-        <div class="field"><label>Nome</label><input id="cfg-addr-name" value="${escAttr(cfg.address?.name)}" /></div>
-        <div class="field"><label>Rua</label><input id="cfg-addr-street" value="${escAttr(cfg.address?.street)}" /></div>
+        <div class="field"><label>Nome (condomínio / edifício)</label><input id="cfg-addr-name" value="${escAttr(cfg.address?.name)}" placeholder="Cond. Novo Mundo Empresarial" /></div>
+        <div class="field"><label>Rua e número</label><input id="cfg-addr-street" value="${escAttr(cfg.address?.street)}" placeholder="Av. A, 4165" /></div>
       </div>
       <div class="field-row">
-        <div class="field"><label>Complemento</label><input id="cfg-addr-complement" value="${escAttr(cfg.address?.complement)}" /></div>
-        <div class="field"><label>Bairro</label><input id="cfg-addr-neighborhood" value="${escAttr(cfg.address?.neighborhood)}" /></div>
+        <div class="field"><label>Complemento (sala, torre)</label><input id="cfg-addr-complement" value="${escAttr(cfg.address?.complement)}" placeholder="Torre 05, Sala 318" /></div>
+        <div class="field"><label>Bairro</label><input id="cfg-addr-neighborhood" value="${escAttr(cfg.address?.neighborhood)}" placeholder="Reserva do Paiva" /></div>
       </div>
       <div class="field-row">
-        <div class="field"><label>Cidade</label><input id="cfg-addr-city" value="${escAttr(cfg.address?.city)}" /></div>
-        <div class="field"><label>UF</label><input id="cfg-addr-state" value="${escAttr(cfg.address?.state)}" /></div>
+        <div class="field"><label>Cidade</label><input id="cfg-addr-city" value="${escAttr(cfg.address?.city)}" placeholder="Cabo de Santo Agostinho" /></div>
+        <div class="field"><label>UF</label><input id="cfg-addr-state" value="${escAttr(cfg.address?.state)}" placeholder="PE" /><div class="field-help">2 letras do estado.</div></div>
       </div>
-      <div class="field"><label>CEP</label><input id="cfg-addr-cep" value="${escAttr(cfg.address?.cep)}" /></div>
+      <div class="field"><label>CEP</label><input id="cfg-addr-cep" value="${escAttr(cfg.address?.cep)}" placeholder="54522-005" /></div>
     </div>
     <div class="card" style="margin-top:18px">
-      <h3 style="font-family:'Fraunces',serif;font-size:22px;color:var(--off-white);font-weight:300;margin-bottom:18px">Redes sociais</h3>
-      <div class="field"><label>Instagram</label><input id="cfg-soc-instagram" value="${escAttr(cfg.social?.instagram)}" /></div>
-      <div class="field"><label>Facebook</label><input id="cfg-soc-facebook" value="${escAttr(cfg.social?.facebook)}" /></div>
-      <div class="field"><label>LinkedIn</label><input id="cfg-soc-linkedin" value="${escAttr(cfg.social?.linkedin)}" /></div>
-      <div class="field"><label>YouTube</label><input id="cfg-soc-youtube" value="${escAttr(cfg.social?.youtube)}" /></div>
-      <div class="field"><label>TikTok</label><input id="cfg-soc-tiktok" value="${escAttr(cfg.social?.tiktok)}" /></div>
+      <h3 style="font-family:'Fraunces',serif;font-size:22px;color:var(--off-white);font-weight:300;margin-bottom:6px">Redes sociais</h3>
+      <p style="font-family:'Fraunces',serif;font-style:italic;font-size:13.5px;color:var(--gray-500);margin-bottom:18px">Cole o link COMPLETO de cada perfil (começando com https://). Deixe em branco as redes que você não usa.</p>
+      <div class="field"><label>Instagram</label><input id="cfg-soc-instagram" value="${escAttr(cfg.social?.instagram)}" placeholder="https://www.instagram.com/seuperfil/" /></div>
+      <div class="field"><label>Facebook</label><input id="cfg-soc-facebook" value="${escAttr(cfg.social?.facebook)}" placeholder="https://www.facebook.com/SuaPagina" /></div>
+      <div class="field"><label>LinkedIn</label><input id="cfg-soc-linkedin" value="${escAttr(cfg.social?.linkedin)}" placeholder="https://www.linkedin.com/in/seu-perfil/" /></div>
+      <div class="field"><label>YouTube</label><input id="cfg-soc-youtube" value="${escAttr(cfg.social?.youtube)}" placeholder="https://www.youtube.com/@seucanal" /></div>
+      <div class="field"><label>TikTok</label><input id="cfg-soc-tiktok" value="${escAttr(cfg.social?.tiktok)}" placeholder="https://www.tiktok.com/@seuperfil" /></div>
     </div>
     <div class="card" style="margin-top:18px">
-      <h3 style="font-family:'Fraunces',serif;font-size:22px;color:var(--off-white);font-weight:300;margin-bottom:8px">Analytics <span class="pill" style="font-size:10px">opcional</span></h3>
-      <p style="font-family:'Fraunces',serif;font-style:italic;font-size:13.5px;color:var(--gray-500);margin-bottom:18px">Códigos pra ver quem visita o site. Pula se você não tiver.</p>
-      <div class="field"><label>Microsoft Clarity ID</label><input id="cfg-clarity" value="${escAttr(cfg.clarity_id)}" placeholder="abc1234567" /><div class="field-help">Heatmap grátis em <a href="https://clarity.microsoft.com" target="_blank">clarity.microsoft.com</a></div></div>
-      <div class="field"><label>Plausible Domain</label><input id="cfg-plausible" value="${escAttr(cfg.plausible_domain)}" placeholder="henriquesilvaadv.com.br" /></div>
-      <div class="field"><label>Google Analytics 4 ID</label><input id="cfg-ga4" value="${escAttr(cfg.ga4_id)}" placeholder="G-XXXXXXXXXX" /></div>
+      <h3 style="font-family:'Fraunces',serif;font-size:22px;color:var(--off-white);font-weight:300;margin-bottom:6px">Estatísticas <span class="pill" style="font-size:10px">opcional</span></h3>
+      <p style="font-family:'Fraunces',serif;font-style:italic;font-size:13.5px;color:var(--gray-500);margin-bottom:18px">Códigos pra ver <strong>quantas pessoas visitam</strong> o site, <strong>de onde vêm</strong> e <strong>o que clicam</strong>. Pode pular se ainda não tem — dá pra adicionar depois.</p>
+      <div class="field"><label>Microsoft Clarity</label><input id="cfg-clarity" value="${escAttr(cfg.clarity_id)}" placeholder="abc1234567" /><div class="field-help">Mostra heatmaps (onde clicam) e gravações de visitantes anônimos. <strong>Grátis e ilimitado</strong>. Cole só o ID curto que aparece em <a href="https://clarity.microsoft.com" target="_blank">clarity.microsoft.com</a>.</div></div>
+      <div class="field"><label>Plausible</label><input id="cfg-plausible" value="${escAttr(cfg.plausible_domain)}" placeholder="seusite.com.br" /><div class="field-help">Estatísticas simples e sem cookies. Pago (~$9/mês). Cole só o domínio do seu site (sem https).</div></div>
+      <div class="field"><label>Google Analytics 4</label><input id="cfg-ga4" value="${escAttr(cfg.ga4_id)}" placeholder="G-XXXXXXXXXX" /><div class="field-help">Estatísticas do Google. Grátis. Cole o código que começa com "G-".</div></div>
     </div>
   `;
   function markDirty() { setDirty(true); }
