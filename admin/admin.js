@@ -213,6 +213,145 @@ function toast(message, kind = 'success') {
   setTimeout(() => el.remove(), 2800);
 }
 
+/* ===================== SAVE BAR + DIRTY STATE ===================== */
+const dirty = { isDirty: false, count: 0, onSave: null, autoKey: null };
+
+function setDirty(isDirty, count = 0) {
+  dirty.isDirty = isDirty;
+  dirty.count = count;
+  const bar = document.getElementById('savebar');
+  if (!bar) return;
+  if (isDirty) {
+    bar.classList.add('show');
+    const status = bar.querySelector('.savebar-status');
+    status.classList.remove('saving','saved');
+    bar.querySelector('.savebar-msg').textContent = count > 0 ? `${count} alterações não salvas` : 'Você tem alterações não salvas';
+  } else {
+    bar.classList.remove('show');
+  }
+}
+
+function setSaving(state) {
+  const bar = document.getElementById('savebar');
+  if (!bar) return;
+  const status = bar.querySelector('.savebar-status');
+  status.classList.remove('saving','saved');
+  if (state === 'saving') {
+    bar.classList.add('show');
+    status.classList.add('saving');
+    bar.querySelector('.savebar-msg').textContent = 'Salvando…';
+  } else if (state === 'saved') {
+    status.classList.add('saved');
+    bar.querySelector('.savebar-msg').textContent = 'Tudo salvo';
+    setTimeout(() => { if (!dirty.isDirty) bar.classList.remove('show'); }, 2000);
+  }
+}
+
+function mountSaveBar(onSave, viewUrl) {
+  // Remove se existir
+  document.getElementById('savebar')?.remove();
+  const bar = document.createElement('div');
+  bar.id = 'savebar';
+  bar.className = 'savebar';
+  bar.innerHTML = `
+    <div class="savebar-status">
+      <span class="dot"></span>
+      <span class="savebar-msg">Você tem alterações não salvas</span>
+      <span class="hint">· Ctrl+S para salvar</span>
+    </div>
+    <div class="savebar-actions">
+      ${viewUrl ? `<a href="${viewUrl}" target="_blank" class="btn btn-ghost">Ver no site ↗</a>` : ''}
+      <button class="btn btn-secondary" id="savebarDiscard">Descartar</button>
+      <button class="btn btn-primary" id="savebarSave">Salvar</button>
+    </div>
+  `;
+  document.body.appendChild(bar);
+  dirty.onSave = onSave;
+  bar.querySelector('#savebarSave').addEventListener('click', onSave);
+  bar.querySelector('#savebarDiscard').addEventListener('click', () => {
+    if (confirm('Descartar todas as alterações?')) {
+      if (dirty.autoKey) try { localStorage.removeItem(dirty.autoKey); } catch(_) {}
+      location.reload();
+    }
+  });
+}
+
+function unmountSaveBar() {
+  document.getElementById('savebar')?.remove();
+  dirty.isDirty = false; dirty.count = 0; dirty.onSave = null; dirty.autoKey = null;
+}
+
+window.addEventListener('keydown', (e) => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+    if (dirty.onSave) { e.preventDefault(); dirty.onSave(); }
+  }
+});
+window.addEventListener('beforeunload', (e) => {
+  if (dirty.isDirty) { e.preventDefault(); e.returnValue = ''; }
+});
+
+/* ===================== MODAL ===================== */
+
+function showModal({ icon = 'success', title, msg, actions = [] }) {
+  document.querySelector('.modal-bg')?.remove();
+  const bg = document.createElement('div');
+  bg.className = 'modal-bg';
+  const iconSvg = icon === 'success'
+    ? '<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>'
+    : icon === 'warn'
+    ? '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>'
+    : '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>';
+  bg.innerHTML = `
+    <div class="modal-box">
+      <div class="modal-icon ${icon}">${iconSvg}</div>
+      <div class="modal-title">${escHtml(title)}</div>
+      ${msg ? `<div class="modal-msg">${msg}</div>` : ''}
+      <div class="modal-actions"></div>
+    </div>
+  `;
+  const acts = bg.querySelector('.modal-actions');
+  actions.forEach((a, i) => {
+    if (a.href) {
+      const link = document.createElement('a');
+      link.href = a.href; link.target = a.target || '_self';
+      link.className = `btn ${a.kind || (i === 0 ? 'btn-primary' : 'btn-secondary')}`;
+      link.textContent = a.label;
+      link.addEventListener('click', () => bg.remove());
+      acts.appendChild(link);
+    } else {
+      const btn = document.createElement('button');
+      btn.className = `btn ${a.kind || (i === 0 ? 'btn-primary' : 'btn-secondary')}`;
+      btn.textContent = a.label;
+      btn.addEventListener('click', () => { if (a.onClick) a.onClick(); bg.remove(); });
+      acts.appendChild(btn);
+    }
+  });
+  bg.addEventListener('click', (e) => { if (e.target === bg) bg.remove(); });
+  document.body.appendChild(bg);
+}
+
+/* ===================== ICONS ===================== */
+const I = {
+  home: '<svg viewBox="0 0 24 24"><path d="M3 12l9-9 9 9"/><path d="M5 10v10h14V10"/></svg>',
+  pages: '<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>',
+  posts: '<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>',
+  plus: '<svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>',
+  image: '<svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>',
+  cog: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>',
+  ext: '<svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>',
+  user: '<svg viewBox="0 0 24 24"><circle cx="12" cy="7" r="4"/><path d="M3 21v-2a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4v2"/></svg>',
+  star: '<svg viewBox="0 0 24 24"><polygon points="12 2 15 8.5 22 9.5 17 14.5 18 22 12 18.5 6 22 7 14.5 2 9.5 9 8.5 12 2"/></svg>',
+  flag: '<svg viewBox="0 0 24 24"><line x1="4" y1="22" x2="4" y2="15"/><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/></svg>',
+  help: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>',
+  contact: '<svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>',
+  hero: '<svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="2"/><polyline points="21 15 17 11 3 21"/></svg>',
+  list: '<svg viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>',
+  upload: '<svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>',
+  burger: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>',
+  building: '<svg viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20"/><line x1="9" y1="6" x2="9" y2="6"/><line x1="15" y1="6" x2="15" y2="6"/><line x1="9" y1="10" x2="9" y2="10"/><line x1="15" y1="10" x2="15" y2="10"/><line x1="9" y1="14" x2="15" y2="14"/></svg>',
+  briefcase: '<svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>',
+};
+
 function mdInline(text) {
   return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
     .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1"/>')
@@ -318,105 +457,112 @@ function renderLogin(app) {
 /* ===================== TOPBAR ===================== */
 
 function renderTopbar(active) {
+  const item = (key, label, icon, href = `#/${key}`) =>
+    `<a href="${href}" class="${active===key?'active':''}">${icon}<span>${label}</span></a>`;
   return `
-    <div class="topbar">
+    <div class="topbar" id="topbar">
       <div class="topbar-brand">
         <img src="/HenriqueSilva/assets/seal-hsa.png" alt="HSA" />
         <div class="topbar-brand-text">Henrique Silva<small>Advocacia · Admin</small></div>
       </div>
       <div class="topbar-nav">
-        <a href="#/dashboard" class="${active==='dashboard'?'active':''}">Painel</a>
-        <a href="#/site" class="${active==='site'?'active':''}">Home</a>
-        <a href="#/landings" class="${active==='landings'?'active':''}">Páginas</a>
-        <a href="#/posts" class="${active==='posts'?'active':''}">Blog</a>
-        <a href="#/new" class="${active==='new'?'active':''}">+ Novo</a>
-        <a href="#/imagens" class="${active==='imagens'?'active':''}">Imagens</a>
-        <a href="#/config" class="${active==='config'?'active':''}">Config</a>
-        <a href="/HenriqueSilva/" target="_blank">Ver site ↗</a>
+        ${item('dashboard', 'Painel', I.cog, '#/dashboard')}
+        ${item('site', 'Home', I.home, '#/site')}
+        ${item('landings', 'Páginas', I.pages, '#/landings')}
+        ${item('posts', 'Blog', I.posts, '#/posts')}
+        ${item('imagens', 'Imagens', I.image, '#/imagens')}
+        ${item('config', 'Configurações', I.cog, '#/config')}
+        <a href="/HenriqueSilva/" target="_blank" rel="noopener">${I.ext}<span>Ver site</span></a>
       </div>
       <div class="topbar-actions">
-        <span class="topbar-user">Logado</span>
+        <span class="topbar-user">Online</span>
         <button class="topbar-logout" id="btnLogout">Sair</button>
+        <button class="burger" id="btnBurger" aria-label="Menu">${I.burger}</button>
       </div>
     </div>
   `;
 }
 document.addEventListener('click', async (e) => {
-  if (e.target && e.target.id === 'btnLogout') {
+  const t = e.target.closest && e.target.closest('button');
+  if (!t) return;
+  if (t.id === 'btnLogout') {
     if (confirm('Sair?')) {
       await supa.auth.signOut();
       currentSession = null;
       location.hash = '#/login';
     }
   }
+  if (t.id === 'btnBurger') {
+    document.getElementById('topbar')?.classList.toggle('menu-open');
+  }
+});
+// Fecha menu ao navegar
+window.addEventListener('hashchange', () => {
+  document.getElementById('topbar')?.classList.remove('menu-open');
 });
 
 /* ===================== DASHBOARD ===================== */
 
 async function renderDashboard(app) {
+  unmountSaveBar();
+  const greeting = (() => {
+    const h = new Date().getHours();
+    if (h < 12) return 'Bom dia';
+    if (h < 18) return 'Boa tarde';
+    return 'Boa noite';
+  })();
   app.innerHTML = renderTopbar('dashboard') + `
     <div class="container">
-      <div class="h1">Painel <em>de controle</em></div>
-      <div class="h-sub">Visão geral do site e do blog</div>
+      <div class="h1">${greeting}, <em>Dr. Henrique</em>.</div>
+      <div class="h-sub">O que você gostaria de fazer hoje?</div>
       <div class="dash-grid">
         <a class="dash-card" href="#/site">
-          <div class="dash-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 12 L12 3 L21 12"/><path d="M5 10 V20 H19 V10"/></svg></div>
-          <div class="dash-num">Home</div>
-          <div class="dash-label">Editar página inicial</div>
+          <div class="dash-icon">${I.home}</div>
+          <div class="dash-num"><em>Home</em></div>
+          <div class="dash-label">Página inicial</div>
+          <div class="dash-sublabel">Texto, fotos, depoimentos</div>
         </a>
         <a class="dash-card" href="#/landings">
-          <div class="dash-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg></div>
+          <div class="dash-icon">${I.pages}</div>
           <div class="dash-num">12</div>
           <div class="dash-label">Páginas de áreas</div>
+          <div class="dash-sublabel">Trabalhista, INSS, Família…</div>
         </a>
         <a class="dash-card" href="#/posts">
-          <div class="dash-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
-          <div class="dash-num" id="dashTotal">…</div>
-          <div class="dash-label">Posts do blog</div>
+          <div class="dash-icon">${I.posts}</div>
+          <div class="dash-num" id="dashTotal"><span class="skeleton" style="width:50px;height:32px;display:inline-block"></span></div>
+          <div class="dash-label">Artigos do blog</div>
+          <div class="dash-sublabel">Escreva sobre seus casos</div>
         </a>
         <a class="dash-card" href="#/imagens">
-          <div class="dash-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>
-          <div class="dash-num" id="dashImages">…</div>
+          <div class="dash-icon">${I.image}</div>
+          <div class="dash-num" id="dashImages"><span class="skeleton" style="width:50px;height:32px;display:inline-block"></span></div>
           <div class="dash-label">Imagens enviadas</div>
+          <div class="dash-sublabel">Fotos do escritório, capas</div>
         </a>
       </div>
       <div class="dash-sections">
         <div class="card">
-          <h3 class="dash-section-title">Últimos posts</h3>
-          <div id="dashRecent">Carregando…</div>
+          <h3 class="dash-section-title">Últimos artigos</h3>
+          <div id="dashRecent">
+            <div class="skeleton skel-row"></div>
+            <div class="skeleton skel-row"></div>
+            <div class="skeleton skel-row"></div>
+          </div>
         </div>
         <div class="card">
-          <h3 class="dash-section-title">Atalhos</h3>
+          <h3 class="dash-section-title">Atalhos rápidos</h3>
           <div class="dash-shortcuts">
-            <a class="btn btn-secondary" href="#/site">Editar Home →</a>
-            <a class="btn btn-secondary" href="#/landings">Editar Páginas →</a>
-            <a class="btn btn-secondary" href="#/new">+ Novo post</a>
-            <a class="btn btn-secondary" href="#/config">⚙ Configurações</a>
-            <a class="btn btn-secondary" href="/HenriqueSilva/" target="_blank">Ver site ↗</a>
+            <a class="btn btn-secondary" href="#/new">${I.plus} Escrever novo artigo</a>
+            <a class="btn btn-secondary" href="#/site">${I.home} Editar Home</a>
+            <a class="btn btn-secondary" href="#/imagens">${I.upload} Subir foto</a>
+            <a class="btn btn-secondary" href="/HenriqueSilva/" target="_blank">${I.ext} Ver site público</a>
           </div>
         </div>
       </div>
-      <style>
-        .dash-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-bottom:32px}
-        .dash-card{background:var(--black-2);border:1px solid rgba(212,175,55,.15);padding:28px 26px;display:flex;flex-direction:column;gap:14px;text-decoration:none;color:inherit;transition:all .35s}
-        .dash-card:hover{border-color:var(--gold);transform:translateY(-3px);background:var(--black-3)}
-        .dash-icon{width:38px;height:38px;color:var(--gold)}
-        .dash-icon svg{width:32px;height:32px}
-        .dash-num{font-family:'Fraunces',serif;font-size:36px;font-weight:300;color:var(--off-white);line-height:1;font-style:italic}
-        .dash-label{font-family:'Inter Tight',sans-serif;font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);font-weight:500}
-        .dash-sections{display:grid;grid-template-columns:1.4fr 1fr;gap:18px;margin-top:24px}
-        .dash-section-title{font-family:'Fraunces',serif;font-size:22px;color:var(--off-white);font-weight:300;margin-bottom:18px}
-        .dash-shortcuts{display:flex;flex-direction:column;gap:10px;align-items:flex-start}
-        .dash-shortcuts .btn{width:auto;justify-content:flex-start;padding:10px 16px;font-size:11px}
-        .dash-recent-row{display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid rgba(212,175,55,.1)}
-        .dash-recent-row:last-child{border-bottom:0}
-        .dash-recent-row .when{color:var(--gray-500);font-size:11px;letter-spacing:.18em;text-transform:uppercase;flex-shrink:0}
-        .dash-recent-row .title{flex:1;color:var(--off-white);font-family:'Fraunces',serif;font-size:16px}
-        @media(max-width:980px){.dash-grid{grid-template-columns:repeat(2,1fr)}.dash-sections{grid-template-columns:1fr}}
-        @media(max-width:480px){.dash-grid{grid-template-columns:1fr}}
-      </style>
     </div>
   `;
+  // Carregar dados
   try {
     const items = await listDir(REPO_PATHS.POSTS);
     const mds = items.filter(x => x.name.endsWith('.md'));
@@ -429,13 +575,19 @@ async function renderDashboard(app) {
     }));
     samplePosts.sort((a,b) => (b.date||'').localeCompare(a.date||''));
     if (!samplePosts.length) {
-      $('#dashRecent').innerHTML = '<p style="color:var(--gray-300);font-style:italic">Nenhum post ainda. <a href="#/new" style="color:var(--gold-light)">Criar o primeiro</a>.</p>';
+      $('#dashRecent').innerHTML = `
+        <div class="empty" style="padding:40px 20px">
+          <div class="empty-icon">${I.posts}</div>
+          <h3>Nenhum artigo ainda</h3>
+          <p>Compartilhe seu conhecimento jurídico com seus futuros clientes.</p>
+          <a href="#/new" class="btn btn-primary">${I.plus} Escrever primeiro artigo</a>
+        </div>`;
     } else {
       $('#dashRecent').innerHTML = samplePosts.map(p => `
         <div class="dash-recent-row">
           <span class="when">${fmtDate(p.date||'')}</span>
           <span class="title">${escHtml(p.title||'')}</span>
-          <a href="#/edit/${encodeURIComponent(p.fileBase)}" style="color:var(--gold-light);font-size:11px;letter-spacing:.18em;text-transform:uppercase">Editar</a>
+          <a href="#/edit/${encodeURIComponent(p.fileBase)}">Editar</a>
         </div>
       `).join('');
     }
@@ -452,8 +604,10 @@ async function renderSiteEditor(app) {
   app.innerHTML = renderTopbar('site') + `
     <div class="container">
       <div class="h1">Editar <em>Home</em></div>
-      <div class="h-sub">Textos, fotos e seções da página inicial. As alterações aparecem ao recarregar o site.</div>
-      <div id="siteContainer">Carregando…</div>
+      <div class="h-sub">Tudo o que aparece na página inicial do site — textos, fotos, depoimentos, perguntas frequentes. As alterações aparecem em segundos.</div>
+      <div id="siteContainer">
+        <div class="skeleton skel-card" style="height:480px"></div>
+      </div>
     </div>
   `;
   let file;
@@ -465,107 +619,97 @@ async function renderSiteEditor(app) {
 
   const sections = [
     {
-      id: 'hero',
-      title: 'Hero (topo da página)',
+      id: 'hero', title: 'Topo da página', icon: I.hero, hint: 'A primeira coisa que o visitante vê',
       fields: [
-        { key: 'tagline_quote', label: 'Frase principal', type: 'textarea', html: true },
-        { key: 'cta_primary_label', label: 'Texto do botão WhatsApp' },
+        { key: 'tagline_quote', label: 'Frase principal', type: 'textarea', html: true, hint: 'Aparece em destaque no topo' },
+        { key: 'cta_primary_label', label: 'Botão de WhatsApp' },
         { key: 'video_src', label: 'Vídeo de fundo', type: 'image', accept: 'video/*' },
-        { key: 'poster_src', label: 'Poster (imagem antes do vídeo carregar)', type: 'image' },
-        { key: 'seal_src', label: 'Selo/Logo', type: 'image' },
+        { key: 'poster_src', label: 'Imagem que aparece antes do vídeo carregar', type: 'image' },
+        { key: 'seal_src', label: 'Selo / Logo do escritório', type: 'image' },
       ],
     },
     {
-      id: 'office',
-      title: 'Sobre o Escritório',
+      id: 'office', title: 'Sobre o Escritório', icon: I.building, hint: 'A apresentação do HSA',
       fields: [
-        { key: 'eyebrow', label: 'Pré-título' },
+        { key: 'eyebrow', label: 'Texto pequeno acima do título' },
         { key: 'h2', label: 'Título', type: 'text', html: true },
-        { key: 'paragraphs', label: 'Parágrafos', type: 'list', subtype: 'textarea', html: true },
-        { key: 'pillars', label: 'Pilares (3)', type: 'pillars' },
+        { key: 'paragraphs', label: 'Parágrafos do texto', type: 'list', subtype: 'textarea', html: true },
+        { key: 'pillars', label: 'Pilares (3 destaques numerados)', type: 'pillars' },
         { key: 'photo_src', label: 'Foto do escritório', type: 'image' },
-        { key: 'photo_stamp', label: 'Selo redondo (texto curto)', type: 'text', html: true },
+        { key: 'photo_stamp', label: 'Selo redondo na foto (texto curto)', type: 'text', html: true },
       ],
     },
     {
-      id: 'areas',
-      title: 'Áreas de Atuação (10 cards)',
+      id: 'areas', title: 'Áreas de Atuação', icon: I.briefcase, hint: '10 cards (Trabalhista, INSS, Família…)',
       fields: [
-        { key: 'eyebrow', label: 'Pré-título' },
+        { key: 'eyebrow', label: 'Texto pequeno acima do título' },
         { key: 'h2', label: 'Título', html: true },
         { key: 'sub', label: 'Subtítulo' },
-        { key: 'items', label: 'Cards', type: 'areas' },
+        { key: 'items', label: 'Os 10 cards', type: 'areas' },
       ],
     },
     {
-      id: 'reviews',
-      title: 'Avaliações Google',
+      id: 'reviews', title: 'Avaliações Google', icon: I.star, hint: 'Depoimentos dos seus clientes',
       fields: [
-        { key: 'rating_num', label: 'Nota (ex: 5,0)' },
-        { key: 'meta_html', label: 'Texto do banner', html: true },
+        { key: 'rating_num', label: 'Nota geral (ex: 5,0)' },
+        { key: 'meta_html', label: 'Texto do banner (resumo)', html: true },
         { key: 'items', label: 'Avaliações', type: 'reviews' },
-        { key: 'cta_label', label: 'Texto do botão "ver tudo"' },
+        { key: 'cta_label', label: 'Texto do botão "ver no Google"' },
         { key: 'cta_href', label: 'Link do botão' },
       ],
     },
     {
-      id: 'about',
-      title: 'Quem Sou (Dr. Henrique)',
+      id: 'about', title: 'Quem Sou', icon: I.user, hint: 'Sua apresentação pessoal',
       fields: [
-        { key: 'eyebrow', label: 'Pré-título' },
+        { key: 'eyebrow', label: 'Texto pequeno acima do título' },
         { key: 'h2', label: 'Título', html: true },
-        { key: 'lead', label: 'Citação (lead)', type: 'textarea' },
-        { key: 'paragraphs', label: 'Parágrafos', type: 'list', subtype: 'textarea', html: true },
-        { key: 'credentials', label: 'Credenciais (3)', type: 'credentials' },
-        { key: 'portrait_src', label: 'Foto do Dr. Henrique', type: 'image' },
+        { key: 'lead', label: 'Citação em destaque', type: 'textarea' },
+        { key: 'paragraphs', label: 'Parágrafos do texto', type: 'list', subtype: 'textarea', html: true },
+        { key: 'credentials', label: 'Credenciais (3 destaques)', type: 'credentials' },
+        { key: 'portrait_src', label: 'Sua foto (retrato)', type: 'image' },
         { key: 'portrait_plaque', label: 'Plaqueta (texto sob a foto)' },
       ],
     },
     {
-      id: 'latest',
-      title: 'Últimos artigos (header)',
+      id: 'latest', title: 'Últimos Artigos', icon: I.posts, hint: 'Cabeçalho da seção do blog na home',
       fields: [
-        { key: 'eyebrow', label: 'Pré-título' },
+        { key: 'eyebrow', label: 'Texto pequeno acima do título' },
         { key: 'h2', label: 'Título', html: true },
         { key: 'sub', label: 'Subtítulo' },
         { key: 'cta_label', label: 'Texto do botão "ver todos"' },
       ],
     },
     {
-      id: 'faq',
-      title: 'FAQ',
+      id: 'faq', title: 'Perguntas Frequentes', icon: I.help, hint: 'Dúvidas comuns dos clientes',
       fields: [
-        { key: 'eyebrow', label: 'Pré-título' },
+        { key: 'eyebrow', label: 'Texto pequeno acima do título' },
         { key: 'h2', label: 'Título', html: true },
         { key: 'sub', label: 'Subtítulo', html: true },
-        { key: 'search_placeholder', label: 'Placeholder da busca' },
-        { key: 'items', label: 'Perguntas', type: 'faq' },
+        { key: 'search_placeholder', label: 'Texto da caixa de busca' },
+        { key: 'items', label: 'Perguntas e respostas', type: 'faq' },
       ],
     },
     {
-      id: 'contact_cta',
-      title: 'Contato (formulário)',
+      id: 'contact_cta', title: 'Bloco de Contato', icon: I.contact, hint: 'Formulário no fim da página',
       fields: [
         { key: 'h2', label: 'Título', html: true },
         { key: 'sub', label: 'Subtítulo' },
-        { key: 'form', label: 'Form (labels)', type: 'contact_form' },
+        { key: 'form', label: 'Textos do formulário', type: 'contact_form' },
         { key: 'bg_src', label: 'Foto de fundo', type: 'image' },
       ],
     },
     {
-      id: 'footer',
-      title: 'Rodapé',
+      id: 'footer', title: 'Rodapé', icon: I.flag, hint: 'Aparece no fim de toda página',
       fields: [
-        { key: 'tag', label: 'Descrição (texto principal)', type: 'textarea' },
-        { key: 'address_lines', label: 'Linhas do endereço', type: 'list', subtype: 'text' },
+        { key: 'tag', label: 'Descrição do escritório', type: 'textarea' },
+        { key: 'address_lines', label: 'Endereço (uma linha por vez)', type: 'list', subtype: 'text' },
         { key: 'copyright', label: 'Copyright' },
       ],
     },
     {
-      id: 'wa_fab',
-      title: 'Botão WhatsApp flutuante',
+      id: 'wa_fab', title: 'Botão flutuante WhatsApp', icon: I.contact, hint: 'O botão verde no canto inferior',
       fields: [
-        { key: 'label', label: 'Texto que aparece no hover' },
+        { key: 'label', label: 'Texto que aparece ao passar o mouse' },
       ],
     },
   ];
@@ -574,13 +718,19 @@ async function renderSiteEditor(app) {
     const id = `f-${sectionId}-${field.key}`;
     if (field.type === 'image') {
       const isVideo = (field.accept || '').includes('video');
+      const hasValue = value && value.trim();
       return `
         <div class="field">
           <label>${field.label}</label>
-          <div class="img-picker" data-section="${sectionId}" data-key="${field.key}">
-            ${isVideo ? '' : `<img class="img-preview" src="${previewUrl(value)}" alt="" onerror="this.style.display='none'" />`}
-            <input type="text" id="${id}" value="${escAttr(value)}" placeholder="${isVideo ? 'assets/hero-video.mp4' : 'assets/foto.jpg'}" />
-            <button type="button" class="btn btn-secondary btn-pickimg" data-target="${id}" data-section="${sectionId}" data-isvideo="${isVideo}">Trocar</button>
+          <div class="img-picker" data-section="${sectionId}" data-key="${field.key}" data-isvideo="${isVideo}">
+            ${hasValue && !isVideo ? `<img class="img-preview" src="${previewUrl(value)}" alt="" onerror="this.style.display='none'" />` : `<div class="img-picker-empty">${I.image}</div>`}
+            <div class="img-picker-body">
+              <input type="text" id="${id}" value="${escAttr(value)}" placeholder="${isVideo ? 'assets/hero-video.mp4' : 'assets/foto.jpg'}" />
+              <div class="img-picker-actions">
+                <button type="button" class="btn btn-secondary btn-pickimg" data-target="${id}" data-isvideo="${isVideo}">${I.upload} Enviar arquivo</button>
+                <span class="drop-hint">…ou arraste pra cá</span>
+              </div>
+            </div>
           </div>
         </div>`;
     }
@@ -722,156 +872,65 @@ async function renderSiteEditor(app) {
     return `<div class="field"><label>${field.label}</label><input id="${id}" value="${escAttr(value)}" /></div>`;
   };
 
-  const html = sections.map(sec => `
-    <details class="card editor-section" data-section="${sec.id}" open>
-      <summary><h3 style="font-family:'Fraunces',serif;font-size:22px;color:var(--off-white);font-weight:300;margin:0;display:inline">${sec.title}</h3></summary>
-      <div class="section-body" style="margin-top:18px">
-        ${sec.fields.map(f => renderFieldHtml(sec.id, f, (cfg[sec.id]||{})[f.key])).join('')}
-      </div>
-    </details>
+  // Tabs (esquerda) + content (direita)
+  const tabsHtml = sections.map((sec, i) => `
+    <button data-tab="${sec.id}" class="${i === 0 ? 'active' : ''}">
+      <span class="tab-icon">${sec.icon}</span>
+      <span>${sec.title}</span>
+    </button>
+  `).join('');
+  const panelsHtml = sections.map((sec, i) => `
+    <div class="card editor-section" data-section="${sec.id}" style="${i === 0 ? '' : 'display:none'}">
+      <h3 style="font-family:'Fraunces',serif;font-size:24px;color:var(--off-white);font-weight:300;margin:0 0 4px;letter-spacing:-.012em">${sec.title}</h3>
+      <p style="font-family:'Fraunces',serif;font-style:italic;font-size:14px;color:var(--gray-500);margin:0 0 24px">${sec.hint || ''}</p>
+      ${sec.fields.map(f => renderFieldHtml(sec.id, f, (cfg[sec.id]||{})[f.key])).join('')}
+    </div>
   `).join('');
 
   $('#siteContainer').innerHTML = `
-    ${html}
-    <div class="card" style="margin-top:18px;display:flex;gap:14px;justify-content:flex-end;align-items:center">
-      <a href="#/dashboard" class="btn btn-secondary">← Voltar</a>
-      <button class="btn btn-primary" id="btnSiteSave">Salvar tudo</button>
+    <div class="tabs-shell">
+      <div class="tabs-list" id="siteTabs">${tabsHtml}</div>
+      <div class="tabs-content" id="siteTabsContent">${panelsHtml}</div>
     </div>
     <input type="file" id="picker-file" accept="image/*,video/*" style="display:none" />
-    <style>
-      .editor-section summary{cursor:pointer;list-style:none;padding:18px 0}
-      .editor-section summary::-webkit-details-marker{display:none}
-      .editor-section summary::before{content:"▸";display:inline-block;color:var(--gold);margin-right:12px;transition:transform .25s}
-      .editor-section[open] summary::before{transform:rotate(90deg)}
-      .img-picker{display:flex;gap:10px;align-items:center}
-      .img-picker .img-preview{width:60px;height:60px;object-fit:cover;border:1px solid rgba(212,175,55,.2);background:#000;flex-shrink:0}
-      .img-picker input{flex:1}
-      .card-mini{background:rgba(20,20,20,.5);border:1px solid rgba(212,175,55,.1);padding:14px;margin-bottom:12px;border-radius:0}
-      .card-mini summary{cursor:pointer;color:var(--off-white);padding:6px 0;font-size:13px}
-      .card-mini summary::-webkit-details-marker{display:none}
-      .list-item{display:flex;gap:8px;align-items:flex-start;margin-bottom:10px}
-      .list-item textarea{flex:1}
-      .btn-rmitem{padding:6px 12px;font-size:14px}
-    </style>
   `;
 
-  // === LIST add/remove
-  $('#siteContainer').addEventListener('click', (e) => {
-    const t = e.target;
-    if (t.classList.contains('btn-additem')) {
-      const list = t.parentElement.querySelector('.list-items');
-      const idx = list.children.length;
-      const item = document.createElement('div');
-      item.className = 'list-item'; item.dataset.idx = idx;
-      item.innerHTML = `<textarea rows="2" data-listval></textarea><button type="button" class="btn btn-danger btn-rmitem">×</button>`;
-      list.appendChild(item);
-    }
-    if (t.classList.contains('btn-rmitem')) t.parentElement.remove();
-    if (t.classList.contains('btn-rmrev')) t.closest('details').remove();
-    if (t.classList.contains('btn-rmfaq')) t.closest('details').remove();
-    if (t.classList.contains('btn-addrev')) {
-      const list = t.parentElement.querySelector('.reviews-list');
-      const i = list.children.length;
-      const d = document.createElement('details');
-      d.className = 'card-mini'; d.dataset.idx = i; d.open = true;
-      d.innerHTML = `<summary><strong>Nova avaliação</strong></summary>
-        <div class="field-row"><div class="field"><label>Nome</label><input data-rkey="name" /></div><div class="field"><label>Data/origem</label><input data-rkey="date" value="há 1 dia · Google" /></div></div>
-        <div class="field"><label>Estrelas</label><input data-rkey="stars" value="★★★★★" /></div>
-        <div class="field"><label>Avaliação</label><textarea data-rkey="quote" rows="2"></textarea></div>
-        <button type="button" class="btn btn-danger btn-rmrev">Remover avaliação</button>`;
-      list.appendChild(d);
-    }
-    if (t.classList.contains('btn-addfaq')) {
-      const list = t.parentElement.querySelector('.faq-list');
-      const i = list.children.length;
-      const d = document.createElement('details');
-      d.className = 'card-mini'; d.dataset.idx = i; d.open = true;
-      d.innerHTML = `<summary><strong>Nova pergunta</strong></summary>
-        <div class="field"><label>Pergunta</label><input data-qkey="q" /></div>
-        <div class="field"><label>Resposta (HTML)</label><textarea data-qkey="a" rows="3"></textarea></div>
-        <button type="button" class="btn btn-danger btn-rmfaq">Remover</button>`;
-      list.appendChild(d);
-    }
+  // Switch tabs
+  $('#siteTabs').addEventListener('click', (e) => {
+    const btn = e.target.closest('button[data-tab]');
+    if (!btn) return;
+    $$('#siteTabs button').forEach(b => b.classList.toggle('active', b === btn));
+    const id = btn.dataset.tab;
+    $$('#siteTabsContent .editor-section').forEach(p => p.style.display = p.dataset.section === id ? '' : 'none');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   });
 
-  // === Image picker (faz upload e cola URL)
-  let pickerTarget = null; // {section, key, idx?, akey?}
-  $('#siteContainer').addEventListener('click', (e) => {
-    const t = e.target;
-    if (t.classList.contains('btn-pickimg')) {
-      pickerTarget = { kind: 'simple', selector: '#' + t.dataset.target };
-      const fp = $('#picker-file');
-      fp.accept = t.dataset.isvideo === 'true' ? 'video/*' : 'image/*';
-      fp.click();
-    }
-    if (t.classList.contains('btn-pickimg-area')) {
-      const det = t.closest('details');
-      const input = det.querySelector('input[data-akey="image"]');
-      pickerTarget = { kind: 'area', input };
-      $('#picker-file').accept = 'image/*';
-      $('#picker-file').click();
-    }
-  });
-  $('#picker-file').addEventListener('change', async (e) => {
-    const file = e.target.files[0];
-    e.target.value = '';
-    if (!file || !pickerTarget) return;
-    try {
-      toast('Enviando arquivo…');
-      const buf = await file.arrayBuffer();
-      const bytes = new Uint8Array(buf);
-      let bin = '';
-      for (let i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
-      const b64 = btoa(bin);
-      const ext = file.name.split('.').pop().toLowerCase();
-      const safeName = slugify(file.name.replace(/\.[^.]+$/, '')) + '-' + Date.now().toString(36) + '.' + ext;
-      const isAreaImage = pickerTarget.kind === 'area';
-      const isVideo = file.type.startsWith('video/');
-      const folder = isVideo ? REPO_PATHS.SITE_ASSETS : (isAreaImage ? REPO_PATHS.SITE_ASSETS : REPO_PATHS.IMAGES);
-      const path = `${folder}/${safeName}`;
-      await putBinaryFile(path, b64, `Upload: ${safeName}`);
-      const url = path; // relativo ao repo, content-loader monta com /HenriqueSilva/
-      if (pickerTarget.kind === 'simple') {
-        const inp = document.querySelector(pickerTarget.selector);
-        if (inp) inp.value = url;
-        const prev = inp && inp.parentElement.querySelector('.img-preview');
-        if (prev) { prev.src = previewUrl(url); prev.style.display = ''; }
-      }
-      if (pickerTarget.kind === 'area') {
-        pickerTarget.input.value = url;
-        const prev = pickerTarget.input.parentElement.querySelector('.img-preview');
-        if (prev) { prev.src = previewUrl(url); prev.style.display = ''; }
-      }
-      toast('Imagem enviada ✓');
-    } catch (err) { toast(err.message, 'error'); }
-    pickerTarget = null;
-  });
-
-  // === Save tudo
-  $('#btnSiteSave').addEventListener('click', async () => {
-    const newCfg = JSON.parse(JSON.stringify(cfg)); // clone
+  // Coleta o cfg novo a partir do DOM
+  function collectCfg() {
+    const newCfg = JSON.parse(JSON.stringify(cfg));
     sections.forEach(sec => {
       newCfg[sec.id] = newCfg[sec.id] || {};
+      const root = document.querySelector(`.editor-section[data-section="${sec.id}"]`);
+      if (!root) return;
       sec.fields.forEach(f => {
         const id = `f-${sec.id}-${f.key}`;
         if (f.type === 'list') {
-          const arr = $$(`details.editor-section[data-section="${sec.id}"] .list-items[data-key="${f.key}"] [data-listval]`).map(t => t.value);
+          const arr = $$(`.list-items[data-key="${f.key}"] [data-listval]`, root).map(t => t.value);
           newCfg[sec.id][f.key] = arr.filter(s => s.trim());
         } else if (f.type === 'pillars' || f.type === 'credentials') {
-          const arr = $$(`details.editor-section[data-section="${sec.id}"] [data-${f.type}="${sec.id}.${f.key}"] .card-mini`).map(card => {
+          const arr = $$(`[data-${f.type}="${sec.id}.${f.key}"] .card-mini`, root).map(card => {
             const o = {};
             card.querySelectorAll('[data-pkey]').forEach(inp => { o[inp.dataset.pkey] = inp.value; });
             return o;
           });
           newCfg[sec.id][f.key] = arr;
         } else if (f.type === 'areas') {
-          const arr = $$(`details.editor-section[data-section="${sec.id}"] [data-areas="${sec.id}.${f.key}"] details.card-mini`).map(card => {
+          const arr = $$(`[data-areas="${sec.id}.${f.key}"] details.card-mini`, root).map(card => {
             const o = {};
             card.querySelectorAll('[data-akey]').forEach(inp => {
               if (inp.dataset.akey === 'tags') o.tags = inp.value.split(',').map(t => t.trim()).filter(Boolean);
               else o[inp.dataset.akey] = inp.value;
             });
-            // preserva campos existentes (featured, slug, href)
             const existing = (cfg[sec.id]?.items || []).find(x => x.slug === o.slug);
             if (existing) {
               o.featured = existing.featured;
@@ -881,25 +940,18 @@ async function renderSiteEditor(app) {
             return o;
           });
           newCfg[sec.id][f.key] = arr;
-        } else if (f.type === 'reviews') {
-          const arr = $$(`details.editor-section[data-section="${sec.id}"] [data-reviews="${sec.id}.${f.key}"] details.card-mini`).map(card => {
+        } else if (f.type === 'reviews' || f.type === 'faq') {
+          const sel = `[data-${f.type}="${sec.id}.${f.key}"] details.card-mini`;
+          const arr = $$(sel, root).map(card => {
             const o = {};
-            card.querySelectorAll('[data-rkey]').forEach(inp => { o[inp.dataset.rkey] = inp.value; });
-            return o;
-          });
-          newCfg[sec.id][f.key] = arr;
-        } else if (f.type === 'faq') {
-          const arr = $$(`details.editor-section[data-section="${sec.id}"] [data-faq="${sec.id}.${f.key}"] details.card-mini`).map(card => {
-            const o = {};
-            card.querySelectorAll('[data-qkey]').forEach(inp => { o[inp.dataset.qkey] = inp.value; });
+            const dataAttr = f.type === 'reviews' ? 'rkey' : 'qkey';
+            card.querySelectorAll(`[data-${dataAttr}]`).forEach(inp => { o[inp.dataset[dataAttr]] = inp.value; });
             return o;
           });
           newCfg[sec.id][f.key] = arr;
         } else if (f.type === 'contact_form') {
           const o = {};
-          $$(`details.editor-section[data-section="${sec.id}"] [data-form="${sec.id}.${f.key}"] [data-fkey]`).forEach(inp => {
-            o[inp.dataset.fkey] = inp.value;
-          });
+          $$(`[data-form="${sec.id}.${f.key}"] [data-fkey]`, root).forEach(inp => { o[inp.dataset.fkey] = inp.value; });
           newCfg[sec.id][f.key] = o;
         } else {
           const el = document.getElementById(id);
@@ -907,28 +959,203 @@ async function renderSiteEditor(app) {
         }
       });
     });
+    return newCfg;
+  }
 
-    const btn = $('#btnSiteSave');
-    btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Salvando…';
-    try {
-      await putJsonFile(REPO_PATHS.SITE_CONTENT, newCfg, sha, 'admin: atualizar conteúdo da home');
-      toast('Salvo! Recarregue o site para ver ✓');
-      setTimeout(() => location.reload(), 1500);
-    } catch (e) {
-      toast(e.message, 'error');
-      btn.disabled = false; btn.textContent = 'Salvar tudo';
+  // === Add/remove handlers
+  $('#siteTabsContent').addEventListener('click', (e) => {
+    const t = e.target.closest('button');
+    if (!t) return;
+    if (t.classList.contains('btn-additem')) {
+      const list = t.parentElement.querySelector('.list-items');
+      const item = document.createElement('div');
+      item.className = 'list-item'; item.dataset.idx = list.children.length;
+      item.innerHTML = `<textarea rows="2" data-listval></textarea><button type="button" class="btn btn-danger btn-rmitem">×</button>`;
+      list.appendChild(item);
+      markDirty();
+    }
+    if (t.classList.contains('btn-rmitem')) { t.parentElement.remove(); markDirty(); }
+    if (t.classList.contains('btn-rmrev') || t.classList.contains('btn-rmfaq')) { t.closest('details').remove(); markDirty(); }
+    if (t.classList.contains('btn-addrev')) {
+      const list = t.parentElement.querySelector('.reviews-list');
+      const d = document.createElement('details');
+      d.className = 'card-mini'; d.open = true;
+      d.innerHTML = `<summary><strong>Nova avaliação</strong></summary>
+        <div class="field-row"><div class="field"><label>Nome</label><input data-rkey="name" /></div><div class="field"><label>Data/origem</label><input data-rkey="date" value="há 1 dia · Google" /></div></div>
+        <div class="field"><label>Estrelas</label><input data-rkey="stars" value="★★★★★" /></div>
+        <div class="field"><label>Texto da avaliação</label><textarea data-rkey="quote" rows="2"></textarea></div>
+        <button type="button" class="btn btn-danger btn-rmrev">Remover avaliação</button>`;
+      list.appendChild(d);
+      markDirty();
+    }
+    if (t.classList.contains('btn-addfaq')) {
+      const list = t.parentElement.querySelector('.faq-list');
+      const d = document.createElement('details');
+      d.className = 'card-mini'; d.open = true;
+      d.innerHTML = `<summary><strong>Nova pergunta</strong></summary>
+        <div class="field"><label>Pergunta</label><input data-qkey="q" /></div>
+        <div class="field"><label>Resposta</label><textarea data-qkey="a" rows="3"></textarea></div>
+        <button type="button" class="btn btn-danger btn-rmfaq">Remover</button>`;
+      list.appendChild(d);
+      markDirty();
     }
   });
+
+  // === Image upload (botão Trocar OU drag-drop)
+  let pickerTarget = null;
+  async function uploadFileToInput(file, targetInput, isVideo = false) {
+    if (!file) return;
+    if (file.size > 25 * 1024 * 1024) { toast('Arquivo muito grande (>25MB)', 'error'); return; }
+    try {
+      toast('Enviando…');
+      const buf = await file.arrayBuffer();
+      const bytes = new Uint8Array(buf);
+      let bin = '';
+      const chunk = 0x8000;
+      for (let i = 0; i < bytes.length; i += chunk) {
+        bin += String.fromCharCode.apply(null, bytes.subarray(i, i + chunk));
+      }
+      const b64 = btoa(bin);
+      const ext = file.name.split('.').pop().toLowerCase();
+      const safeName = slugify(file.name.replace(/\.[^.]+$/, '')) + '-' + Date.now().toString(36) + '.' + ext;
+      const folder = isVideo || file.type.startsWith('video/') ? REPO_PATHS.SITE_ASSETS : REPO_PATHS.SITE_ASSETS;
+      const path = `${folder}/${safeName}`;
+      await putBinaryFile(path, b64, `Upload: ${safeName}`);
+      targetInput.value = path;
+      const picker = targetInput.closest('.img-picker');
+      if (picker) {
+        const empty = picker.querySelector('.img-picker-empty');
+        if (empty) {
+          const img = document.createElement('img');
+          img.className = 'img-preview';
+          img.src = previewUrl(path);
+          empty.replaceWith(img);
+        } else {
+          const prev = picker.querySelector('.img-preview');
+          if (prev) prev.src = previewUrl(path);
+        }
+      }
+      toast('Imagem enviada ✓');
+      markDirty();
+    } catch (err) { toast(err.message, 'error'); }
+  }
+
+  $('#siteTabsContent').addEventListener('click', (e) => {
+    const t = e.target.closest('button');
+    if (!t) return;
+    if (t.classList.contains('btn-pickimg')) {
+      const inp = document.getElementById(t.dataset.target);
+      pickerTarget = { input: inp, isVideo: t.dataset.isvideo === 'true' };
+      const fp = $('#picker-file');
+      fp.accept = pickerTarget.isVideo ? 'video/*' : 'image/*';
+      fp.click();
+    }
+  });
+  $('#picker-file').addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    e.target.value = '';
+    if (!file || !pickerTarget) return;
+    await uploadFileToInput(file, pickerTarget.input, pickerTarget.isVideo);
+    pickerTarget = null;
+  });
+
+  // === Drag-and-drop em img-pickers
+  $('#siteTabsContent').addEventListener('dragenter', (e) => {
+    const picker = e.target.closest('.img-picker');
+    if (picker) { e.preventDefault(); picker.classList.add('dragging'); }
+  });
+  $('#siteTabsContent').addEventListener('dragover', (e) => {
+    const picker = e.target.closest('.img-picker');
+    if (picker) { e.preventDefault(); }
+  });
+  $('#siteTabsContent').addEventListener('dragleave', (e) => {
+    const picker = e.target.closest('.img-picker');
+    if (picker && !picker.contains(e.relatedTarget)) picker.classList.remove('dragging');
+  });
+  $('#siteTabsContent').addEventListener('drop', async (e) => {
+    const picker = e.target.closest('.img-picker');
+    if (!picker) return;
+    e.preventDefault();
+    picker.classList.remove('dragging');
+    const file = e.dataTransfer.files[0];
+    const inp = picker.querySelector('input[type="text"]');
+    const isVideo = picker.dataset.isvideo === 'true' || (file && file.type.startsWith('video/'));
+    if (file && inp) await uploadFileToInput(file, inp, isVideo);
+  });
+
+  // === Dirty tracking
+  function markDirty() { setDirty(true); saveDraft(); }
+  function saveDraft() {
+    if (!dirty.autoKey) return;
+    try { localStorage.setItem(dirty.autoKey, JSON.stringify(collectCfg())); } catch(_) {}
+  }
+  $('#siteTabsContent').addEventListener('input', markDirty);
+  $('#siteTabsContent').addEventListener('change', markDirty);
+
+  // === Save
+  async function doSave() {
+    const newCfg = collectCfg();
+    setSaving('saving');
+    try {
+      await putJsonFile(REPO_PATHS.SITE_CONTENT, newCfg, sha, 'admin: atualizar Home');
+      try { localStorage.removeItem(dirty.autoKey); } catch(_) {}
+      setDirty(false);
+      setSaving('saved');
+      showModal({
+        icon: 'success',
+        title: 'Salvo com sucesso',
+        msg: 'Suas alterações já estão no ar. Pode abrir o site público pra conferir.',
+        actions: [
+          { label: 'Ver no site', href: '/HenriqueSilva/', target: '_blank', kind: 'btn-primary' },
+          { label: 'Continuar editando', kind: 'btn-secondary' },
+        ]
+      });
+    } catch (e) {
+      setSaving('saved'); setDirty(true);
+      toast(e.message, 'error');
+    }
+  }
+
+  // === Auto-save local + restore
+  dirty.autoKey = `hsa_draft_site`;
+  try {
+    const draft = localStorage.getItem(dirty.autoKey);
+    if (draft) {
+      const draftCfg = JSON.parse(draft);
+      if (JSON.stringify(draftCfg) !== JSON.stringify(cfg)) {
+        showModal({
+          icon: 'warn', title: 'Rascunho recuperado',
+          msg: 'Você tinha alterações não salvas. Deseja recuperá-las?',
+          actions: [
+            { label: 'Recuperar rascunho', kind: 'btn-primary', onClick: () => {
+              Object.assign(cfg, draftCfg);
+              renderSiteEditor(app);
+            }},
+            { label: 'Descartar', kind: 'btn-secondary', onClick: () => {
+              try { localStorage.removeItem(dirty.autoKey); } catch(_) {}
+            }},
+          ]
+        });
+      }
+    }
+  } catch(_) {}
+
+  mountSaveBar(doSave, '/HenriqueSilva/');
 }
 
 /* ===================== LANDINGS LIST ===================== */
 
 async function renderLandings(app) {
+  unmountSaveBar();
   app.innerHTML = renderTopbar('landings') + `
     <div class="container">
       <div class="h1">Páginas <em>de áreas</em></div>
-      <div class="h-sub">12 páginas dedicadas: 10 áreas + Sobre + Contato. Edite título, textos, FAQ e mais de cada uma.</div>
-      <div id="landingsContainer">Carregando…</div>
+      <div class="h-sub">12 páginas dedicadas: 10 áreas do direito + Sobre + Contato. Cada uma tem seu próprio título, texto, depoimentos e FAQ.</div>
+      <div id="landingsContainer">
+        <div class="landing-grid">
+          ${Array(12).fill(0).map(() => '<div class="skeleton skel-card"></div>').join('')}
+        </div>
+      </div>
     </div>
   `;
   let file;
@@ -946,21 +1173,7 @@ async function renderLandings(app) {
       </a>
     `;
   }).join('');
-  $('#landingsContainer').innerHTML = `
-    <div class="landing-grid">${cards}</div>
-    <style>
-      .landing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
-      .landing-card{background:var(--black-2);border:1px solid rgba(212,175,55,.15);padding:24px;text-decoration:none;color:inherit;transition:all .35s}
-      .landing-card:hover{border-color:var(--gold);transform:translateY(-3px);background:var(--black-3)}
-      .landing-card-eyebrow{font-family:'Inter Tight',sans-serif;font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);font-weight:500;margin-bottom:14px}
-      .landing-card-h1{font-family:'Fraunces',serif;font-size:22px;font-weight:300;color:var(--off-white);line-height:1.2;margin-bottom:10px}
-      .landing-card-h1 em{font-style:italic;color:var(--gold-light)}
-      .landing-card-sub{color:var(--gray-300);font-size:13px;line-height:1.55;font-weight:300;font-style:italic;margin-bottom:14px}
-      .landing-card-meta{font-family:'Inter Tight',sans-serif;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--gray-500)}
-      @media(max-width:980px){.landing-grid{grid-template-columns:repeat(2,1fr)}}
-      @media(max-width:560px){.landing-grid{grid-template-columns:1fr}}
-    </style>
-  `;
+  $('#landingsContainer').innerHTML = `<div class="landing-grid">${cards}</div>`;
 }
 
 /* ===================== LANDING EDITOR ===================== */
@@ -970,8 +1183,8 @@ async function renderLandingEditor(app, slug) {
   app.innerHTML = renderTopbar('landings') + `
     <div class="container">
       <div class="h1">Editar <em>${LANDING_LABELS[slug]}</em></div>
-      <div class="h-sub">Página /${slug}/ · todos os textos abaixo são editáveis. Ao salvar, é necessário rodar o build (ou aguardar a Action) para ver no site.</div>
-      <div id="landingContainer">Carregando…</div>
+      <div class="h-sub">Página /${slug}/ · todos os textos são editáveis. Após salvar, o site é regenerado automaticamente em ~30 segundos.</div>
+      <div id="landingContainer"><div class="skeleton skel-card" style="height:480px"></div></div>
     </div>
   `;
   let file;
@@ -981,116 +1194,140 @@ async function renderLandingEditor(app, slug) {
   const sha = file.sha;
   const l = all[slug] || {};
 
+  const tabs = [
+    { id: 'topo', label: 'Topo + SEO', icon: I.hero },
+    { id: 'intro', label: 'Introdução', icon: I.list },
+    { id: 'bullets', label: 'Bullets', icon: I.briefcase },
+    { id: 'faq', label: 'Perguntas', icon: I.help },
+  ];
+
   $('#landingContainer').innerHTML = `
-    <div class="card">
-      <h3 style="font-family:'Fraunces',serif;font-size:22px;color:var(--off-white);font-weight:300;margin-bottom:18px">SEO e topo</h3>
-      <div class="field"><label>Title (aba do navegador, Google)</label><input id="l-page_title" value="${escAttr(l.page_title)}" /></div>
-      <div class="field"><label>Meta description</label><textarea id="l-page_description" rows="2">${escHtml(l.page_description||'')}</textarea></div>
-      <div class="field-row">
-        <div class="field"><label>Pré-título (eyebrow)</label><input id="l-eyebrow" value="${escAttr(l.eyebrow)}" /></div>
-        <div class="field"><label>Texto do botão WhatsApp</label><input id="l-cta_text" value="${escAttr(l.cta_text)}" /></div>
+    <div class="tabs-shell">
+      <div class="tabs-list" id="lTabs">
+        ${tabs.map((t, i) => `<button data-tab="${t.id}" class="${i===0?'active':''}"><span class="tab-icon">${t.icon}</span><span>${t.label}</span></button>`).join('')}
       </div>
-      <div class="field"><label>H1 (título grande do hero, com &lt;em&gt;)</label><input id="l-h1" value="${escAttr(l.h1)}" /></div>
-      <div class="field"><label>Subtítulo (parágrafo do hero)</label><textarea id="l-subtitle" rows="2">${escHtml(l.subtitle||'')}</textarea></div>
-      <div class="field"><label>Texto pré-preenchido WhatsApp</label><input id="l-wa_text" value="${escAttr(l.wa_text)}" /></div>
-    </div>
+      <div class="tabs-content" id="lTabsContent">
 
-    <div class="card" style="margin-top:18px">
-      <h3 style="font-family:'Fraunces',serif;font-size:22px;color:var(--off-white);font-weight:300;margin-bottom:18px">Introdução</h3>
-      <div class="field"><label>H2 (com &lt;em&gt;)</label><input id="l-intro_h2" value="${escAttr(l.intro?.h2)}" /></div>
-      <div class="field"><label>Parágrafos</label>
-        <div class="list-items" id="introParagraphs">
-          ${(l.intro?.paragraphs||[]).map((p,i)=>`<div class="list-item" data-idx="${i}"><textarea rows="3" data-listval>${escHtml(p)}</textarea><button type="button" class="btn btn-danger btn-rmitem">×</button></div>`).join('')}
+        <div class="card editor-section" data-section="topo">
+          <h3 style="font-family:'Fraunces',serif;font-size:24px;color:var(--off-white);font-weight:300;margin:0 0 4px">Topo da página + SEO</h3>
+          <p style="font-family:'Fraunces',serif;font-style:italic;font-size:14px;color:var(--gray-500);margin:0 0 24px">O que aparece em destaque + textos que o Google lê</p>
+          <div class="field"><label>Título da aba <span class="pill">SEO</span></label><input id="l-page_title" value="${escAttr(l.page_title)}" /><div class="field-help">O que aparece na aba do navegador e no Google. Ex: "Advogado Trabalhista em PE — Henrique Silva"</div></div>
+          <div class="field"><label>Descrição para Google <span class="pill">SEO</span></label><textarea id="l-page_description" rows="2">${escHtml(l.page_description||'')}</textarea><div class="field-help">Resumo que aparece embaixo do título nos resultados de busca (até 160 caracteres)</div></div>
+          <div class="field-row">
+            <div class="field"><label>Texto pequeno acima do título</label><input id="l-eyebrow" value="${escAttr(l.eyebrow)}" /></div>
+            <div class="field"><label>Texto do botão WhatsApp</label><input id="l-cta_text" value="${escAttr(l.cta_text)}" /></div>
+          </div>
+          <div class="field"><label>Título grande</label><input id="l-h1" value="${escAttr(l.h1)}" /><div class="field-help">Pode usar &lt;em&gt;palavra&lt;/em&gt; pra destacar em itálico dourado</div></div>
+          <div class="field"><label>Subtítulo</label><textarea id="l-subtitle" rows="2">${escHtml(l.subtitle||'')}</textarea></div>
+          <div class="field"><label>Mensagem pré-preenchida no WhatsApp</label><input id="l-wa_text" value="${escAttr(l.wa_text)}" /></div>
         </div>
-        <button type="button" class="btn btn-secondary btn-additem-intro">+ Adicionar parágrafo</button>
+
+        <div class="card editor-section" data-section="intro" style="display:none">
+          <h3 style="font-family:'Fraunces',serif;font-size:24px;color:var(--off-white);font-weight:300;margin:0 0 4px">Introdução</h3>
+          <p style="font-family:'Fraunces',serif;font-style:italic;font-size:14px;color:var(--gray-500);margin:0 0 24px">O texto explicativo da área</p>
+          <div class="field"><label>Título da introdução</label><input id="l-intro_h2" value="${escAttr(l.intro?.h2)}" /></div>
+          <div class="field"><label>Parágrafos</label>
+            <div class="list-items" id="introParagraphs">
+              ${(l.intro?.paragraphs||[]).map((p,i)=>`<div class="list-item" data-idx="${i}"><textarea rows="3" data-listval>${escHtml(p)}</textarea><button type="button" class="btn btn-danger btn-rmitem">×</button></div>`).join('')}
+            </div>
+            <button type="button" class="btn btn-secondary btn-additem-intro">${I.plus} Adicionar parágrafo</button>
+          </div>
+        </div>
+
+        <div class="card editor-section" data-section="bullets" style="display:none">
+          <h3 style="font-family:'Fraunces',serif;font-size:24px;color:var(--off-white);font-weight:300;margin:0 0 4px">Bullets — Em que ajudamos</h3>
+          <p style="font-family:'Fraunces',serif;font-style:italic;font-size:14px;color:var(--gray-500);margin:0 0 24px">Lista numerada de serviços ou tópicos</p>
+          <div class="field-row">
+            <div class="field"><label>Texto pequeno acima do título</label><input id="l-bullets_eye" value="${escAttr(l.bullets_eye)}" /></div>
+            <div class="field"><label>Título</label><input id="l-bullets_h2" value="${escAttr(l.bullets_h2)}" /></div>
+          </div>
+          <div class="bullets-list" id="bulletsList">
+            ${(l.bullets||[]).map((b,i)=>`
+              <details class="card-mini" data-idx="${i}">
+                <summary><strong>${escHtml(b.title)}</strong></summary>
+                <div class="field"><label>Título</label><input data-bkey="title" value="${escAttr(b.title)}" /></div>
+                <div class="field"><label>Descrição</label><textarea data-bkey="text" rows="2">${escHtml(b.text)}</textarea></div>
+                <button type="button" class="btn btn-danger btn-rmbullet">Remover</button>
+              </details>
+            `).join('')}
+          </div>
+          <button type="button" class="btn btn-secondary btn-addbullet">${I.plus} Adicionar tópico</button>
+        </div>
+
+        <div class="card editor-section" data-section="faq" style="display:none">
+          <h3 style="font-family:'Fraunces',serif;font-size:24px;color:var(--off-white);font-weight:300;margin:0 0 4px">Perguntas Frequentes</h3>
+          <p style="font-family:'Fraunces',serif;font-style:italic;font-size:14px;color:var(--gray-500);margin:0 0 24px">Dúvidas comuns dos clientes desta área</p>
+          <div class="faq-list" id="faqList">
+            ${(l.faq||[]).map((q,i)=>`
+              <details class="card-mini" data-idx="${i}">
+                <summary><strong>${escHtml(q.q)}</strong></summary>
+                <div class="field"><label>Pergunta</label><input data-qkey="q" value="${escAttr(q.q)}" /></div>
+                <div class="field"><label>Resposta</label><textarea data-qkey="a" rows="3">${escHtml(q.a)}</textarea></div>
+                <button type="button" class="btn btn-danger btn-rmqq">Remover</button>
+              </details>
+            `).join('')}
+          </div>
+          <button type="button" class="btn btn-secondary btn-addqq">${I.plus} Adicionar pergunta</button>
+        </div>
+
       </div>
     </div>
-
-    <div class="card" style="margin-top:18px">
-      <h3 style="font-family:'Fraunces',serif;font-size:22px;color:var(--off-white);font-weight:300;margin-bottom:18px">Bullets (em que atuamos)</h3>
-      <div class="field-row">
-        <div class="field"><label>Eyebrow</label><input id="l-bullets_eye" value="${escAttr(l.bullets_eye)}" /></div>
-        <div class="field"><label>H2 (com &lt;em&gt;)</label><input id="l-bullets_h2" value="${escAttr(l.bullets_h2)}" /></div>
-      </div>
-      <div class="bullets-list" id="bulletsList">
-        ${(l.bullets||[]).map((b,i)=>`
-          <details class="card-mini" data-idx="${i}">
-            <summary><strong>${escHtml(b.title)}</strong></summary>
-            <div class="field"><label>Título</label><input data-bkey="title" value="${escAttr(b.title)}" /></div>
-            <div class="field"><label>Texto (HTML)</label><textarea data-bkey="text" rows="2">${escHtml(b.text)}</textarea></div>
-            <button type="button" class="btn btn-danger btn-rmbullet">Remover</button>
-          </details>
-        `).join('')}
-      </div>
-      <button type="button" class="btn btn-secondary btn-addbullet">+ Adicionar bullet</button>
-    </div>
-
-    <div class="card" style="margin-top:18px">
-      <h3 style="font-family:'Fraunces',serif;font-size:22px;color:var(--off-white);font-weight:300;margin-bottom:18px">FAQ</h3>
-      <div class="faq-list" id="faqList">
-        ${(l.faq||[]).map((q,i)=>`
-          <details class="card-mini" data-idx="${i}">
-            <summary><strong>${escHtml(q.q)}</strong></summary>
-            <div class="field"><label>Pergunta</label><input data-qkey="q" value="${escAttr(q.q)}" /></div>
-            <div class="field"><label>Resposta (HTML)</label><textarea data-qkey="a" rows="3">${escHtml(q.a)}</textarea></div>
-            <button type="button" class="btn btn-danger btn-rmqq">Remover</button>
-          </details>
-        `).join('')}
-      </div>
-      <button type="button" class="btn btn-secondary btn-addqq">+ Adicionar pergunta</button>
-    </div>
-
-    <div class="card" style="margin-top:18px;display:flex;gap:14px;justify-content:flex-end;align-items:center">
-      <a href="#/landings" class="btn btn-secondary">← Voltar</a>
-      <button class="btn btn-primary" id="btnLSave">Salvar página</button>
-    </div>
-
-    <style>
-      .card-mini{background:rgba(20,20,20,.5);border:1px solid rgba(212,175,55,.1);padding:14px;margin-bottom:12px}
-      .card-mini summary{cursor:pointer;color:var(--off-white);padding:6px 0;font-size:13px}
-      .list-items{margin-bottom:10px}
-      .list-item{display:flex;gap:8px;align-items:flex-start;margin-bottom:10px}
-      .list-item textarea{flex:1}
-      .btn-rmitem{padding:6px 12px;font-size:14px}
-    </style>
   `;
 
-  $('#landingContainer').addEventListener('click', (e) => {
-    const t = e.target;
+  $('#lTabs').addEventListener('click', (e) => {
+    const btn = e.target.closest('button[data-tab]');
+    if (!btn) return;
+    $$('#lTabs button').forEach(b => b.classList.toggle('active', b === btn));
+    const id = btn.dataset.tab;
+    $$('#lTabsContent .editor-section').forEach(p => p.style.display = p.dataset.section === id ? '' : 'none');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+
+  function markDirty() { setDirty(true); saveDraft(); }
+  function saveDraft() {
+    if (!dirty.autoKey) return;
+    try { localStorage.setItem(dirty.autoKey, JSON.stringify(collectL())); } catch(_) {}
+  }
+  $('#lTabsContent').addEventListener('click', (e) => {
+    const t = e.target.closest('button');
+    if (!t) return;
     if (t.classList.contains('btn-additem-intro')) {
       const list = $('#introParagraphs');
-      const i = list.children.length;
       const it = document.createElement('div');
-      it.className = 'list-item'; it.dataset.idx = i;
+      it.className = 'list-item';
       it.innerHTML = `<textarea rows="3" data-listval></textarea><button type="button" class="btn btn-danger btn-rmitem">×</button>`;
       list.appendChild(it);
+      markDirty();
     }
-    if (t.classList.contains('btn-rmitem')) t.parentElement.remove();
+    if (t.classList.contains('btn-rmitem')) { t.parentElement.remove(); markDirty(); }
     if (t.classList.contains('btn-addbullet')) {
       const list = $('#bulletsList');
       const d = document.createElement('details');
-      d.className = 'card-mini'; d.dataset.idx = list.children.length; d.open = true;
-      d.innerHTML = `<summary><strong>Novo bullet</strong></summary>
+      d.className = 'card-mini'; d.open = true;
+      d.innerHTML = `<summary><strong>Novo tópico</strong></summary>
         <div class="field"><label>Título</label><input data-bkey="title" /></div>
-        <div class="field"><label>Texto (HTML)</label><textarea data-bkey="text" rows="2"></textarea></div>
+        <div class="field"><label>Descrição</label><textarea data-bkey="text" rows="2"></textarea></div>
         <button type="button" class="btn btn-danger btn-rmbullet">Remover</button>`;
       list.appendChild(d);
+      markDirty();
     }
-    if (t.classList.contains('btn-rmbullet')) t.closest('details').remove();
+    if (t.classList.contains('btn-rmbullet')) { t.closest('details').remove(); markDirty(); }
     if (t.classList.contains('btn-addqq')) {
       const list = $('#faqList');
       const d = document.createElement('details');
-      d.className = 'card-mini'; d.dataset.idx = list.children.length; d.open = true;
+      d.className = 'card-mini'; d.open = true;
       d.innerHTML = `<summary><strong>Nova pergunta</strong></summary>
         <div class="field"><label>Pergunta</label><input data-qkey="q" /></div>
-        <div class="field"><label>Resposta (HTML)</label><textarea data-qkey="a" rows="3"></textarea></div>
+        <div class="field"><label>Resposta</label><textarea data-qkey="a" rows="3"></textarea></div>
         <button type="button" class="btn btn-danger btn-rmqq">Remover</button>`;
       list.appendChild(d);
+      markDirty();
     }
-    if (t.classList.contains('btn-rmqq')) t.closest('details').remove();
+    if (t.classList.contains('btn-rmqq')) { t.closest('details').remove(); markDirty(); }
   });
+  $('#lTabsContent').addEventListener('input', markDirty);
 
-  $('#btnLSave').addEventListener('click', async () => {
+  function collectL() {
     const newL = JSON.parse(JSON.stringify(l));
     newL.page_title = $('#l-page_title').value;
     newL.page_description = $('#l-page_description').value;
@@ -1114,33 +1351,80 @@ async function renderLandingEditor(app, slug) {
       card.querySelectorAll('[data-qkey]').forEach(inp => o[inp.dataset.qkey] = inp.value);
       return o;
     }).filter(q => q.q || q.a);
+    return newL;
+  }
 
+  async function doSave() {
+    const newL = collectL();
     const merged = { ...all, [slug]: newL };
-    const btn = $('#btnLSave');
-    btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Salvando…';
+    setSaving('saving');
     try {
-      await putJsonFile(REPO_PATHS.LANDINGS_CONTENT, merged, sha, `admin: atualizar landing ${slug}`);
-      toast('Salvo! Build precisa rodar pra atualizar a página ✓');
-      setTimeout(() => { location.hash = '#/landings'; }, 1800);
+      await putJsonFile(REPO_PATHS.LANDINGS_CONTENT, merged, sha, `admin: atualizar /${slug}/`);
+      try { localStorage.removeItem(dirty.autoKey); } catch(_) {}
+      setDirty(false);
+      setSaving('saved');
+      showModal({
+        icon: 'success',
+        title: 'Página salva',
+        msg: 'O site está sendo regenerado. Em cerca de 30 segundos a alteração estará no ar.',
+        actions: [
+          { label: 'Ver no site', href: `/HenriqueSilva/${slug}/`, target: '_blank', kind: 'btn-primary' },
+          { label: 'Voltar para lista', kind: 'btn-secondary', onClick: () => { location.hash = '#/landings'; } },
+        ]
+      });
     } catch (e) {
+      setSaving('saved'); setDirty(true);
       toast(e.message, 'error');
-      btn.disabled = false; btn.textContent = 'Salvar página';
     }
-  });
+  }
+
+  // Auto-save draft local
+  dirty.autoKey = `hsa_draft_landing_${slug}`;
+  try {
+    const draft = localStorage.getItem(dirty.autoKey);
+    if (draft) {
+      const draftL = JSON.parse(draft);
+      if (JSON.stringify(draftL) !== JSON.stringify(l)) {
+        showModal({
+          icon: 'warn', title: 'Rascunho recuperado',
+          msg: 'Você tinha alterações não salvas nesta página. Deseja recuperá-las?',
+          actions: [
+            { label: 'Recuperar', kind: 'btn-primary', onClick: () => {
+              all[slug] = draftL;
+              renderLandingEditor(app, slug);
+            }},
+            { label: 'Descartar', kind: 'btn-secondary', onClick: () => {
+              try { localStorage.removeItem(dirty.autoKey); } catch(_) {}
+            }},
+          ]
+        });
+      }
+    }
+  } catch(_) {}
+
+  mountSaveBar(doSave, `/HenriqueSilva/${slug}/`);
 }
 
 /* ===================== POSTS LIST ===================== */
 
 async function renderPosts(app) {
+  unmountSaveBar();
   app.innerHTML = renderTopbar('posts') + `
     <div class="container">
-      <div class="h1">Posts <em>do blog</em></div>
-      <div class="h-sub">Artigos publicados · ordenados pelo mais recente</div>
+      <div class="h1">Artigos <em>do blog</em></div>
+      <div class="h-sub">Compartilhe seu conhecimento jurídico. Cada artigo aparece no blog do site e ajuda no Google.</div>
       <div class="posts-toolbar">
         <input class="posts-search" id="postsSearch" placeholder="Buscar por título…" />
-        <a href="#/new" class="btn btn-primary">+ Novo post</a>
+        <a href="#/new" class="btn btn-primary">${I.plus} Escrever novo</a>
       </div>
-      <div id="postsContainer"><p style="color:var(--gray-300)">Carregando posts… <span class="spinner"></span></p></div>
+      <div id="postsContainer">
+        <div class="posts-grid">
+          <div class="skeleton skel-row"></div>
+          <div class="skeleton skel-row"></div>
+          <div class="skeleton skel-row"></div>
+          <div class="skeleton skel-row"></div>
+        </div>
+      </div>
     </div>
   `;
   try {
@@ -1155,7 +1439,13 @@ async function renderPosts(app) {
     const renderList = (filter='') => {
       const filtered = filter ? posts.filter(p => (p.title||'').toLowerCase().includes(filter.toLowerCase())) : posts;
       if (!filtered.length) {
-        $('#postsContainer').innerHTML = `<div class="empty"><h3>Nenhum post ainda</h3><p>Crie seu primeiro artigo</p><a href="#/new" class="btn btn-primary">+ Criar primeiro post</a></div>`;
+        $('#postsContainer').innerHTML = `
+          <div class="empty">
+            <div class="empty-icon">${I.posts}</div>
+            <h3>${filter ? 'Nada encontrado' : 'Nenhum artigo ainda'}</h3>
+            <p>${filter ? 'Tente buscar por outro termo.' : 'Compartilhe seu conhecimento jurídico com seus futuros clientes — eles te encontram pelo Google.'}</p>
+            ${!filter ? `<a href="#/new" class="btn btn-primary">${I.plus} Escrever primeiro artigo</a>` : ''}
+          </div>`;
         return;
       }
       $('#postsContainer').innerHTML = `<div class="posts-grid">` + filtered.map(p => `
@@ -1211,52 +1501,59 @@ async function renderEditor(app, fileBase) {
   }
   app.innerHTML = renderTopbar(fileBase ? 'posts' : 'new') + `
     <div class="container">
-      <div class="h1">${fileBase ? 'Editar post' : 'Novo <em>post</em>'}</div>
-      <div class="h-sub">${fileBase ? 'Modifique o conteúdo e salve' : 'Escreva um novo artigo'}</div>
+      <div class="h1">${fileBase ? 'Editar artigo' : 'Novo <em>artigo</em>'}</div>
+      <div class="h-sub">${fileBase ? 'Modifique e salve. O artigo é regenerado em ~30 segundos.' : 'Compartilhe seu conhecimento jurídico. Use uma linguagem que seu cliente entenda.'}</div>
       <div class="card">
-        <div class="field"><label>Título</label><input id="f-title" value="${escAttr(meta.title)}" /></div>
+        <div class="field"><label>Título</label><input id="f-title" value="${escAttr(meta.title)}" placeholder="Ex: Como provar horas extras na Justiça do Trabalho" /></div>
         <div class="field-row">
-          <div class="field"><label>Slug (URL)</label><input id="f-slug" value="${escAttr(meta.slug)}" /><div class="field-help">Deixa vazio pra gerar automático.</div></div>
+          <div class="field"><label>Endereço da página <span class="pill">URL</span></label><input id="f-slug" value="${escAttr(meta.slug)}" /><div class="field-help">Deixe em branco que é gerado automaticamente. Aparece como /blog/<i>endereço</i>/.</div></div>
           <div class="field"><label>Categoria</label><select id="f-category">${Object.entries(CATEGORIES).map(([k,v]) => `<option value="${k}" ${meta.category===k?'selected':''}>${v}</option>`).join('')}</select></div>
         </div>
-        <div class="field"><label>Resumo (excerpt)</label><textarea id="f-excerpt" rows="2">${escHtml(meta.excerpt||'')}</textarea></div>
+        <div class="field"><label>Resumo curto</label><textarea id="f-excerpt" rows="2" placeholder="Frase que aparece nos cards e nos resultados de busca (1-2 linhas).">${escHtml(meta.excerpt||'')}</textarea></div>
         <div class="field-row">
-          <div class="field"><label>Tags (separadas por vírgula)</label><input id="f-tags" value="${escAttr((meta.tags||[]).join(', '))}" /></div>
-          <div class="field"><label>Imagem de capa</label><input id="f-cover" value="${escAttr(meta.cover)}" /><div class="field-help"><button type="button" id="uploadCover" class="btn btn-secondary" style="padding:6px 12px;font-size:9px">Enviar imagem…</button></div></div>
+          <div class="field"><label>Tags <span class="pill">opcional</span></label><input id="f-tags" value="${escAttr((meta.tags||[]).join(', '))}" placeholder="horas-extras, prova, CLT" /></div>
+          <div class="field"><label>Imagem de capa</label>
+            <div class="img-picker" id="coverPicker" data-isvideo="false">
+              ${meta.cover ? `<img class="img-preview" src="${previewUrl(meta.cover)}" alt="" onerror="this.style.display='none'" />` : `<div class="img-picker-empty">${I.image}</div>`}
+              <div class="img-picker-body">
+                <input type="text" id="f-cover" value="${escAttr(meta.cover)}" placeholder="/HenriqueSilva/blog/images/capa.jpg" />
+                <div class="img-picker-actions">
+                  <button type="button" class="btn btn-secondary btn-pickcover">${I.upload} Enviar</button>
+                  <span class="drop-hint">…ou arraste pra cá</span>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
         <div class="field-row">
-          <div class="field"><label>Data publicação</label><input type="date" id="f-date" value="${meta.date||todayIso()}" /></div>
+          <div class="field"><label>Data de publicação</label><input type="date" id="f-date" value="${meta.date||todayIso()}" /></div>
           <div class="field"><label>Última atualização</label><input type="date" id="f-updated" value="${meta.updated||todayIso()}" /></div>
         </div>
       </div>
       <div class="card" style="margin-top:18px">
-        <label style="display:block;font-family:'Inter Tight',sans-serif;font-size:10.5px;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);font-weight:500;margin-bottom:14px">Conteúdo</label>
+        <label style="display:block;font-family:'Inter Tight',sans-serif;font-size:10.5px;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);font-weight:500;margin-bottom:14px">Conteúdo do artigo</label>
         <div class="editor-toolbar">
-          <button type="button" class="editor-tool" data-md="**" title="Negrito"><b>B</b></button>
-          <button type="button" class="editor-tool" data-md="*" title="Itálico"><i>I</i></button>
+          <button type="button" class="editor-tool" data-md="**" title="Negrito (Ctrl+B)"><b>B</b></button>
+          <button type="button" class="editor-tool" data-md="*" title="Itálico (Ctrl+I)"><i>I</i></button>
           <span class="editor-tool-sep"></span>
-          <button type="button" class="editor-tool" data-prefix="## " title="H2">H2</button>
-          <button type="button" class="editor-tool" data-prefix="### " title="H3">H3</button>
+          <button type="button" class="editor-tool" data-prefix="## " title="Subtítulo">H2</button>
+          <button type="button" class="editor-tool" data-prefix="### " title="Sub-subtítulo">H3</button>
           <span class="editor-tool-sep"></span>
-          <button type="button" class="editor-tool" data-prefix="- ">• Lista</button>
-          <button type="button" class="editor-tool" data-prefix="1. ">1. Lista</button>
-          <button type="button" class="editor-tool" data-prefix="> ">" Citação</button>
+          <button type="button" class="editor-tool" data-prefix="- " title="Lista">• Lista</button>
+          <button type="button" class="editor-tool" data-prefix="1. " title="Lista numerada">1. Lista</button>
+          <button type="button" class="editor-tool" data-prefix="> " title="Citação">" Citação</button>
           <span class="editor-tool-sep"></span>
-          <button type="button" class="editor-tool" id="tool-link">Link</button>
-          <button type="button" class="editor-tool" id="tool-image">Imagem</button>
-          <button type="button" class="editor-tool" data-md="\`">‹/›</button>
-          <button type="button" class="editor-tool" data-prefix="---">— Linha</button>
+          <button type="button" class="editor-tool" id="tool-link" title="Link">Link</button>
+          <button type="button" class="editor-tool" id="tool-image" title="Imagem">Imagem</button>
+          <button type="button" class="editor-tool" data-md="\`" title="Código">‹/›</button>
+          <button type="button" class="editor-tool" data-prefix="---" title="Linha divisória">— Linha</button>
         </div>
         <div class="editor-grid">
-          <textarea id="f-body" class="editor-textarea">${escHtml(body)}</textarea>
+          <textarea id="f-body" class="editor-textarea" placeholder="Escreva aqui — pode arrastar imagens direto pro texto.">${escHtml(body)}</textarea>
           <div id="preview" class="editor-preview"></div>
         </div>
       </div>
-      <div class="card" style="margin-top:18px;display:flex;gap:14px;justify-content:flex-end;align-items:center;flex-wrap:wrap">
-        <a href="#/posts" class="btn btn-secondary">← Voltar</a>
-        ${fileBase ? `<button class="btn btn-danger" id="btnDelete">Excluir</button>` : ''}
-        <button class="btn btn-primary" id="btnSave">${fileBase ? 'Salvar alterações' : 'Publicar post'}</button>
-      </div>
+      ${fileBase ? `<div class="card" style="margin-top:18px"><button class="btn btn-danger" id="btnDelete">Excluir este artigo</button></div>` : ''}
     </div>
     <input type="file" id="fileInput" accept="image/*" style="display:none" />
   `;
@@ -1270,24 +1567,24 @@ async function renderEditor(app, fileBase) {
     if (!slugIn.value || slugIn.dataset.auto === '1'){ slugIn.value = slugify(e.target.value); slugIn.dataset.auto = '1'; }
   });
   $('#f-slug').addEventListener('input', e => { e.target.dataset.auto = '0'; });
-  $$('.editor-tool[data-md]').forEach(b => b.addEventListener('click', () => wrapSelection(ta, b.dataset.md)));
-  $$('.editor-tool[data-prefix]').forEach(b => b.addEventListener('click', () => prefixLines(ta, b.dataset.prefix)));
+  $$('.editor-tool[data-md]').forEach(b => b.addEventListener('click', () => { wrapSelection(ta, b.dataset.md); markDirty(); }));
+  $$('.editor-tool[data-prefix]').forEach(b => b.addEventListener('click', () => { prefixLines(ta, b.dataset.prefix); markDirty(); }));
   $('#tool-link').addEventListener('click', () => {
     const url = prompt('URL:');
     if (!url) return;
     const sel = ta.value.slice(ta.selectionStart, ta.selectionEnd) || 'texto do link';
-    insertAtCursor(ta, `[${sel}](${url})`);
+    insertAtCursor(ta, `[${sel}](${url})`); markDirty();
   });
-  $('#tool-image').addEventListener('click', () => $('#fileInput').click());
-  $('#uploadCover').addEventListener('click', () => { $('#fileInput').dataset.target = 'cover'; $('#fileInput').click(); });
-  $('#fileInput').addEventListener('change', async e => {
-    const file = e.target.files[0]; if (!file) return;
-    const target = e.target.dataset.target || 'inline';
-    e.target.dataset.target = ''; e.target.value = '';
+
+  async function uploadFile(file, target) {
+    if (!file) return;
+    if (file.size > 25 * 1024 * 1024) { toast('Arquivo muito grande (>25MB)', 'error'); return; }
     try {
       const buf = await file.arrayBuffer();
       const bytes = new Uint8Array(buf);
-      let bin = ''; for (let i=0;i<bytes.length;i++) bin += String.fromCharCode(bytes[i]);
+      let bin = '';
+      const chunk = 0x8000;
+      for (let i = 0; i < bytes.length; i += chunk) bin += String.fromCharCode.apply(null, bytes.subarray(i, i + chunk));
       const b64 = btoa(bin);
       const ext = file.name.split('.').pop().toLowerCase();
       const safeName = slugify(file.name.replace(/\.[^.]+$/, '')) + '-' + Date.now().toString(36) + '.' + ext;
@@ -1295,11 +1592,63 @@ async function renderEditor(app, fileBase) {
       toast('Enviando…');
       await putBinaryFile(path, b64, `Upload: ${safeName}`);
       const url = pasteUrl(path);
-      if (target === 'cover'){ $('#f-cover').value = url; toast('Capa definida ✓'); }
-      else { insertAtCursor(ta, `![${file.name.replace(/\.[^.]+$/, '')}](${url})`); updatePreview(); toast('Imagem inserida ✓'); }
+      if (target === 'cover'){
+        $('#f-cover').value = url;
+        const picker = $('#coverPicker');
+        const empty = picker.querySelector('.img-picker-empty');
+        if (empty) {
+          const img = document.createElement('img');
+          img.className = 'img-preview'; img.src = previewUrl(path);
+          empty.replaceWith(img);
+        } else {
+          const prev = picker.querySelector('.img-preview');
+          if (prev) prev.src = previewUrl(path);
+        }
+        toast('Capa definida ✓');
+      } else {
+        insertAtCursor(ta, `![${file.name.replace(/\.[^.]+$/, '')}](${url})`); updatePreview();
+        toast('Imagem inserida ✓');
+      }
+      markDirty();
     } catch(err){ toast(err.message, 'error'); }
+  }
+
+  $('#tool-image').addEventListener('click', () => { $('#fileInput').dataset.target = 'inline'; $('#fileInput').click(); });
+  document.querySelectorAll('.btn-pickcover').forEach(b => b.addEventListener('click', () => { $('#fileInput').dataset.target = 'cover'; $('#fileInput').click(); }));
+  $('#fileInput').addEventListener('change', async e => {
+    const file = e.target.files[0]; const target = e.target.dataset.target || 'inline';
+    e.target.dataset.target = ''; e.target.value = '';
+    await uploadFile(file, target);
   });
-  $('#btnSave').addEventListener('click', async () => {
+
+  // Drag-and-drop em coverPicker e textarea (artigo)
+  const cover = $('#coverPicker');
+  ['dragenter','dragover'].forEach(ev => cover.addEventListener(ev, e => { e.preventDefault(); cover.classList.add('dragging'); }));
+  ['dragleave','drop'].forEach(ev => cover.addEventListener(ev, e => { e.preventDefault(); cover.classList.remove('dragging'); }));
+  cover.addEventListener('drop', async e => { const f = e.dataTransfer.files[0]; await uploadFile(f, 'cover'); });
+
+  ta.addEventListener('dragover', e => e.preventDefault());
+  ta.addEventListener('drop', async e => {
+    const f = e.dataTransfer.files[0];
+    if (!f || !f.type.startsWith('image/')) return;
+    e.preventDefault();
+    await uploadFile(f, 'inline');
+  });
+
+  function markDirty() { setDirty(true); saveDraft(); }
+  function saveDraft() {
+    if (!dirty.autoKey) return;
+    try {
+      localStorage.setItem(dirty.autoKey, JSON.stringify({
+        title: $('#f-title').value, slug: $('#f-slug').value, excerpt: $('#f-excerpt').value,
+        category: $('#f-category').value, tags: $('#f-tags').value, cover: $('#f-cover').value,
+        date: $('#f-date').value, updated: $('#f-updated').value, body: ta.value,
+      }));
+    } catch(_) {}
+  }
+  ['input','change'].forEach(ev => app.addEventListener(ev, markDirty));
+
+  async function doSave() {
     const m = {
       title: $('#f-title').value.trim(),
       slug: ($('#f-slug').value.trim() || slugify($('#f-title').value.trim())),
@@ -1311,27 +1660,65 @@ async function renderEditor(app, fileBase) {
       updated: todayIso(),
     };
     if (!m.title){ toast('Título obrigatório', 'error'); return; }
-    if (!m.slug){ toast('Slug inválido', 'error'); return; }
+    if (!m.slug){ toast('Endereço inválido', 'error'); return; }
     const filename = fileBase ? `${fileBase}.md` : `${m.date}-${m.slug}.md`;
     const fullPath = `${REPO_PATHS.POSTS}/${filename}`;
     const content = buildFrontMatter(m) + ta.value + '\n';
+    setSaving('saving');
     try {
-      $('#btnSave').disabled = true; $('#btnSave').innerHTML = '<span class="spinner"></span> Salvando…';
       await putTextFile(fullPath, content, sha, fileBase ? `Update: ${m.title}` : `Publish: ${m.title}`);
-      toast(fileBase ? 'Post atualizado ✓' : 'Post publicado ✓');
-      setTimeout(() => { location.hash = '#/posts'; }, 1200);
-    } catch(err){ toast(err.message, 'error'); $('#btnSave').disabled = false; $('#btnSave').textContent = fileBase ? 'Salvar alterações' : 'Publicar post'; }
-  });
+      try { localStorage.removeItem(dirty.autoKey); } catch(_) {}
+      setDirty(false);
+      setSaving('saved');
+      showModal({
+        icon: 'success',
+        title: fileBase ? 'Artigo atualizado' : 'Artigo publicado',
+        msg: 'Em cerca de 30 segundos o artigo estará no ar.',
+        actions: [
+          { label: 'Ver no site', href: `/HenriqueSilva/blog/${m.slug}/`, target: '_blank', kind: 'btn-primary' },
+          { label: 'Voltar pra lista', kind: 'btn-secondary', onClick: () => { location.hash = '#/posts'; } },
+        ]
+      });
+    } catch(err){ setSaving('saved'); setDirty(true); toast(err.message, 'error'); }
+  }
   if (fileBase){
     $('#btnDelete').addEventListener('click', async () => {
-      if (!confirm(`Excluir "${meta.title}"?`)) return;
+      if (!confirm(`Excluir "${meta.title}"? Essa ação é definitiva.`)) return;
       try {
         await deleteFile(`${REPO_PATHS.POSTS}/${fileBase}.md`, sha, `Delete: ${meta.title}`);
-        toast('Post excluído');
+        toast('Artigo excluído');
+        unmountSaveBar();
         location.hash = '#/posts';
       } catch(err){ toast(err.message, 'error'); }
     });
   }
+
+  // Auto-save draft local
+  dirty.autoKey = `hsa_draft_post_${fileBase || 'new'}`;
+  try {
+    const draft = localStorage.getItem(dirty.autoKey);
+    if (draft) {
+      const d = JSON.parse(draft);
+      const currentBody = body, currentTitle = meta.title;
+      if ((d.body || '') !== currentBody || (d.title || '') !== currentTitle) {
+        showModal({
+          icon: 'warn', title: 'Rascunho recuperado',
+          msg: 'Você tinha alterações não salvas neste artigo. Deseja recuperá-las?',
+          actions: [
+            { label: 'Recuperar', kind: 'btn-primary', onClick: () => {
+              $('#f-title').value = d.title; $('#f-slug').value = d.slug; $('#f-excerpt').value = d.excerpt;
+              $('#f-category').value = d.category; $('#f-tags').value = d.tags; $('#f-cover').value = d.cover;
+              $('#f-date').value = d.date; $('#f-updated').value = d.updated; ta.value = d.body;
+              updatePreview(); setDirty(true);
+            }},
+            { label: 'Descartar', kind: 'btn-secondary', onClick: () => { try { localStorage.removeItem(dirty.autoKey); } catch(_) {} } },
+          ]
+        });
+      }
+    }
+  } catch(_) {}
+
+  mountSaveBar(doSave, fileBase ? `/HenriqueSilva/blog/${meta.slug}/` : null);
 }
 
 function insertAtCursor(ta, text) {
@@ -1362,55 +1749,74 @@ function prefixLines(ta, prefix) {
 /* ===================== GALLERY ===================== */
 
 async function renderGallery(app) {
+  unmountSaveBar();
   app.innerHTML = renderTopbar('imagens') + `
     <div class="container">
-      <div class="h1">Galeria <em>de imagens</em></div>
-      <div class="h-sub">Imagens disponíveis para os posts e cards do site</div>
+      <div class="h1">Imagens <em>do site</em></div>
+      <div class="h-sub">Suas fotos disponíveis. Arraste arquivos pra qualquer lugar dessa página pra enviar.</div>
       <div class="posts-toolbar">
         <input class="posts-search" id="galSearch" placeholder="Buscar por nome…" />
-        <button class="btn btn-primary" id="btnUpload">+ Enviar imagem</button>
+        <button class="btn btn-primary" id="btnUpload">${I.upload} Enviar imagem</button>
       </div>
-      <div id="galContainer">Carregando…</div>
+      <div id="galContainer">
+        <div class="gal-grid">
+          ${Array(8).fill(0).map(() => '<div class="skeleton skel-card" style="height:180px"></div>').join('')}
+        </div>
+      </div>
       <input type="file" id="galFile" accept="image/*" multiple style="display:none" />
-      <style>
-        .gal-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
-        .gal-item{background:var(--black-2);border:1px solid rgba(212,175,55,.15);padding:8px;transition:all .3s;position:relative}
-        .gal-item:hover{border-color:var(--gold)}
-        .gal-thumb{width:100%;aspect-ratio:1;background:#080808 center/cover no-repeat;border:1px solid rgba(212,175,55,.1);cursor:pointer}
-        .gal-name{font-family:'Inter Tight',sans-serif;font-size:11px;color:var(--gray-300);margin-top:8px;text-overflow:ellipsis;overflow:hidden;white-space:nowrap;font-weight:300}
-        .gal-actions{display:flex;gap:6px;margin-top:8px}
-        .gal-actions button{flex:1;padding:6px 8px;font-size:9px;letter-spacing:.16em;border:1px solid rgba(212,175,55,.3);background:transparent;color:var(--gold-light);text-transform:uppercase;font-weight:500;cursor:pointer;transition:all .25s}
-        .gal-actions button:hover{background:rgba(212,175,55,.1)}
-        .gal-actions .del:hover{background:var(--danger);border-color:var(--danger);color:#fff}
-        @media(max-width:780px){.gal-grid{grid-template-columns:repeat(2,1fr)}}
-      </style>
     </div>
   `;
-  $('#btnUpload').addEventListener('click', () => $('#galFile').click());
-  $('#galFile').addEventListener('change', async e => {
-    const files = Array.from(e.target.files || []);
-    e.target.value = '';
-    if (!files.length) return;
+  async function uploadFiles(files) {
+    if (!files || !files.length) return;
+    let count = 0;
     for (const file of files){
+      if (file.size > 25 * 1024 * 1024) { toast(`${file.name}: arquivo > 25MB`, 'error'); continue; }
       try {
         const buf = await file.arrayBuffer();
         const bytes = new Uint8Array(buf);
-        let bin = ''; for (let i=0;i<bytes.length;i++) bin += String.fromCharCode(bytes[i]);
+        let bin = ''; const chunk = 0x8000;
+        for (let i=0;i<bytes.length;i+=chunk) bin += String.fromCharCode.apply(null, bytes.subarray(i, i + chunk));
         const b64 = btoa(bin);
         const ext = file.name.split('.').pop().toLowerCase();
         const safeName = slugify(file.name.replace(/\.[^.]+$/, '')) + '-' + Date.now().toString(36) + '.' + ext;
         const path = `${REPO_PATHS.IMAGES}/${safeName}`;
         toast(`Enviando ${file.name}…`);
         await putBinaryFile(path, b64, `Upload: ${safeName}`);
+        count++;
       } catch(err){ toast(err.message, 'error'); }
     }
-    toast('Upload concluído ✓');
+    if (count) toast(`${count} ${count===1?'imagem enviada':'imagens enviadas'} ✓`);
     renderGallery(app);
+  }
+  $('#btnUpload').addEventListener('click', () => $('#galFile').click());
+  $('#galFile').addEventListener('change', e => { uploadFiles(Array.from(e.target.files || [])); e.target.value = ''; });
+
+  // Drag-drop em qualquer lugar da galeria
+  ['dragenter','dragover'].forEach(ev => app.addEventListener(ev, e => {
+    if (e.dataTransfer && Array.from(e.dataTransfer.items || []).some(i => i.kind === 'file')) {
+      e.preventDefault(); document.body.classList.add('dragging-file');
+    }
+  }));
+  ['dragleave','dragend','drop'].forEach(ev => app.addEventListener(ev, e => {
+    if (e.type === 'dragleave' && e.relatedTarget) return;
+    document.body.classList.remove('dragging-file');
+  }));
+  app.addEventListener('drop', async e => {
+    if (!e.dataTransfer || !e.dataTransfer.files.length) return;
+    e.preventDefault();
+    await uploadFiles(Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/')));
   });
+
   try {
     const imgs = ((await listDir(REPO_PATHS.IMAGES)) || []).filter(x => /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(x.name));
     if (!imgs.length){
-      $('#galContainer').innerHTML = '<div class="empty"><h3>Nenhuma imagem ainda</h3><p>Use o botão acima para enviar a primeira</p></div>';
+      $('#galContainer').innerHTML = `
+        <div class="empty">
+          <div class="empty-icon">${I.image}</div>
+          <h3>Nenhuma imagem ainda</h3>
+          <p>Arraste fotos pra cá ou clique no botão acima. JPG, PNG, WebP até 25MB.</p>
+          <button class="btn btn-primary" onclick="document.getElementById('galFile').click()">${I.upload} Enviar primeira imagem</button>
+        </div>`;
       return;
     }
     const renderList = (filter='') => {
@@ -1445,11 +1851,12 @@ async function renderGallery(app) {
 /* ===================== CONFIG ===================== */
 
 async function renderConfig(app) {
+  unmountSaveBar();
   app.innerHTML = renderTopbar('config') + `
     <div class="container">
-      <div class="h1">Configurações <em>do site</em></div>
-      <div class="h-sub">Contato, redes sociais, analytics. Reflete em todas as páginas.</div>
-      <div id="cfgContainer">Carregando…</div>
+      <div class="h1">Configurações <em>gerais</em></div>
+      <div class="h-sub">Telefone, e-mail, endereço, redes sociais e códigos de analytics. As alterações aparecem em todas as páginas do site.</div>
+      <div id="cfgContainer"><div class="skeleton skel-card" style="height:480px"></div></div>
     </div>
   `;
   let file;
@@ -1493,17 +1900,16 @@ async function renderConfig(app) {
       <div class="field"><label>TikTok</label><input id="cfg-soc-tiktok" value="${escAttr(cfg.social?.tiktok)}" /></div>
     </div>
     <div class="card" style="margin-top:18px">
-      <h3 style="font-family:'Fraunces',serif;font-size:22px;color:var(--off-white);font-weight:300;margin-bottom:18px">Analytics</h3>
-      <div class="field"><label>Microsoft Clarity ID</label><input id="cfg-clarity" value="${escAttr(cfg.clarity_id)}" placeholder="abc1234567" /></div>
+      <h3 style="font-family:'Fraunces',serif;font-size:22px;color:var(--off-white);font-weight:300;margin-bottom:8px">Analytics <span class="pill" style="font-size:10px">opcional</span></h3>
+      <p style="font-family:'Fraunces',serif;font-style:italic;font-size:13.5px;color:var(--gray-500);margin-bottom:18px">Códigos pra ver quem visita o site. Pula se você não tiver.</p>
+      <div class="field"><label>Microsoft Clarity ID</label><input id="cfg-clarity" value="${escAttr(cfg.clarity_id)}" placeholder="abc1234567" /><div class="field-help">Heatmap grátis em <a href="https://clarity.microsoft.com" target="_blank">clarity.microsoft.com</a></div></div>
       <div class="field"><label>Plausible Domain</label><input id="cfg-plausible" value="${escAttr(cfg.plausible_domain)}" placeholder="henriquesilvaadv.com.br" /></div>
       <div class="field"><label>Google Analytics 4 ID</label><input id="cfg-ga4" value="${escAttr(cfg.ga4_id)}" placeholder="G-XXXXXXXXXX" /></div>
     </div>
-    <div class="card" style="margin-top:18px;display:flex;gap:14px;justify-content:flex-end">
-      <a href="#/dashboard" class="btn btn-secondary">← Voltar</a>
-      <button class="btn btn-primary" id="cfgSave">Salvar</button>
-    </div>
   `;
-  $('#cfgSave').addEventListener('click', async () => {
+  function markDirty() { setDirty(true); }
+  $('#cfgContainer').addEventListener('input', markDirty);
+  async function doSaveCfg() {
     const newCfg = {
       ...cfg,
       clarity_id: $('#cfg-clarity').value.trim(),
@@ -1530,11 +1936,19 @@ async function renderConfig(app) {
         tiktok: $('#cfg-soc-tiktok').value.trim(),
       },
     };
+    setSaving('saving');
     try {
-      $('#cfgSave').disabled = true; $('#cfgSave').innerHTML = '<span class="spinner"></span> Salvando…';
-      await putJsonFile(REPO_PATHS.SITE_CONFIG, newCfg, sha, 'admin: atualizar site-config');
-      toast('Configurações salvas ✓');
-      setTimeout(() => { location.hash = '#/dashboard'; }, 1200);
-    } catch(err){ toast(err.message, 'error'); $('#cfgSave').disabled = false; $('#cfgSave').textContent = 'Salvar'; }
-  });
+      await putJsonFile(REPO_PATHS.SITE_CONFIG, newCfg, sha, 'admin: atualizar configurações');
+      setDirty(false); setSaving('saved');
+      showModal({
+        icon: 'success', title: 'Configurações salvas',
+        msg: 'Telefone, e-mail e demais informações foram atualizados em todo o site.',
+        actions: [
+          { label: 'Ver no site', href: '/HenriqueSilva/', target: '_blank', kind: 'btn-primary' },
+          { label: 'Continuar', kind: 'btn-secondary' },
+        ]
+      });
+    } catch(err){ setSaving('saved'); setDirty(true); toast(err.message, 'error'); }
+  }
+  mountSaveBar(doSaveCfg, '/HenriqueSilva/');
 }
