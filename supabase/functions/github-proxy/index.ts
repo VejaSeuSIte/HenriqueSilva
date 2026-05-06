@@ -91,7 +91,12 @@ function normalizePath(raw: string): { ok: true; path: string } | { ok: false; r
 }
 
 function pathAllowed(p: string): boolean {
-  return ALLOWED_PREFIXES.some((pref) => p.startsWith(pref));
+  // Aceita: prefixo + qualquer arquivo OU exatamente o diretório (pra listDir).
+  return ALLOWED_PREFIXES.some((pref) => {
+    if (p.startsWith(pref)) return true;
+    const dir = pref.replace(/\/$/, "");
+    return p === dir;
+  });
 }
 
 async function rateLimit(supaSrv: ReturnType<typeof createClient>, userId: string): Promise<{ ok: true } | { ok: false; retryAfter: number }> {
