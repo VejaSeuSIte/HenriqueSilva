@@ -2112,7 +2112,11 @@ async function renderEditor(app, fileBase) {
           <button type="button" class="editor-tool" data-md="\`" title="Código">‹/›</button>
           <button type="button" class="editor-tool" data-prefix="---" title="Linha divisória">— Linha</button>
         </div>
-        <div class="editor-grid">
+        <button type="button" class="editor-toggle-preview" id="togglePreview" aria-pressed="false">
+          <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          <span>Ver formatado</span>
+        </button>
+        <div class="editor-grid" id="editorGrid">
           <textarea id="f-body" class="editor-textarea" placeholder="Escreva aqui — pode arrastar imagens direto pro texto.">${escHtml(body)}</textarea>
           <div id="preview" class="editor-preview"></div>
         </div>
@@ -2126,6 +2130,18 @@ async function renderEditor(app, fileBase) {
   function updatePreview(){ preview.innerHTML = mdRender(ta.value); }
   ta.addEventListener('input', updatePreview);
   updatePreview();
+
+  // Toggle preview/editar (visível só em mobile via CSS)
+  const togglePreview = $('#togglePreview');
+  if (togglePreview) {
+    togglePreview.addEventListener('click', () => {
+      const grid = $('#editorGrid');
+      const showing = grid.classList.toggle('show-preview');
+      togglePreview.setAttribute('aria-pressed', String(showing));
+      togglePreview.querySelector('span').textContent = showing ? '← Voltar a editar' : 'Ver formatado';
+      if (showing) updatePreview();
+    });
+  }
   $('#f-title').addEventListener('input', e => {
     const slugIn = $('#f-slug');
     if (!slugIn.value || slugIn.dataset.auto === '1'){ slugIn.value = slugify(e.target.value); slugIn.dataset.auto = '1'; }

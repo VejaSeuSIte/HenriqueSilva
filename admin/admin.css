@@ -97,6 +97,7 @@ em{color:var(--gold-light);font-style:italic;font-weight:300}
 .post-row-actions .btn{padding:8px 14px;font-size:10px;letter-spacing:.18em}
 
 /* ═════ EDITOR (markdown post) ═════ */
+.editor-toggle-preview{display:none}
 .editor-toolbar{display:flex;flex-wrap:wrap;gap:4px;background:var(--black-3);border:1px solid var(--gold-soft);border-bottom:0;padding:6px;border-radius:2px 2px 0 0}
 .editor-tool{background:transparent;border:0;color:var(--gray-300);padding:9px 12px;font-family:'Inter Tight',sans-serif;font-size:12px;font-weight:500;transition:all .2s;border-radius:2px}
 .editor-tool:hover{background:var(--gold-faint);color:var(--gold-light)}
@@ -315,22 +316,26 @@ body.dragging-file::after{content:"📁  Solte a imagem aqui";position:fixed;ins
   .landing-grid{grid-template-columns:repeat(2,1fr)}
 }
 @media(max-width:780px){
-  .topbar{padding:10px 16px;gap:8px;position:sticky}
-  .topbar-brand img{height:32px;width:32px}
-  .topbar-brand-text{font-size:14px}
+  .topbar{padding:10px 14px;gap:8px;position:sticky}
+  .topbar-brand{gap:10px;flex:1;min-width:0}
+  .topbar-brand img{height:32px;width:32px;flex-shrink:0}
+  .topbar-brand-text{font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .topbar-brand-text small{font-size:8px}
-  .topbar-nav{position:absolute;top:100%;left:0;right:0;background:rgba(20,20,20,.98);flex-direction:column;align-items:stretch;padding:8px;border-bottom:1px solid var(--gold-soft);transform:translateY(-10px);opacity:0;visibility:hidden;transition:all .25s;backdrop-filter:blur(14px)}
+  .topbar-nav{position:absolute;top:100%;left:0;right:0;background:rgba(20,20,20,.98);flex-direction:column;align-items:stretch;padding:6px;border-bottom:1px solid var(--gold-soft);transform:translateY(-10px);opacity:0;visibility:hidden;transition:all .25s;backdrop-filter:blur(14px);max-height:calc(100vh - 60px);overflow-y:auto}
   .topbar.menu-open .topbar-nav{transform:translateY(0);opacity:1;visibility:visible}
-  .topbar-nav a{padding:14px 18px;font-size:12px;border-radius:0;border-bottom:1px solid var(--gold-faint);justify-content:flex-start}
+  .topbar-nav a{padding:16px 20px;font-size:13px;letter-spacing:.16em;border-radius:0;border-bottom:1px solid var(--gold-faint);justify-content:flex-start;min-height:48px}
+  .topbar-nav a svg{width:16px;height:16px}
   .topbar-nav a:last-child{border-bottom:0}
-  .topbar-actions{margin-left:auto}
+  .topbar-actions{gap:6px}
   .topbar-user{display:none}
-  .topbar-logout{padding:7px 12px;font-size:9px;letter-spacing:.14em}
-  .burger{display:flex;align-items:center;justify-content:center}
+  .topbar-logout{padding:8px 12px;font-size:9.5px;letter-spacing:.14em;min-height:36px}
+  .topbar-actions #btnHelp{padding:8px;min-width:36px;min-height:36px}
+  .topbar-actions #btnHelp svg{width:18px;height:18px}
+  .burger{display:flex;align-items:center;justify-content:center;min-width:42px;min-height:42px}
 
-  .container{padding:28px 18px 110px}
-  .h1{font-size:28px;line-height:1.14}
-  .h-sub{font-size:15px;margin-bottom:24px}
+  .container{padding:24px 16px 110px}
+  .h1{font-size:26px;line-height:1.15}
+  .h-sub{font-size:14.5px;margin-bottom:22px;line-height:1.5}
 
   .login-page{padding:24px 18px}
   .login-box{padding:32px 24px}
@@ -338,44 +343,153 @@ body.dragging-file::after{content:"📁  Solte a imagem aqui";position:fixed;ins
   .login-brand-name{font-size:20px}
   .login-title{font-size:24px}
   .login-sub{font-size:13.5px;margin-bottom:24px}
+  .login-btn{padding:18px 22px;min-height:52px;font-size:12px}
 
-  .card{padding:22px 20px}
-  .post-row{padding:20px 22px}
-  .post-row h3{font-size:18px}
+  .card{padding:20px 18px}
+  .post-row{padding:18px 20px}
+  .post-row h3{font-size:17px}
   .post-row-actions{flex-wrap:wrap;gap:6px}
-  .post-row-actions .btn{padding:7px 12px;font-size:9.5px;letter-spacing:.14em}
+  .post-row-actions .btn{padding:9px 14px;font-size:10px;letter-spacing:.14em;min-height:38px;flex:1;justify-content:center}
 
   .field-row{grid-template-columns:1fr;gap:0}
-  .field input, .field select, .field textarea{padding:12px 14px;font-size:14px}
+  /* iOS evita zoom-in se font-size >= 16px */
+  .field input, .field select, .field textarea{padding:13px 14px;font-size:16px;border-radius:2px}
+  .field input[type="date"]{font-size:15px}
   .field label{font-size:10px;letter-spacing:.22em}
+  .field-help{font-size:13px;line-height:1.55}
 
-  .editor-toolbar{gap:2px;padding:5px}
-  .editor-tool{padding:7px 10px;font-size:11px}
-  .editor-grid{grid-template-columns:1fr;min-height:0}
-  .editor-textarea{height:340px;border-right:0;border-bottom:1px solid var(--gold-soft);padding:18px 18px;font-size:13.5px}
-  .editor-preview{height:auto;min-height:240px;padding:18px}
+  .btn{min-height:44px;padding:13px 20px;font-size:11px}
+  .btn-sm{min-height:36px;padding:9px 14px;font-size:10px}
+  .btn-ghost{min-height:36px}
 
-  .savebar{padding:12px 16px;flex-wrap:wrap;gap:10px}
-  .savebar-status{font-size:11.5px}
+  /* Editor de post (markdown): toggle preview em mobile */
+  .editor-toolbar{gap:2px;padding:5px;position:sticky;top:0;z-index:5;background:var(--black-3)}
+  .editor-tool{padding:10px 12px;font-size:13px;min-width:42px;min-height:42px;display:inline-flex;align-items:center;justify-content:center}
+  .editor-tool svg{width:16px;height:16px}
+  .editor-grid{grid-template-columns:1fr;min-height:0;position:relative}
+  .editor-textarea{height:380px;border-right:0;border-bottom:1px solid var(--gold-soft);padding:16px;font-size:15px}
+  .editor-preview{height:auto;min-height:200px;padding:16px;display:none}
+  .editor-grid.show-preview .editor-preview{display:block}
+  .editor-grid.show-preview .editor-textarea{display:none}
+  .editor-toggle-preview{display:flex;width:100%;background:var(--black-3);border:1px solid var(--gold-soft);border-top:0;color:var(--gold-light);padding:10px;font-family:'Inter Tight',sans-serif;font-size:11px;letter-spacing:.18em;text-transform:uppercase;cursor:pointer;align-items:center;justify-content:center;gap:8px;min-height:42px}
+  .editor-toggle-preview:hover{background:var(--gold-faint)}
+  .editor-toggle-preview svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.6}
+
+  /* Rich editor toolbar (B/I) maior pra dedo */
+  .rich-toolbar{padding:6px}
+  .rich-toolbar button{padding:9px 12px;min-width:42px;min-height:40px;font-size:13px}
+  .rich-toolbar button b, .rich-toolbar button i{font-size:15px}
+  .rich-area{padding:14px 16px;font-size:15.5px;min-height:80px}
+  .rich-area.single{min-height:auto;padding:12px 16px}
+
+  /* Image picker — esconde drag hint (não funciona em touch) */
+  .img-picker{flex-direction:row;align-items:flex-start;padding:8px}
+  .img-picker .img-preview, .img-picker-empty{width:64px;height:64px}
+  .img-picker-body{gap:8px}
+  .img-picker-body input{padding:11px 13px;font-size:14px}
+  .img-picker-actions{gap:8px}
+  .img-picker-actions .btn{padding:9px 13px;font-size:10px;min-height:40px}
+  /* Esconde "...ou arraste pra cá" em devices touch */
+  .drop-hint{display:none}
+
+  .savebar{padding:11px 14px;padding-bottom:max(11px, env(safe-area-inset-bottom));gap:8px}
+  .savebar-status{font-size:11.5px;min-width:0;flex:1}
   .savebar-status .hint{display:none}
-  .savebar-actions{flex:1;justify-content:flex-end}
-  .savebar .btn{padding:10px 16px;font-size:10.5px}
+  .savebar-msg{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .savebar-actions{gap:6px}
+  .savebar-actions .btn-ghost{display:none}
+  .savebar .btn{padding:11px 14px;font-size:10.5px;min-height:42px}
+  .savebar .btn-secondary{padding:11px 12px}
 
-  .dash-grid{grid-template-columns:1fr}
+  .dash-grid{grid-template-columns:1fr;gap:14px}
+  .dash-card{padding:24px 22px}
+  .dash-num{font-size:32px}
   .gal-grid{grid-template-columns:repeat(2,1fr)}
+  .gal-actions button{min-height:36px;font-size:9.5px}
   .landing-grid{grid-template-columns:1fr}
   .posts-grid{grid-template-columns:1fr}
+  .posts-search{min-width:0;width:100%;padding:13px 16px;font-size:16px}
 
-  .modal-box{padding:28px 24px}
-  .modal-title{font-size:20px}
-  .modal-actions{flex-direction:column}
+  /* Tabs verticais → horizontal scroll com snap */
+  .tabs-list{margin-bottom:18px;-webkit-overflow-scrolling:touch;scroll-snap-type:x mandatory;scrollbar-width:thin}
+  .tabs-list button{min-width:130px;scroll-snap-align:start;padding:12px 16px;min-height:60px}
+  .tabs-list button .tab-icon{width:20px;height:20px}
 
-  .toast{left:14px;right:14px;bottom:90px;min-width:0;font-size:12.5px}
+  .modal-bg{padding:14px;align-items:flex-end}
+  .modal-box{padding:24px 22px;max-height:calc(100vh - 28px);overflow-y:auto;border-radius:8px 8px 2px 2px;animation-name:popInMobile}
+  .modal-title{font-size:19px}
+  .modal-msg{font-size:14px}
+  .modal-actions{flex-direction:column-reverse;gap:8px}
+  .modal-actions .btn{width:100%;min-height:48px;padding:14px 20px}
+
+  .toast{left:14px;right:14px;bottom:max(96px, calc(env(safe-area-inset-bottom) + 88px));min-width:0;font-size:13px;padding:13px 18px}
+
+  /* Sub-cards (pillars/credentials/areas/reviews/faq) */
+  .card-mini{padding:14px 14px}
+  .card-mini summary{font-size:13.5px;padding:8px 0}
+  .list-item textarea{font-size:15px}
+
+  /* Empty states menores */
+  .empty{padding:50px 16px}
+  .empty-icon{width:64px;height:64px}
+  .empty-icon svg{width:32px;height:32px}
+  .empty h3{font-size:21px}
+  .empty p{font-size:14px}
+
+  /* Skeletons */
+  .skel-row{height:74px;margin-bottom:10px}
+  .skel-card{height:140px}
+
+  /* Drag overlay (não acontece em touch mas se rolar, escondemos) */
+  body.dragging-file::after{font-size:20px;padding:30px}
 }
+
+/* Mobile pequeno (iPhone SE / Android entry-level) */
 @media(max-width:480px){
-  .container{padding:24px 14px 110px}
-  .h1{font-size:24px}
+  .container{padding:20px 12px 110px}
+  .h1{font-size:23px}
+  .h-sub{font-size:13.5px;margin-bottom:18px}
+
   .login-box{padding:24px 18px}
   .login-brand img{height:42px;width:42px}
   .login-title{font-size:21px}
+  .login-sub{font-size:12.5px}
+
+  .topbar{padding:9px 12px}
+  .topbar-brand img{height:30px;width:30px}
+  .topbar-brand-text{font-size:13px}
+
+  .card{padding:18px 16px}
+  .field{margin-bottom:16px}
+  .field-row{gap:0}
+  .field-row .field{margin-bottom:14px}
+
+  .gal-grid{grid-template-columns:1fr}
+  .dash-card{padding:20px 18px}
+
+  .editor-textarea{height:320px;padding:14px}
+  .editor-preview{padding:14px}
+
+  .modal-box{padding:20px 18px}
+  .modal-title{font-size:18px}
+
+  .savebar{padding:10px 12px}
+  .savebar .btn{padding:10px 12px;font-size:10px}
+
+  .post-row-actions .btn{font-size:9.5px}
+}
+
+@keyframes popInMobile {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Touch devices: esconde hover hints permanentes e drag-and-drop (não funciona em touch) */
+@media (hover: none) and (pointer: coarse) {
+  .drop-hint{display:none !important}
+  body.dragging-file::after{display:none}
+  /* Hover effects que não fazem sentido em touch */
+  .dash-card:hover{transform:none}
+  .post-row:hover{transform:none}
+  .landing-card:hover{transform:none}
 }
