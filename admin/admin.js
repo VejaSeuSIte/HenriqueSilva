@@ -213,6 +213,148 @@ function toast(message, kind = 'success') {
   setTimeout(() => el.remove(), 2800);
 }
 
+/* ===================== RICH TEXT EDITOR (WYSIWYG sem HTML cru) ===================== */
+// Registro global pra coletar valores na hora de salvar
+const richInstances = new Map();
+function clearRichInstances() { richInstances.clear(); }
+
+// Sanitiza o HTML produzido pelo contenteditable: só deixa <strong>, <em>, <a>, <br>
+function sanitizeRichHtml(html, opts = {}) {
+  const div = document.createElement('div');
+  div.innerHTML = html || '';
+  function walk(node) {
+    if (node.nodeType === 3) return escHtml(node.textContent).replace(/&amp;nbsp;/g, ' ');
+    if (node.nodeType !== 1) return '';
+    const tag = node.nodeName.toLowerCase();
+    let inner = '';
+    for (const c of node.childNodes) inner += walk(c);
+    if (!inner.trim() && tag !== 'br') return inner;
+    if (tag === 'b' || tag === 'strong') return `<strong>${inner}</strong>`;
+    if (tag === 'i' || tag === 'em') return `<em>${inner}</em>`;
+    if (tag === 'br') return opts.singleLine ? ' ' : '<br/>';
+    if (tag === 'a') {
+      let href = node.getAttribute('href') || '';
+      if (!/^(https?:\/\/|mailto:|tel:|\/|#)/i.test(href)) href = 'https://' + href;
+      const safeHref = href.replace(/"/g, '&quot;').replace(/</g, '&lt;');
+      const target = /^https?:/i.test(href) ? ' target="_blank"' : '';
+      return `<a href="${safeHref}"${target}>${inner}</a>`;
+    }
+    if (tag === 'p' || tag === 'div') return inner + (opts.singleLine ? '' : '<br/>');
+    return inner;
+  }
+  let out = walk(div);
+  // Limpa <br/> finais sobrando
+  out = out.replace(/(<br\/>)+$/g, '');
+  return out;
+}
+
+function makeRichEditor(targetEl, key, initialHtml, opts = {}) {
+  const singleLine = !!opts.singleLine;
+  const placeholder = opts.placeholder || '';
+  targetEl.classList.add('rich-editor-shell');
+  targetEl.innerHTML = `
+    <div class="rich-editor">
+      <div class="rich-toolbar">
+        <button type="button" data-cmd="bold" title="Negrito (Ctrl+B)"><b>B</b></button>
+        <button type="button" data-cmd="italic" title="Itálico (Ctrl+I)"><i>I</i></button>
+        ${opts.allowLink === false ? '' : '<button type="button" data-cmd="link" title="Inserir link">🔗</button>'}
+        ${opts.allowLink === false ? '' : '<button type="button" data-cmd="unlink" title="Remover link">⌀</button>'}
+        <span class="sep"></span>
+        <button type="button" data-cmd="clear" title="Remover formatação">A</button>
+      </div>
+      <div class="rich-area${singleLine ? ' single' : ''}" contenteditable="true" data-placeholder="${escAttr(placeholder)}"></div>
+    </div>
+  `;
+  const area = targetEl.querySelector('.rich-area');
+  area.innerHTML = initialHtml || '';
+
+  // Single-line: previne Enter
+  if (singleLine) {
+    area.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); } });
+  }
+
+  // Toolbar handlers
+  targetEl.querySelectorAll('.rich-toolbar button').forEach(b => {
+    b.addEventListener('mousedown', (e) => { e.preventDefault(); }); // não perde seleção
+    b.addEventListener('click', (e) => {
+      e.preventDefault();
+      const cmd = b.dataset.cmd;
+      area.focus();
+      if (cmd === 'bold' || cmd === 'italic') {
+        document.execCommand(cmd, false, null);
+      } else if (cmd === 'link') {
+        const sel = window.getSelection();
+        const selectedText = sel ? sel.toString() : '';
+        if (!selectedText) { toast('Selecione o texto que vira link primeiro', 'error'); return; }
+        const url = prompt('Cole o endereço (URL):');
+        if (url) document.execCommand('createLink', false, url);
+      } else if (cmd === 'unlink') {
+        document.execCommand('unlink', false, null);
+      } else if (cmd === 'clear') {
+        document.execCommand('removeFormat', false, null);
+      }
+      updateToolbarState();
+      area.dispatchEvent(new Event('input', { bubbles: true }));
+    });
+  });
+
+  // Atalhos teclado
+  area.addEventListener('keydown', (e) => {
+    if (e.ctrlKey || e.metaKey) {
+      const k = e.key.toLowerCase();
+      if (k === 'b') { e.preventDefault(); document.execCommand('bold'); area.dispatchEvent(new Event('input', { bubbles: true })); }
+      if (k === 'i') { e.preventDefault(); document.execCommand('italic'); area.dispatchEvent(new Event('input', { bubbles: true })); }
+    }
+  });
+
+  // Estado da toolbar (B/I active quando cursor está em texto formatado)
+  function updateToolbarState() {
+    try {
+      targetEl.querySelector('[data-cmd="bold"]').classList.toggle('active', document.queryCommandState('bold'));
+      targetEl.querySelector('[data-cmd="italic"]').classList.toggle('active', document.queryCommandState('italic'));
+    } catch (_) {}
+  }
+  area.addEventListener('keyup', updateToolbarState);
+  area.addEventListener('mouseup', updateToolbarState);
+
+  // Cole texto sem formatação herdada
+  area.addEventListener('paste', (e) => {
+    e.preventDefault();
+    const text = (e.clipboardData || window.clipboardData).getData('text/plain');
+    document.execCommand('insertText', false, text);
+  });
+
+  const inst = {
+    getHtml() { return sanitizeRichHtml(area.innerHTML, { singleLine }); },
+    setHtml(h) { area.innerHTML = h || ''; },
+    focus() { area.focus(); },
+    el: area,
+  };
+  if (key) richInstances.set(key, inst);
+  return inst;
+}
+
+// Inicializa todos os .js-rich num container (idempotente — não re-inicializa)
+function initRichEditors(root = document) {
+  root.querySelectorAll('.js-rich:not([data-rich-init])').forEach(el => {
+    const key = el.dataset.richKey;
+    const html = el.dataset.richHtml || '';
+    const single = el.dataset.richSingle === 'true';
+    const placeholder = el.dataset.richPlaceholder || '';
+    el.removeAttribute('data-rich-html');
+    el.dataset.richInit = '1';
+    makeRichEditor(el, key, html, { singleLine: single, placeholder });
+  });
+}
+
+// Lê o HTML de um .js-rich pelo elemento (qualquer container/key)
+function getRichHtml(el) {
+  if (!el) return '';
+  const k = el.dataset.richKey;
+  const r = richInstances.get(k);
+  return r ? r.getHtml() : '';
+}
+
 /* ===================== SAVE BAR + DIRTY STATE ===================== */
 const dirty = { isDirty: false, count: 0, onSave: null, autoKey: null };
 
@@ -734,23 +876,29 @@ async function renderSiteEditor(app) {
           </div>
         </div>`;
     }
-    if (field.type === 'textarea' || (field.type === 'text' && field.html)) {
-      return `<div class="field"><label>${field.label}</label><textarea id="${id}" rows="3">${escHtml(value || '')}</textarea>${field.html ? '<div class="field-help">Aceita HTML simples: &lt;em&gt;, &lt;strong&gt;, &lt;br/&gt;, &lt;a href=""&gt;</div>' : ''}</div>`;
+    if (field.html && (field.type === 'textarea' || field.type === 'text' || !field.type)) {
+      // WYSIWYG (negrito/itálico via botões, sem HTML cru)
+      const richKey = `site.${sectionId}.${field.key}`;
+      const single = field.type === 'text';
+      return `<div class="field"><label>${field.label}</label><div class="js-rich" data-rich-key="${richKey}" data-rich-html="${escAttr(value || '')}" data-rich-single="${single}" data-rich-placeholder="${escAttr(field.hint || '')}"></div></div>`;
+    }
+    if (field.type === 'textarea') {
+      return `<div class="field"><label>${field.label}</label><textarea id="${id}" rows="3">${escHtml(value || '')}</textarea></div>`;
     }
     if (field.type === 'list') {
       const items = Array.isArray(value) ? value : [];
+      const useRich = field.html;
+      const richKeyBase = `site.${sectionId}.${field.key}`;
       return `
-        <div class="field" data-list-field="${sectionId}.${field.key}">
+        <div class="field" data-list-field="${sectionId}.${field.key}" data-rich-list="${useRich}" data-rich-base="${richKeyBase}">
           <label>${field.label}</label>
           <div class="list-items" data-key="${field.key}">
-            ${items.map((v, i) => `
-              <div class="list-item" data-idx="${i}">
-                <textarea rows="2" data-listval>${escHtml(v)}</textarea>
-                <button type="button" class="btn btn-danger btn-rmitem">×</button>
-              </div>
-            `).join('')}
+            ${items.map((v, i) => useRich
+              ? `<div class="list-item" data-idx="${i}"><div class="js-rich" style="flex:1" data-rich-key="${richKeyBase}.${i}" data-rich-html="${escAttr(v)}"></div><button type="button" class="btn btn-danger btn-rmitem">×</button></div>`
+              : `<div class="list-item" data-idx="${i}"><textarea rows="2" data-listval>${escHtml(v)}</textarea><button type="button" class="btn btn-danger btn-rmitem">×</button></div>`
+            ).join('')}
           </div>
-          <button type="button" class="btn btn-secondary btn-additem" data-section="${sectionId}" data-key="${field.key}">+ Adicionar</button>
+          <button type="button" class="btn btn-secondary btn-additem" data-section="${sectionId}" data-key="${field.key}" data-rich="${useRich}">${I.plus} Adicionar</button>
         </div>`;
     }
     if (field.type === 'pillars') {
@@ -795,19 +943,24 @@ async function renderSiteEditor(app) {
           <div class="areas-list">
             ${items.map((a, i) => `
               <details class="card-mini" data-idx="${i}" ${i < 2 ? 'open' : ''}>
-                <summary><strong>${escHtml(a.label || a.slug)}</strong> ${a.featured ? '<span style="color:var(--gold);font-size:10px">DESTAQUE</span>' : ''}</summary>
-                <div class="field"><label>Slug (link)</label><input data-akey="slug" value="${escAttr(a.slug)}" readonly style="opacity:.6" /></div>
-                <div class="field"><label>Rótulo curto</label><input data-akey="label" value="${escAttr(a.label)}" /></div>
-                <div class="field"><label>Título do card (HTML, com &lt;em&gt;)</label><input data-akey="h3" value="${escAttr(a.h3)}" /></div>
+                <summary><strong>${escHtml(a.label || a.slug)}</strong> ${a.featured ? '<span style="color:var(--gold);font-size:10px;letter-spacing:.18em">DESTAQUE</span>' : ''}</summary>
+                <div class="field"><label>Nome curto da área</label><input data-akey="label" value="${escAttr(a.label)}" /></div>
+                <div class="field"><label>Título do card</label><div class="js-rich" data-rich-key="site.areas.${i}.h3" data-rich-html="${escAttr(a.h3)}" data-rich-single="true"></div></div>
                 <div class="field"><label>Descrição</label><textarea data-akey="description" rows="2">${escHtml(a.description)}</textarea></div>
                 <div class="field"><label>Imagem</label>
                   <div class="img-picker">
-                    <img class="img-preview" src="${previewUrl(a.image)}" alt="" onerror="this.style.display='none'" />
-                    <input type="text" data-akey="image" value="${escAttr(a.image)}" />
-                    <button type="button" class="btn btn-secondary btn-pickimg-area" data-idx="${i}">Trocar</button>
+                    ${a.image ? `<img class="img-preview" src="${previewUrl(a.image)}" alt="" onerror="this.style.display='none'" />` : `<div class="img-picker-empty">${I.image}</div>`}
+                    <div class="img-picker-body">
+                      <input type="text" data-akey="image" value="${escAttr(a.image)}" />
+                      <div class="img-picker-actions">
+                        <button type="button" class="btn btn-secondary btn-pickimg-area" data-idx="${i}">${I.upload} Trocar</button>
+                        <span class="drop-hint">…ou arraste</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
                 ${a.featured ? `<div class="field"><label>Tags (separadas por vírgula)</label><input data-akey="tags" value="${escAttr((a.tags||[]).join(', '))}" /></div>` : ''}
+                <input type="hidden" data-akey="slug" value="${escAttr(a.slug)}" />
               </details>
             `).join('')}
           </div>
@@ -827,12 +980,12 @@ async function renderSiteEditor(app) {
                   <div class="field"><label>Data/origem</label><input data-rkey="date" value="${escAttr(r.date)}" /></div>
                 </div>
                 <div class="field"><label>Estrelas</label><input data-rkey="stars" value="${escAttr(r.stars)}" /></div>
-                <div class="field"><label>Avaliação</label><textarea data-rkey="quote" rows="2">${escHtml(r.quote)}</textarea></div>
+                <div class="field"><label>Texto da avaliação</label><textarea data-rkey="quote" rows="2">${escHtml(r.quote)}</textarea></div>
                 <button type="button" class="btn btn-danger btn-rmrev" data-idx="${i}">Remover avaliação</button>
               </details>
             `).join('')}
           </div>
-          <button type="button" class="btn btn-secondary btn-addrev">+ Adicionar avaliação</button>
+          <button type="button" class="btn btn-secondary btn-addrev">${I.plus} Adicionar avaliação</button>
         </div>`;
     }
     if (field.type === 'faq') {
@@ -845,12 +998,12 @@ async function renderSiteEditor(app) {
               <details class="card-mini" data-idx="${i}">
                 <summary><strong>${escHtml((q.q||'').slice(0, 60))}</strong></summary>
                 <div class="field"><label>Pergunta</label><input data-qkey="q" value="${escAttr(q.q)}" /></div>
-                <div class="field"><label>Resposta (HTML)</label><textarea data-qkey="a" rows="3">${escHtml(q.a)}</textarea></div>
+                <div class="field"><label>Resposta</label><div class="js-rich" data-rich-key="site.faq.${i}.a" data-rich-html="${escAttr(q.a)}"></div></div>
                 <button type="button" class="btn btn-danger btn-rmfaq" data-idx="${i}">Remover</button>
               </details>
             `).join('')}
           </div>
-          <button type="button" class="btn btn-secondary btn-addfaq">+ Adicionar pergunta</button>
+          <button type="button" class="btn btn-secondary btn-addfaq">${I.plus} Adicionar pergunta</button>
         </div>`;
     }
     if (field.type === 'contact_form') {
@@ -887,6 +1040,7 @@ async function renderSiteEditor(app) {
     </div>
   `).join('');
 
+  clearRichInstances();
   $('#siteContainer').innerHTML = `
     <div class="tabs-shell">
       <div class="tabs-list" id="siteTabs">${tabsHtml}</div>
@@ -894,6 +1048,7 @@ async function renderSiteEditor(app) {
     </div>
     <input type="file" id="picker-file" accept="image/*,video/*" style="display:none" />
   `;
+  initRichEditors($('#siteTabsContent'));
 
   // Switch tabs
   $('#siteTabs').addEventListener('click', (e) => {
@@ -915,7 +1070,14 @@ async function renderSiteEditor(app) {
       sec.fields.forEach(f => {
         const id = `f-${sec.id}-${f.key}`;
         if (f.type === 'list') {
-          const arr = $$(`.list-items[data-key="${f.key}"] [data-listval]`, root).map(t => t.value);
+          const list = root.querySelector(`.list-items[data-key="${f.key}"]`);
+          if (!list) return;
+          const arr = Array.from(list.children).map(li => {
+            const rich = li.querySelector('.js-rich');
+            if (rich) return getRichHtml(rich);
+            const ta = li.querySelector('[data-listval]');
+            return ta ? ta.value : '';
+          });
           newCfg[sec.id][f.key] = arr.filter(s => s.trim());
         } else if (f.type === 'pillars' || f.type === 'credentials') {
           const arr = $$(`[data-${f.type}="${sec.id}.${f.key}"] .card-mini`, root).map(card => {
@@ -931,6 +1093,8 @@ async function renderSiteEditor(app) {
               if (inp.dataset.akey === 'tags') o.tags = inp.value.split(',').map(t => t.trim()).filter(Boolean);
               else o[inp.dataset.akey] = inp.value;
             });
+            const h3Rich = card.querySelector('.js-rich');
+            if (h3Rich) o.h3 = getRichHtml(h3Rich);
             const existing = (cfg[sec.id]?.items || []).find(x => x.slug === o.slug);
             if (existing) {
               o.featured = existing.featured;
@@ -940,12 +1104,19 @@ async function renderSiteEditor(app) {
             return o;
           });
           newCfg[sec.id][f.key] = arr;
-        } else if (f.type === 'reviews' || f.type === 'faq') {
-          const sel = `[data-${f.type}="${sec.id}.${f.key}"] details.card-mini`;
-          const arr = $$(sel, root).map(card => {
+        } else if (f.type === 'reviews') {
+          const arr = $$(`[data-reviews="${sec.id}.${f.key}"] details.card-mini`, root).map(card => {
             const o = {};
-            const dataAttr = f.type === 'reviews' ? 'rkey' : 'qkey';
-            card.querySelectorAll(`[data-${dataAttr}]`).forEach(inp => { o[inp.dataset[dataAttr]] = inp.value; });
+            card.querySelectorAll('[data-rkey]').forEach(inp => { o[inp.dataset.rkey] = inp.value; });
+            return o;
+          });
+          newCfg[sec.id][f.key] = arr;
+        } else if (f.type === 'faq') {
+          const arr = $$(`[data-faq="${sec.id}.${f.key}"] details.card-mini`, root).map(card => {
+            const o = {};
+            card.querySelectorAll('[data-qkey]').forEach(inp => { o[inp.dataset.qkey] = inp.value; });
+            const aRich = card.querySelector('.js-rich');
+            if (aRich) o.a = getRichHtml(aRich);
             return o;
           });
           newCfg[sec.id][f.key] = arr;
@@ -953,6 +1124,9 @@ async function renderSiteEditor(app) {
           const o = {};
           $$(`[data-form="${sec.id}.${f.key}"] [data-fkey]`, root).forEach(inp => { o[inp.dataset.fkey] = inp.value; });
           newCfg[sec.id][f.key] = o;
+        } else if (f.html && (f.type === 'textarea' || f.type === 'text' || !f.type)) {
+          const richEl = root.querySelector(`.js-rich[data-rich-key="site.${sec.id}.${f.key}"]`);
+          if (richEl) newCfg[sec.id][f.key] = getRichHtml(richEl);
         } else {
           const el = document.getElementById(id);
           if (el) newCfg[sec.id][f.key] = el.value;
@@ -967,11 +1141,20 @@ async function renderSiteEditor(app) {
     const t = e.target.closest('button');
     if (!t) return;
     if (t.classList.contains('btn-additem')) {
-      const list = t.parentElement.querySelector('.list-items');
+      const fieldEl = t.closest('[data-list-field]');
+      const isRich = fieldEl && fieldEl.dataset.richList === 'true';
+      const list = fieldEl.querySelector('.list-items');
       const item = document.createElement('div');
-      item.className = 'list-item'; item.dataset.idx = list.children.length;
-      item.innerHTML = `<textarea rows="2" data-listval></textarea><button type="button" class="btn btn-danger btn-rmitem">×</button>`;
+      item.className = 'list-item';
+      const idx = list.children.length;
+      if (isRich) {
+        const base = fieldEl.dataset.richBase;
+        item.innerHTML = `<div class="js-rich" style="flex:1" data-rich-key="${base}.add${Date.now()}-${idx}" data-rich-html=""></div><button type="button" class="btn btn-danger btn-rmitem">×</button>`;
+      } else {
+        item.innerHTML = `<textarea rows="2" data-listval></textarea><button type="button" class="btn btn-danger btn-rmitem">×</button>`;
+      }
       list.appendChild(item);
+      initRichEditors(item);
       markDirty();
     }
     if (t.classList.contains('btn-rmitem')) { t.parentElement.remove(); markDirty(); }
@@ -992,11 +1175,13 @@ async function renderSiteEditor(app) {
       const list = t.parentElement.querySelector('.faq-list');
       const d = document.createElement('details');
       d.className = 'card-mini'; d.open = true;
+      const newKey = `site.faq.add${Date.now()}-${list.children.length}.a`;
       d.innerHTML = `<summary><strong>Nova pergunta</strong></summary>
         <div class="field"><label>Pergunta</label><input data-qkey="q" /></div>
-        <div class="field"><label>Resposta</label><textarea data-qkey="a" rows="3"></textarea></div>
+        <div class="field"><label>Resposta</label><div class="js-rich" data-rich-key="${newKey}" data-rich-html=""></div></div>
         <button type="button" class="btn btn-danger btn-rmfaq">Remover</button>`;
       list.appendChild(d);
+      initRichEditors(d);
       markDirty();
     }
   });
@@ -1201,6 +1386,7 @@ async function renderLandingEditor(app, slug) {
     { id: 'faq', label: 'Perguntas', icon: I.help },
   ];
 
+  clearRichInstances();
   $('#landingContainer').innerHTML = `
     <div class="tabs-shell">
       <div class="tabs-list" id="lTabs">
@@ -1217,7 +1403,7 @@ async function renderLandingEditor(app, slug) {
             <div class="field"><label>Texto pequeno acima do título</label><input id="l-eyebrow" value="${escAttr(l.eyebrow)}" /></div>
             <div class="field"><label>Texto do botão WhatsApp</label><input id="l-cta_text" value="${escAttr(l.cta_text)}" /></div>
           </div>
-          <div class="field"><label>Título grande</label><input id="l-h1" value="${escAttr(l.h1)}" /><div class="field-help">Pode usar &lt;em&gt;palavra&lt;/em&gt; pra destacar em itálico dourado</div></div>
+          <div class="field"><label>Título grande</label><div class="js-rich" data-rich-key="land.h1" data-rich-html="${escAttr(l.h1)}" data-rich-single="true"></div><div class="field-help">Selecione qualquer palavra e clique em B (negrito) ou I (itálico) pra destacar.</div></div>
           <div class="field"><label>Subtítulo</label><textarea id="l-subtitle" rows="2">${escHtml(l.subtitle||'')}</textarea></div>
           <div class="field"><label>Mensagem pré-preenchida no WhatsApp</label><input id="l-wa_text" value="${escAttr(l.wa_text)}" /></div>
         </div>
@@ -1225,10 +1411,10 @@ async function renderLandingEditor(app, slug) {
         <div class="card editor-section" data-section="intro" style="display:none">
           <h3 style="font-family:'Fraunces',serif;font-size:24px;color:var(--off-white);font-weight:300;margin:0 0 4px">Introdução</h3>
           <p style="font-family:'Fraunces',serif;font-style:italic;font-size:14px;color:var(--gray-500);margin:0 0 24px">O texto explicativo da área</p>
-          <div class="field"><label>Título da introdução</label><input id="l-intro_h2" value="${escAttr(l.intro?.h2)}" /></div>
+          <div class="field"><label>Título da introdução</label><div class="js-rich" data-rich-key="land.intro_h2" data-rich-html="${escAttr(l.intro?.h2 || '')}" data-rich-single="true"></div></div>
           <div class="field"><label>Parágrafos</label>
             <div class="list-items" id="introParagraphs">
-              ${(l.intro?.paragraphs||[]).map((p,i)=>`<div class="list-item" data-idx="${i}"><textarea rows="3" data-listval>${escHtml(p)}</textarea><button type="button" class="btn btn-danger btn-rmitem">×</button></div>`).join('')}
+              ${(l.intro?.paragraphs||[]).map((p,i)=>`<div class="list-item" data-idx="${i}"><div class="js-rich" style="flex:1" data-rich-key="land.intro.${i}" data-rich-html="${escAttr(p)}"></div><button type="button" class="btn btn-danger btn-rmitem">×</button></div>`).join('')}
             </div>
             <button type="button" class="btn btn-secondary btn-additem-intro">${I.plus} Adicionar parágrafo</button>
           </div>
@@ -1239,14 +1425,14 @@ async function renderLandingEditor(app, slug) {
           <p style="font-family:'Fraunces',serif;font-style:italic;font-size:14px;color:var(--gray-500);margin:0 0 24px">Lista numerada de serviços ou tópicos</p>
           <div class="field-row">
             <div class="field"><label>Texto pequeno acima do título</label><input id="l-bullets_eye" value="${escAttr(l.bullets_eye)}" /></div>
-            <div class="field"><label>Título</label><input id="l-bullets_h2" value="${escAttr(l.bullets_h2)}" /></div>
+            <div class="field"><label>Título</label><div class="js-rich" data-rich-key="land.bullets_h2" data-rich-html="${escAttr(l.bullets_h2)}" data-rich-single="true"></div></div>
           </div>
           <div class="bullets-list" id="bulletsList">
             ${(l.bullets||[]).map((b,i)=>`
               <details class="card-mini" data-idx="${i}">
                 <summary><strong>${escHtml(b.title)}</strong></summary>
                 <div class="field"><label>Título</label><input data-bkey="title" value="${escAttr(b.title)}" /></div>
-                <div class="field"><label>Descrição</label><textarea data-bkey="text" rows="2">${escHtml(b.text)}</textarea></div>
+                <div class="field"><label>Descrição</label><div class="js-rich" data-rich-key="land.bullets.${i}.text" data-rich-html="${escAttr(b.text)}"></div></div>
                 <button type="button" class="btn btn-danger btn-rmbullet">Remover</button>
               </details>
             `).join('')}
@@ -1262,7 +1448,7 @@ async function renderLandingEditor(app, slug) {
               <details class="card-mini" data-idx="${i}">
                 <summary><strong>${escHtml(q.q)}</strong></summary>
                 <div class="field"><label>Pergunta</label><input data-qkey="q" value="${escAttr(q.q)}" /></div>
-                <div class="field"><label>Resposta</label><textarea data-qkey="a" rows="3">${escHtml(q.a)}</textarea></div>
+                <div class="field"><label>Resposta</label><div class="js-rich" data-rich-key="land.faq.${i}.a" data-rich-html="${escAttr(q.a)}"></div></div>
                 <button type="button" class="btn btn-danger btn-rmqq">Remover</button>
               </details>
             `).join('')}
@@ -1273,6 +1459,7 @@ async function renderLandingEditor(app, slug) {
       </div>
     </div>
   `;
+  initRichEditors($('#lTabsContent'));
 
   $('#lTabs').addEventListener('click', (e) => {
     const btn = e.target.closest('button[data-tab]');
@@ -1293,34 +1480,40 @@ async function renderLandingEditor(app, slug) {
     if (!t) return;
     if (t.classList.contains('btn-additem-intro')) {
       const list = $('#introParagraphs');
+      const i = list.children.length;
       const it = document.createElement('div');
       it.className = 'list-item';
-      it.innerHTML = `<textarea rows="3" data-listval></textarea><button type="button" class="btn btn-danger btn-rmitem">×</button>`;
+      it.innerHTML = `<div class="js-rich" style="flex:1" data-rich-key="land.intro.add${Date.now()}-${i}" data-rich-html=""></div><button type="button" class="btn btn-danger btn-rmitem">×</button>`;
       list.appendChild(it);
+      initRichEditors(it);
       markDirty();
     }
     if (t.classList.contains('btn-rmitem')) { t.parentElement.remove(); markDirty(); }
     if (t.classList.contains('btn-addbullet')) {
       const list = $('#bulletsList');
+      const i = list.children.length;
       const d = document.createElement('details');
       d.className = 'card-mini'; d.open = true;
       d.innerHTML = `<summary><strong>Novo tópico</strong></summary>
         <div class="field"><label>Título</label><input data-bkey="title" /></div>
-        <div class="field"><label>Descrição</label><textarea data-bkey="text" rows="2"></textarea></div>
+        <div class="field"><label>Descrição</label><div class="js-rich" data-rich-key="land.bullets.add${Date.now()}-${i}.text" data-rich-html=""></div></div>
         <button type="button" class="btn btn-danger btn-rmbullet">Remover</button>`;
       list.appendChild(d);
+      initRichEditors(d);
       markDirty();
     }
     if (t.classList.contains('btn-rmbullet')) { t.closest('details').remove(); markDirty(); }
     if (t.classList.contains('btn-addqq')) {
       const list = $('#faqList');
+      const i = list.children.length;
       const d = document.createElement('details');
       d.className = 'card-mini'; d.open = true;
       d.innerHTML = `<summary><strong>Nova pergunta</strong></summary>
         <div class="field"><label>Pergunta</label><input data-qkey="q" /></div>
-        <div class="field"><label>Resposta</label><textarea data-qkey="a" rows="3"></textarea></div>
+        <div class="field"><label>Resposta</label><div class="js-rich" data-rich-key="land.faq.add${Date.now()}-${i}.a" data-rich-html=""></div></div>
         <button type="button" class="btn btn-danger btn-rmqq">Remover</button>`;
       list.appendChild(d);
+      initRichEditors(d);
       markDirty();
     }
     if (t.classList.contains('btn-rmqq')) { t.closest('details').remove(); markDirty(); }
@@ -1333,22 +1526,32 @@ async function renderLandingEditor(app, slug) {
     newL.page_description = $('#l-page_description').value;
     newL.eyebrow = $('#l-eyebrow').value;
     newL.cta_text = $('#l-cta_text').value;
-    newL.h1 = $('#l-h1').value;
+    const h1Rich = $('.js-rich[data-rich-key="land.h1"]');
+    newL.h1 = h1Rich ? getRichHtml(h1Rich) : $('#l-h1').value;
     newL.subtitle = $('#l-subtitle').value;
     newL.wa_text = $('#l-wa_text').value;
     newL.intro = newL.intro || {};
-    newL.intro.h2 = $('#l-intro_h2').value;
-    newL.intro.paragraphs = $$('#introParagraphs [data-listval]').map(t => t.value).filter(s => s.trim());
+    const introH2Rich = $('.js-rich[data-rich-key="land.intro_h2"]');
+    newL.intro.h2 = introH2Rich ? getRichHtml(introH2Rich) : $('#l-intro_h2').value;
+    newL.intro.paragraphs = $$('#introParagraphs > .list-item').map(li => {
+      const r = li.querySelector('.js-rich');
+      return r ? getRichHtml(r) : '';
+    }).filter(s => s.trim());
     newL.bullets_eye = $('#l-bullets_eye').value;
-    newL.bullets_h2 = $('#l-bullets_h2').value;
+    const bH2Rich = $('.js-rich[data-rich-key="land.bullets_h2"]');
+    newL.bullets_h2 = bH2Rich ? getRichHtml(bH2Rich) : $('#l-bullets_h2').value;
     newL.bullets = $$('#bulletsList details.card-mini').map(card => {
       const o = {};
       card.querySelectorAll('[data-bkey]').forEach(inp => o[inp.dataset.bkey] = inp.value);
+      const tRich = card.querySelector('.js-rich');
+      if (tRich) o.text = getRichHtml(tRich);
       return o;
     }).filter(b => b.title || b.text);
     newL.faq = $$('#faqList details.card-mini').map(card => {
       const o = {};
       card.querySelectorAll('[data-qkey]').forEach(inp => o[inp.dataset.qkey] = inp.value);
+      const aRich = card.querySelector('.js-rich');
+      if (aRich) o.a = getRichHtml(aRich);
       return o;
     }).filter(q => q.q || q.a);
     return newL;

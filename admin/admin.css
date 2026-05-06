@@ -192,6 +192,26 @@ em{color:var(--gold-light);font-style:italic;font-weight:300}
 .empty p{font-family:'Fraunces',serif;font-style:italic;font-size:15px;color:var(--gray-300);margin-bottom:28px;max-width:380px;margin-left:auto;margin-right:auto;line-height:1.55}
 .empty .btn{margin:0 4px}
 
+/* ═════ RICH TEXT EDITOR (WYSIWYG) ═════ */
+.rich-editor{border:1px solid var(--gold-soft);border-radius:2px;background:var(--black);overflow:hidden;transition:border-color .25s}
+.rich-editor:focus-within{border-color:var(--gold)}
+.rich-toolbar{display:flex;gap:2px;padding:5px;background:var(--black-3);border-bottom:1px solid var(--gold-soft)}
+.rich-toolbar button{background:transparent;border:0;color:var(--gray-300);padding:6px 10px;border-radius:2px;cursor:pointer;font-family:'Inter Tight',sans-serif;font-size:12.5px;transition:all .2s;min-width:32px;display:inline-flex;align-items:center;justify-content:center;gap:5px}
+.rich-toolbar button:hover{background:var(--gold-faint);color:var(--gold-light)}
+.rich-toolbar button.active{background:var(--gold-faint);color:var(--gold-light)}
+.rich-toolbar button b{font-family:'Fraunces',serif;font-weight:700;font-size:14px}
+.rich-toolbar button i{font-family:'Fraunces',serif;font-style:italic;font-size:14px}
+.rich-toolbar button svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.7}
+.rich-toolbar .sep{width:1px;background:var(--gold-soft);margin:5px 4px}
+.rich-area{padding:13px 16px;color:var(--off-white);font-family:'Inter Tight',sans-serif;font-size:14px;font-weight:300;line-height:1.65;outline:none;min-height:60px;white-space:pre-wrap;word-wrap:break-word}
+.rich-area.single{min-height:auto;padding:11px 16px}
+.rich-area.single br{display:none}
+.rich-area:empty::before{content:attr(data-placeholder);color:var(--gray-500);font-style:italic;pointer-events:none}
+.rich-area strong{color:var(--gold-light);font-weight:500}
+.rich-area em{color:var(--gold-light);font-style:italic}
+.rich-area a{color:var(--gold-light);text-decoration:underline}
+.rich-area::selection{background:rgba(212,175,55,.3)}
+
 /* ═════ TOAST ═════ */
 .toast{position:fixed;bottom:90px;right:24px;background:var(--black-2);border:1px solid var(--gold);color:var(--off-white);padding:14px 22px;font-family:'Inter Tight',sans-serif;font-size:13px;z-index:100;box-shadow:0 18px 40px rgba(0,0,0,.6);min-width:280px;display:flex;align-items:center;gap:14px;animation:slideIn .3s ease;border-radius:2px}
 .toast.success{border-color:var(--success)}
