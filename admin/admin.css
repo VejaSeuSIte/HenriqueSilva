@@ -139,12 +139,16 @@ em{color:var(--gold-light);font-style:italic;font-weight:300}
 .tabs-content{min-width:0}
 
 /* ═════ STICKY SAVE BAR ═════ */
-.savebar{position:fixed;bottom:0;left:0;right:0;background:rgba(20,20,20,.96);backdrop-filter:blur(14px);border-top:1px solid var(--gold-soft);padding:14px 32px;display:flex;align-items:center;justify-content:space-between;gap:18px;z-index:40;transform:translateY(100%);transition:transform .35s cubic-bezier(.22,.8,.24,1);box-shadow:0 -8px 24px rgba(0,0,0,.3)}
+.savebar{position:fixed;bottom:0;left:0;right:0;background:rgba(20,20,20,.96);backdrop-filter:blur(14px);border-top:1px solid var(--gold-soft);padding:14px 32px;padding-bottom:max(14px,env(safe-area-inset-bottom));display:flex;align-items:center;justify-content:space-between;gap:18px;z-index:60;transform:translateY(100%);transition:transform .35s cubic-bezier(.22,.8,.24,1);box-shadow:0 -8px 24px rgba(0,0,0,.3)}
 .savebar.show{transform:translateY(0)}
 .savebar-status{display:flex;align-items:center;gap:14px;font-family:'Inter Tight',sans-serif;font-size:12.5px;color:var(--gray-300);letter-spacing:.04em}
-.savebar-status .dot{width:8px;height:8px;border-radius:50%;background:#e6a64a;box-shadow:0 0 0 4px rgba(230,166,74,.2);animation:pulseDot 1.6s ease-in-out infinite}
+.savebar-status .dot{width:8px;height:8px;border-radius:50%;background:#e6a64a;box-shadow:0 0 0 4px rgba(230,166,74,.2);animation:pulseDot 1.6s ease-in-out infinite;flex-shrink:0}
+.savebar-status .dot::after{content:"●";display:none}
 .savebar-status.saving .dot{background:var(--gold)}
 .savebar-status.saved .dot{background:var(--success);animation:none}
+/* Suporte a daltonismo: indicador textual implícito via ícone */
+.savebar-status.saved::before{content:"✓ ";color:var(--success);font-weight:700;margin-right:-6px}
+.savebar-status.saving::before{content:"○ ";color:var(--gold);font-weight:700;margin-right:-6px}
 .savebar-status .hint{font-size:11px;color:var(--gray-500);font-style:italic}
 .savebar-actions{display:flex;gap:10px;align-items:center}
 @keyframes pulseDot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.85)}}
@@ -285,6 +289,17 @@ em{color:var(--gold-light);font-style:italic;font-weight:300}
 .gal-actions button{flex:1;padding:7px 8px;font-size:9px;letter-spacing:.16em;border:1px solid var(--gold-soft);background:transparent;color:var(--gold-light);text-transform:uppercase;font-weight:500;cursor:pointer;transition:all .25s;border-radius:2px}
 .gal-actions button:hover{background:var(--gold-faint)}
 .gal-actions .del:hover{background:var(--danger);border-color:var(--danger);color:#fff}
+
+/* ═════ REDUCED MOTION ═════ */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .skeleton, .savebar-status .dot { animation: none !important }
+}
 
 /* ═════ DRAGGING / HOVER UPLOAD ═════ */
 body.dragging-file::after{content:"📁  Solte a imagem aqui";position:fixed;inset:0;background:rgba(212,175,55,.08);border:3px dashed var(--gold);display:flex;align-items:center;justify-content:center;font-family:'Fraunces',serif;font-size:32px;color:var(--gold-light);font-style:italic;z-index:300;pointer-events:none;backdrop-filter:blur(2px)}

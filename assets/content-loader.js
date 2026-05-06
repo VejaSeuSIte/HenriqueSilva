@@ -15,6 +15,8 @@
     cfg = await r.json();
   } catch (e) {
     console.warn('[content-loader] não carregou site-content.json:', e);
+    // Sinaliza pro admin/ferramentas saberem que houve falha. Não polui o site público.
+    document.documentElement.setAttribute('data-content-loader-error', e.message || 'load failed');
     return;
   }
 
@@ -119,8 +121,19 @@
     setText('.reviews-banner-num', cfg.reviews.rating_num);
     setText('.reviews-banner-stars', cfg.reviews.rating_stars);
     setHTML('.reviews-banner-meta', cfg.reviews.meta_html);
-    const cards = $$('.review-card');
-    (cfg.reviews.items || []).forEach((rev, i) => {
+    const items = cfg.reviews.items || [];
+    let cards = $$('.review-card');
+    // Se JSON tem MAIS reviews que DOM tem cards, clona o último pra criar os faltantes
+    if (cards.length > 0 && items.length > cards.length) {
+      const container = cards[0].parentElement;
+      const template = cards[cards.length - 1];
+      while (cards.length < items.length) {
+        const clone = template.cloneNode(true);
+        container.appendChild(clone);
+        cards = $$('.review-card', container);
+      }
+    }
+    items.forEach((rev, i) => {
       const card = cards[i];
       if (!card) return;
       const name = card.querySelector('.review-name, h4');
@@ -132,6 +145,8 @@
       if (stars) setText(stars, rev.stars);
       if (quote) setText(quote, rev.quote);
     });
+    // Se JSON tem MENOS reviews, esconde os cards extras
+    cards.forEach((card, i) => { card.style.display = i < items.length ? '' : 'none'; });
     const cta = $('.reviews-cta a, .reviews-cta-link');
     if (cta) {
       setBtnText(cta, cfg.reviews.cta_label);

@@ -76,21 +76,35 @@ bootstrap();
 
 async function callProxy(action, opts = {}) {
   if (!currentSession) throw new Error('Sessão expirada');
-  const r = await fetch(`${SUPABASE_URL}/functions/v1/github-proxy`, {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${currentSession.access_token}`,
-      'apikey': SUPABASE_ANON_KEY,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ action, ...opts }),
-  });
-  const data = await r.json().catch(() => ({}));
-  if (!r.ok) {
-    if (r.status === 401) { await supa.auth.signOut(); currentSession = null; location.hash = '#/login'; }
-    throw new Error(data.error || `Erro ${r.status}`);
+  const isUpload = action === 'putBinary' || (action === 'putFile' && opts.content && opts.content.length > 100_000);
+  const timeoutMs = isUpload ? 90_000 : 30_000;
+  const ac = new AbortController();
+  const timer = setTimeout(() => ac.abort(), timeoutMs);
+  try {
+    const r = await fetch(`${SUPABASE_URL}/functions/v1/github-proxy`, {
+      method: 'POST',
+      signal: ac.signal,
+      headers: {
+        'Authorization': `Bearer ${currentSession.access_token}`,
+        'apikey': SUPABASE_ANON_KEY,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ action, ...opts }),
+    });
+    const data = await r.json().catch(() => ({}));
+    if (!r.ok) {
+      if (r.status === 401) { await supa.auth.signOut(); currentSession = null; location.hash = '#/login'; }
+      const err = new Error(data.error || `Erro ${r.status}`);
+      err.status = r.status;
+      throw err;
+    }
+    return data;
+  } catch (e) {
+    if (e.name === 'AbortError') throw new Error('Tempo esgotado — verifique sua conexão e tente de novo.');
+    throw e;
+  } finally {
+    clearTimeout(timer);
   }
-  return data;
 }
 
 function decodeBase64Utf8(b64) {
@@ -417,9 +431,11 @@ function mountSaveBar(onSave, viewUrl) {
   const bar = document.createElement('div');
   bar.id = 'savebar';
   bar.className = 'savebar';
+  bar.setAttribute('role', 'region');
+  bar.setAttribute('aria-label', 'Barra de salvamento');
   bar.innerHTML = `
-    <div class="savebar-status">
-      <span class="dot"></span>
+    <div class="savebar-status" aria-live="polite">
+      <span class="dot" aria-hidden="true"></span>
       <span class="savebar-msg">Você tem alterações não salvas</span>
       <span class="hint">· Ctrl+S para salvar</span>
     </div>
@@ -457,9 +473,13 @@ window.addEventListener('beforeunload', (e) => {
 /* ===================== MODAL ===================== */
 
 function showModal({ icon = 'success', title, msg, actions = [] }) {
+  const prevFocus = document.activeElement;
   document.querySelector('.modal-bg')?.remove();
   const bg = document.createElement('div');
   bg.className = 'modal-bg';
+  bg.setAttribute('role', 'dialog');
+  bg.setAttribute('aria-modal', 'true');
+  bg.setAttribute('aria-labelledby', 'modalTitle');
   const iconSvg = icon === 'success'
     ? '<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>'
     : icon === 'warn'
@@ -468,7 +488,7 @@ function showModal({ icon = 'success', title, msg, actions = [] }) {
   bg.innerHTML = `
     <div class="modal-box">
       <div class="modal-icon ${icon}">${iconSvg}</div>
-      <div class="modal-title">${escHtml(title)}</div>
+      <div class="modal-title" id="modalTitle">${escHtml(title)}</div>
       ${msg ? `<div class="modal-msg">${msg}</div>` : ''}
       <div class="modal-actions"></div>
     </div>
@@ -490,8 +510,27 @@ function showModal({ icon = 'success', title, msg, actions = [] }) {
       acts.appendChild(btn);
     }
   });
-  bg.addEventListener('click', (e) => { if (e.target === bg) bg.remove(); });
+  bg.addEventListener('click', (e) => { if (e.target === bg) closeModal(); });
+  function closeModal() {
+    bg.remove();
+    document.removeEventListener('keydown', onKey);
+    if (prevFocus && prevFocus.focus) try { prevFocus.focus(); } catch (_) {}
+  }
+  function onKey(e) {
+    if (e.key === 'Escape') { e.preventDefault(); closeModal(); return; }
+    if (e.key === 'Tab') {
+      const f = bg.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+      if (!f.length) return;
+      const first = f[0], last = f[f.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    }
+  }
+  document.addEventListener('keydown', onKey);
   document.body.appendChild(bg);
+  // Foca o primeiro botão "primary" disponível
+  const firstBtn = bg.querySelector('.btn-primary, .btn');
+  if (firstBtn) firstBtn.focus();
 }
 
 /* ===================== QUICK TOUR ===================== */
@@ -1486,7 +1525,19 @@ async function renderSiteEditor(app) {
       });
     } catch (e) {
       setSaving('saved'); setDirty(true);
-      toast(e.message, 'error');
+      if (e.status === 409) {
+        showModal({
+          icon: 'warn',
+          title: 'Conflito de edição',
+          msg: 'Outra aba (ou outra pessoa) editou e salvou a Home antes de você. Pra não sobrescrever, recarregue e refaça suas alterações.',
+          actions: [
+            { label: 'Recarregar', kind: 'btn-primary', onClick: () => location.reload() },
+            { label: 'Continuar editando', kind: 'btn-secondary' },
+          ]
+        });
+      } else {
+        toast(e.message, 'error');
+      }
     }
   }
 
@@ -1748,11 +1799,20 @@ async function renderLandingEditor(app, slug) {
   }
 
   async function doSave() {
-    const newL = collectL();
-    const merged = { ...all, [slug]: newL };
     setSaving('saving');
+    // Re-fetch ANTES de salvar pra detectar conflito cedo (landings-content.json
+    // é compartilhado entre as 12 páginas — se alguém editou outra landing, faz merge).
+    let freshAll, freshSha;
     try {
-      await putJsonFile(REPO_PATHS.LANDINGS_CONTENT, merged, sha, `admin: atualizar /${slug}/`);
+      const fresh = await getJsonFile(REPO_PATHS.LANDINGS_CONTENT);
+      freshAll = fresh.content; freshSha = fresh.sha;
+    } catch (e) { setSaving('saved'); toast(e.message, 'error'); return; }
+
+    const newL = collectL();
+    // Mergear: usa 'all' como base mas pega edições recentes de OUTRAS landings de freshAll.
+    const merged = { ...freshAll, [slug]: newL };
+    try {
+      await putJsonFile(REPO_PATHS.LANDINGS_CONTENT, merged, freshSha, `admin: atualizar /${slug}/`);
       try { localStorage.removeItem(dirty.autoKey); } catch(_) {}
       setDirty(false);
       setSaving('saved');
@@ -1767,7 +1827,18 @@ async function renderLandingEditor(app, slug) {
       });
     } catch (e) {
       setSaving('saved'); setDirty(true);
-      toast(e.message, 'error');
+      if (e.status === 409) {
+        showModal({
+          icon: 'warn', title: 'Conflito de edição',
+          msg: 'Alguém salvou esta página enquanto você editava. Recarregue e refaça suas alterações.',
+          actions: [
+            { label: 'Recarregar', kind: 'btn-primary', onClick: () => location.reload() },
+            { label: 'Continuar editando', kind: 'btn-secondary' },
+          ]
+        });
+      } else {
+        toast(e.message, 'error');
+      }
     }
   }
 
@@ -2074,7 +2145,21 @@ async function renderEditor(app, fileBase) {
           { label: 'Voltar pra lista', kind: 'btn-secondary', onClick: () => { location.hash = '#/posts'; } },
         ]
       });
-    } catch(err){ setSaving('saved'); setDirty(true); toast(err.message, 'error'); }
+    } catch(err) {
+      setSaving('saved'); setDirty(true);
+      if (err.status === 409) {
+        showModal({
+          icon: 'warn', title: 'Conflito de edição',
+          msg: 'Alguém editou este artigo. Recarregue pra evitar sobrescrever as alterações.',
+          actions: [
+            { label: 'Recarregar', kind: 'btn-primary', onClick: () => location.reload() },
+            { label: 'Continuar', kind: 'btn-secondary' },
+          ]
+        });
+      } else {
+        toast(err.message, 'error');
+      }
+    }
   }
   if (fileBase){
     $('#btnDelete').addEventListener('click', async () => {
