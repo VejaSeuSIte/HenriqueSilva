@@ -110,7 +110,9 @@ async function rateLimit(supaSrv: ReturnType<typeof createClient>, userId: strin
   }
 }
 
-async function logAudit(supaSrv: ReturnType<typeof createClient>, payload: {
+// Fire-and-forget mas com timeout pra não vazar conexão.
+// EdgeRuntime.waitUntil mantém a Promise viva após response, sem bloquear.
+function logAudit(supaSrv: ReturnType<typeof createClient>, payload: {
   user_id: string;
   client_id: string | null;
   action: string;
@@ -118,11 +120,19 @@ async function logAudit(supaSrv: ReturnType<typeof createClient>, payload: {
   status_code: number;
   message?: string;
 }) {
-  try {
-    await supaSrv.from("audit_logs").insert(payload as Record<string, unknown>);
-  } catch {
-    // Tabela pode não existir ainda. Não bloqueia operação.
-  }
+  const promise = (async () => {
+    try {
+      const ac = new AbortController();
+      const t = setTimeout(() => ac.abort(), 5000);
+      try {
+        await supaSrv.from("audit_logs").insert(payload as Record<string, unknown>).abortSignal(ac.signal);
+      } finally { clearTimeout(t); }
+    } catch (e) {
+      console.error("audit log failed:", e);
+    }
+  })();
+  // Deno Deploy: garante que a Promise não é abortada quando response retorna.
+  try { (globalThis as { EdgeRuntime?: { waitUntil(p: Promise<unknown>): void } }).EdgeRuntime?.waitUntil(promise); } catch (_) {}
 }
 
 Deno.serve(async (req) => {

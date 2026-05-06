@@ -243,17 +243,24 @@ function sanitizeRichHtml(html, opts = {}) {
   const div = document.createElement('div');
   div.innerHTML = html || '';
   function safeHref(raw) {
-    let href = String(raw || '').trim();
-    if (!href) return '';
-    // Decode tentativas de obfuscação
-    try { href = decodeURI(href); } catch (_) {}
-    // Bloqueia protocolos perigosos (case-insensitive, com espaços/tabs internos)
-    const stripped = href.replace(/[\s\x00-\x1f]/g, '');
-    if (/^(javascript|data|vbscript|file|blob):/i.test(stripped)) return '';
-    // Aceita apenas http(s), mailto, tel, ou caminhos relativos/anchors
+    const original = String(raw || '').trim();
+    if (!original) return '';
+    // Pra checar protocolo, decodifica em camadas até estabilizar (defesa contra
+    // obfuscação multi-encoded). Mas mantém a string original pra renderizar
+    // (preserva %20 e outros encodings legítimos).
+    let probe = original;
+    for (let i = 0; i < 3; i++) {
+      try {
+        const dec = decodeURIComponent(probe.replace(/%(?![0-9a-f]{2})/gi, '%25'));
+        if (dec === probe) break;
+        probe = dec;
+      } catch (_) { break; }
+    }
+    const stripped = probe.replace(/[\s\x00-\x1f]/g, '').toLowerCase();
+    if (/^(javascript|data|vbscript|file|blob):/.test(stripped)) return '';
+    let href = original;
     if (!/^(https?:\/\/|mailto:|tel:|\/|#)/i.test(stripped)) {
-      // Sem protocolo claro: assume https
-      href = 'https://' + href.replace(/^\/+/, '');
+      href = 'https://' + original.replace(/^\/+/, '');
     }
     return href.replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   }
@@ -394,13 +401,20 @@ function getRichHtml(el) {
 /* ===================== SAVE BAR + DIRTY STATE ===================== */
 const dirty = { isDirty: false, count: 0, onSave: null, autoKey: null };
 
-// Debounce helper — pra auto-save não escrever no localStorage a cada keystroke
+// Debounce helper — pra auto-save não escrever no localStorage a cada keystroke.
+// Tem .flush() pra forçar execução imediata (usado em beforeunload).
 function debounce(fn, ms = 800) {
   let t = null;
-  return function (...args) {
+  let pendingArgs = null;
+  function debounced(...args) {
+    pendingArgs = args;
     clearTimeout(t);
-    t = setTimeout(() => fn.apply(this, args), ms);
+    t = setTimeout(() => { t = null; fn.apply(this, pendingArgs); pendingArgs = null; }, ms);
+  }
+  debounced.flush = function () {
+    if (t) { clearTimeout(t); t = null; if (pendingArgs) fn.apply(null, pendingArgs); pendingArgs = null; }
   };
+  return debounced;
 }
 
 // Confirm modal-based (substitui window.confirm sincrono por modal acessível)
@@ -493,6 +507,10 @@ window.addEventListener('keydown', (e) => {
   }
 });
 window.addEventListener('beforeunload', (e) => {
+  // Force-flush do auto-save: localStorage é síncrono, então funciona em unload.
+  try {
+    if (typeof window.__hsa_flushDraft === 'function') window.__hsa_flushDraft();
+  } catch (_) {}
   if (dirty.isDirty) { e.preventDefault(); e.returnValue = ''; }
 });
 
@@ -1549,6 +1567,7 @@ async function renderSiteEditor(app) {
       }
     }
   }, 600);
+  window.__hsa_flushDraft = saveDraft.flush;
   function markDirty() { setDirty(true); saveDraft(); }
   $('#siteTabsContent').addEventListener('input', markDirty);
   $('#siteTabsContent').addEventListener('change', markDirty);
@@ -1766,6 +1785,7 @@ async function renderLandingEditor(app, slug) {
       if (e && e.name === 'QuotaExceededError') toast('Armazenamento local cheio', 'error');
     }
   }, 600);
+  window.__hsa_flushDraft = saveDraft.flush;
   function markDirty() { setDirty(true); saveDraft(); }
   $('#lTabsContent').addEventListener('click', (e) => {
     const t = e.target.closest('button');
@@ -1813,39 +1833,54 @@ async function renderLandingEditor(app, slug) {
   $('#lTabsContent').addEventListener('input', markDirty);
 
   function collectL() {
+    // Começa com cópia do estado atual (preserva campos que NÃO estão na DOM
+    // — ex: tabs não-renderizadas se houver bug). Sobrescreve só o que coleta.
     const newL = JSON.parse(JSON.stringify(l));
-    newL.page_title = $('#l-page_title').value;
-    newL.page_description = $('#l-page_description').value;
-    newL.eyebrow = $('#l-eyebrow').value;
-    newL.cta_text = $('#l-cta_text').value;
+
+    // Helper: só sobrescreve se o elemento existe (defensa contra DOM corrompida).
+    const ifEl = (sel, fn) => { const e = $(sel); if (e) fn(e); };
+
+    ifEl('#l-page_title', e => newL.page_title = e.value);
+    ifEl('#l-page_description', e => newL.page_description = e.value);
+    ifEl('#l-eyebrow', e => newL.eyebrow = e.value);
+    ifEl('#l-cta_text', e => newL.cta_text = e.value);
+    ifEl('#l-subtitle', e => newL.subtitle = e.value);
+    ifEl('#l-wa_text', e => newL.wa_text = e.value);
+    ifEl('#l-bullets_eye', e => newL.bullets_eye = e.value);
+
     const h1Rich = $('.js-rich[data-rich-key="land.h1"]');
-    newL.h1 = h1Rich ? getRichHtml(h1Rich) : $('#l-h1').value;
-    newL.subtitle = $('#l-subtitle').value;
-    newL.wa_text = $('#l-wa_text').value;
-    newL.intro = newL.intro || {};
+    if (h1Rich) newL.h1 = getRichHtml(h1Rich);
     const introH2Rich = $('.js-rich[data-rich-key="land.intro_h2"]');
-    newL.intro.h2 = introH2Rich ? getRichHtml(introH2Rich) : $('#l-intro_h2').value;
-    newL.intro.paragraphs = $$('#introParagraphs > .list-item').map(li => {
-      const r = li.querySelector('.js-rich');
-      return r ? getRichHtml(r) : '';
-    }).filter(s => s.trim());
-    newL.bullets_eye = $('#l-bullets_eye').value;
+    newL.intro = newL.intro || {};
+    if (introH2Rich) newL.intro.h2 = getRichHtml(introH2Rich);
     const bH2Rich = $('.js-rich[data-rich-key="land.bullets_h2"]');
-    newL.bullets_h2 = bH2Rich ? getRichHtml(bH2Rich) : $('#l-bullets_h2').value;
-    newL.bullets = $$('#bulletsList details.card-mini').map(card => {
-      const o = {};
-      card.querySelectorAll('[data-bkey]').forEach(inp => o[inp.dataset.bkey] = inp.value);
-      const tRich = card.querySelector('.js-rich');
-      if (tRich) o.text = getRichHtml(tRich);
-      return o;
-    }).filter(b => b.title || b.text);
-    newL.faq = $$('#faqList details.card-mini').map(card => {
-      const o = {};
-      card.querySelectorAll('[data-qkey]').forEach(inp => o[inp.dataset.qkey] = inp.value);
-      const aRich = card.querySelector('.js-rich');
-      if (aRich) o.a = getRichHtml(aRich);
-      return o;
-    }).filter(q => q.q || q.a);
+    if (bH2Rich) newL.bullets_h2 = getRichHtml(bH2Rich);
+
+    // Sub-listas: só atualiza se a UI delas foi renderizada (presença do container).
+    if ($('#introParagraphs')) {
+      newL.intro.paragraphs = $$('#introParagraphs > .list-item').map(li => {
+        const r = li.querySelector('.js-rich');
+        return r ? getRichHtml(r) : '';
+      }).filter(s => s.trim());
+    }
+    if ($('#bulletsList')) {
+      newL.bullets = $$('#bulletsList details.card-mini').map(card => {
+        const o = {};
+        card.querySelectorAll('[data-bkey]').forEach(inp => o[inp.dataset.bkey] = inp.value);
+        const tRich = card.querySelector('.js-rich');
+        if (tRich) o.text = getRichHtml(tRich);
+        return o;
+      }).filter(b => b.title || b.text);
+    }
+    if ($('#faqList')) {
+      newL.faq = $$('#faqList details.card-mini').map(card => {
+        const o = {};
+        card.querySelectorAll('[data-qkey]').forEach(inp => o[inp.dataset.qkey] = inp.value);
+        const aRich = card.querySelector('.js-rich');
+        if (aRich) o.a = getRichHtml(aRich);
+        return o;
+      }).filter(q => q.q || q.a);
+    }
     return newL;
   }
 
@@ -2169,6 +2204,7 @@ async function renderEditor(app, fileBase) {
       if (e && e.name === 'QuotaExceededError') toast('Armazenamento local cheio', 'error');
     }
   }, 600);
+  window.__hsa_flushDraft = saveDraft.flush;
   function markDirty() { setDirty(true); saveDraft(); }
   ['input','change'].forEach(ev => app.addEventListener(ev, markDirty));
 

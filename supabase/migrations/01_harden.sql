@@ -93,8 +93,28 @@ begin
 end;
 $$;
 
--- Cleanup buckets antigos (cron diário ou manual)
+-- Cleanup buckets antigos
 create or replace function public.cleanup_rate_limit_buckets()
 returns void language sql as $$
   delete from public.rate_limit_buckets where window_start < now() - interval '1 hour';
+$$;
+
+-- Retention de audit_logs (90 dias)
+create or replace function public.cleanup_old_audit_logs()
+returns void language sql as $$
+  delete from public.audit_logs where created_at < now() - interval '90 days';
+$$;
+
+-- Schedule cleanup diário via pg_cron (se a extensão estiver disponível).
+-- Falha silenciosa se pg_cron não estiver habilitado — admin pode rodar manual.
+do $$
+begin
+  if exists (select 1 from pg_extension where extname = 'pg_cron') then
+    perform cron.schedule('hsa-cleanup-rate-limits', '17 * * * *', 'select public.cleanup_rate_limit_buckets()');
+    perform cron.schedule('hsa-cleanup-audit-logs', '23 3 * * *', 'select public.cleanup_old_audit_logs()');
+  end if;
+exception when others then
+  -- Sem permissão pra cron.schedule, segue
+  null;
+end;
 $$;
