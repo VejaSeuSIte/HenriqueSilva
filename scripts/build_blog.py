@@ -17,6 +17,48 @@ import yaml
 import markdown
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
+try:
+    import bleach
+    BLEACH_OK = True
+except ImportError:
+    BLEACH_OK = False
+    print('WARN: bleach nao instalado, posts NAO sao sanitizados (use pip install bleach)')
+
+# Tags e atributos permitidos no body_html dos posts.
+# <script>, <iframe>, <object>, on* attrs sao removidos.
+ALLOWED_TAGS = [
+    'p', 'br', 'hr', 'em', 'strong', 'b', 'i', 'u', 's', 'strike', 'del',
+    'a', 'img', 'figure', 'figcaption',
+    'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+    'ul', 'ol', 'li',
+    'blockquote', 'cite', 'q',
+    'code', 'pre', 'kbd', 'samp', 'var',
+    'table', 'thead', 'tbody', 'tfoot', 'tr', 'th', 'td', 'caption', 'colgroup', 'col',
+    'span', 'div', 'small', 'sub', 'sup',
+]
+ALLOWED_ATTRS = {
+    '*': ['class', 'id'],
+    'a': ['href', 'title', 'rel', 'target'],
+    'img': ['src', 'alt', 'title', 'width', 'height', 'loading'],
+    'th': ['scope', 'colspan', 'rowspan'],
+    'td': ['colspan', 'rowspan'],
+    'pre': ['class'],
+    'code': ['class'],
+}
+ALLOWED_PROTOCOLS = ['http', 'https', 'mailto', 'tel']
+
+def sanitize_html(html_str):
+    if not BLEACH_OK or not html_str:
+        return html_str
+    return bleach.clean(
+        html_str,
+        tags=ALLOWED_TAGS,
+        attributes=ALLOWED_ATTRS,
+        protocols=ALLOWED_PROTOCOLS,
+        strip=True,
+        strip_comments=True,
+    )
+
 ROOT = Path(__file__).resolve().parent.parent
 SRC_BLOG = ROOT / 'blog'
 LAYOUTS = SRC_BLOG / '_layouts'
@@ -65,6 +107,7 @@ def parse_post(path):
     meta = yaml.safe_load(fm)
     md = markdown.Markdown(extensions=['extra', 'codehilite', 'toc', 'tables', 'fenced_code', 'sane_lists', 'smarty', 'footnotes'])
     body_html = md.convert(body.strip())
+    body_html = sanitize_html(body_html)
     word_count = len(re.findall(r'\w+', body))
     read_min = max(1, round(word_count / 220))
     slug = meta.get('slug') or slugify(meta['title'])

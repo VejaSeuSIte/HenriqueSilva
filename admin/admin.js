@@ -394,6 +394,28 @@ function getRichHtml(el) {
 /* ===================== SAVE BAR + DIRTY STATE ===================== */
 const dirty = { isDirty: false, count: 0, onSave: null, autoKey: null };
 
+// Debounce helper — pra auto-save não escrever no localStorage a cada keystroke
+function debounce(fn, ms = 800) {
+  let t = null;
+  return function (...args) {
+    clearTimeout(t);
+    t = setTimeout(() => fn.apply(this, args), ms);
+  };
+}
+
+// Confirm modal-based (substitui window.confirm sincrono por modal acessível)
+function confirmModal({ title = 'Confirmar', msg = '', confirmLabel = 'Confirmar', confirmKind = 'btn-primary', cancelLabel = 'Cancelar' } = {}) {
+  return new Promise((resolve) => {
+    showModal({
+      icon: 'warn', title, msg,
+      actions: [
+        { label: confirmLabel, kind: confirmKind, onClick: () => resolve(true) },
+        { label: cancelLabel, kind: 'btn-secondary', onClick: () => resolve(false) },
+      ]
+    });
+  });
+}
+
 function setDirty(isDirty, count = 0) {
   dirty.isDirty = isDirty;
   dirty.count = count;
@@ -1497,11 +1519,16 @@ async function renderSiteEditor(app) {
   });
 
   // === Dirty tracking
-  function markDirty() { setDirty(true); saveDraft(); }
-  function saveDraft() {
+  const saveDraft = debounce(() => {
     if (!dirty.autoKey) return;
-    try { localStorage.setItem(dirty.autoKey, JSON.stringify(collectCfg())); } catch(_) {}
-  }
+    try { localStorage.setItem(dirty.autoKey, JSON.stringify(collectCfg())); }
+    catch (e) {
+      if (e && e.name === 'QuotaExceededError') {
+        toast('Armazenamento local cheio — limpe rascunhos antigos', 'error');
+      }
+    }
+  }, 600);
+  function markDirty() { setDirty(true); saveDraft(); }
   $('#siteTabsContent').addEventListener('input', markDirty);
   $('#siteTabsContent').addEventListener('change', markDirty);
 
@@ -1711,11 +1738,14 @@ async function renderLandingEditor(app, slug) {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   });
 
-  function markDirty() { setDirty(true); saveDraft(); }
-  function saveDraft() {
+  const saveDraft = debounce(() => {
     if (!dirty.autoKey) return;
-    try { localStorage.setItem(dirty.autoKey, JSON.stringify(collectL())); } catch(_) {}
-  }
+    try { localStorage.setItem(dirty.autoKey, JSON.stringify(collectL())); }
+    catch (e) {
+      if (e && e.name === 'QuotaExceededError') toast('Armazenamento local cheio', 'error');
+    }
+  }, 600);
+  function markDirty() { setDirty(true); saveDraft(); }
   $('#lTabsContent').addEventListener('click', (e) => {
     const t = e.target.closest('button');
     if (!t) return;
@@ -1929,10 +1959,15 @@ async function renderPosts(app) {
         </article>
       `).join('') + `</div>`;
       $$('[data-del]').forEach(btn => btn.addEventListener('click', async () => {
-        if (!confirm(`Excluir "${btn.dataset.name}"?`)) return;
+        const ok = await confirmModal({
+          title: 'Excluir artigo?',
+          msg: `<strong>${escHtml(btn.dataset.name)}</strong> será removido. Recuperável via histórico do GitHub.`,
+          confirmLabel: 'Sim, excluir', confirmKind: 'btn-danger',
+        });
+        if (!ok) return;
         try {
           await deleteFile(btn.dataset.del, btn.dataset.sha, `Delete: ${btn.dataset.name}`);
-          toast('Post excluído');
+          toast('Artigo excluído');
           renderPosts(app);
         } catch (err) { toast(err.message, 'error'); }
       }));
@@ -2101,8 +2136,7 @@ async function renderEditor(app, fileBase) {
     await uploadFile(f, 'inline');
   });
 
-  function markDirty() { setDirty(true); saveDraft(); }
-  function saveDraft() {
+  const saveDraft = debounce(() => {
     if (!dirty.autoKey) return;
     try {
       localStorage.setItem(dirty.autoKey, JSON.stringify({
@@ -2110,8 +2144,11 @@ async function renderEditor(app, fileBase) {
         category: $('#f-category').value, tags: $('#f-tags').value, cover: $('#f-cover').value,
         date: $('#f-date').value, updated: $('#f-updated').value, body: ta.value,
       }));
-    } catch(_) {}
-  }
+    } catch (e) {
+      if (e && e.name === 'QuotaExceededError') toast('Armazenamento local cheio', 'error');
+    }
+  }, 600);
+  function markDirty() { setDirty(true); saveDraft(); }
   ['input','change'].forEach(ev => app.addEventListener(ev, markDirty));
 
   async function doSave() {
@@ -2163,7 +2200,12 @@ async function renderEditor(app, fileBase) {
   }
   if (fileBase){
     $('#btnDelete').addEventListener('click', async () => {
-      if (!confirm(`Excluir "${meta.title}"? Essa ação é definitiva.`)) return;
+      const ok = await confirmModal({
+        title: 'Excluir artigo?',
+        msg: `<strong>${escHtml(meta.title || '(sem título)')}</strong> será removido. Você pode recuperar via histórico do GitHub se precisar.`,
+        confirmLabel: 'Sim, excluir', confirmKind: 'btn-danger',
+      });
+      if (!ok) return;
       try {
         await deleteFile(`${REPO_PATHS.POSTS}/${fileBase}.md`, sha, `Delete: ${meta.title}`);
         toast('Artigo excluído');
@@ -2318,7 +2360,12 @@ async function renderGallery(app) {
         catch(_) { toast('Não foi possível copiar', 'error'); }
       }));
       $$('.del[data-path]').forEach(b => b.addEventListener('click', async () => {
-        if (!confirm('Excluir essa imagem?')) return;
+        const ok = await confirmModal({
+          title: 'Excluir imagem?',
+          msg: `<strong>${escHtml(b.dataset.path.split('/').pop())}</strong> — se estiver em uso em algum post ou página, vai aparecer quebrada.`,
+          confirmLabel: 'Sim, excluir', confirmKind: 'btn-danger',
+        });
+        if (!ok) return;
         try {
           await deleteFile(b.dataset.path, b.dataset.sha, `Delete: ${b.dataset.path.split('/').pop()}`);
           toast('Imagem excluída'); renderGallery(app);
