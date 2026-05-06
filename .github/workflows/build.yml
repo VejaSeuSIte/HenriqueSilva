@@ -1,0 +1,46 @@
+name: Build site
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'assets/landings-content.json'
+      - 'assets/site-content.json'
+      - 'blog/_posts/**'
+      - 'blog/_layouts/**'
+      - 'scripts/build_blog.py'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+      - name: Install deps
+        run: pip install pyyaml jinja2 markdown pygments
+      - name: Build
+        run: python scripts/build_blog.py --inplace
+      - name: Commit if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No changes after build."
+          else
+            git commit -m "build: regenerate static HTMLs [skip ci]"
+            git push
+          fi
