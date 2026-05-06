@@ -18,11 +18,12 @@ const ALLOWED_ORIGINS = new Set([
 // Caminhos permitidos (prefixos). Tudo fora disso → 403.
 // Para multi-cliente, isso é genérico o suficiente (qualquer site VejaSeuSIte
 // usa essas estruturas).
+// Atenção: blog/_layouts/ NÃO está aqui de propósito. Templates Jinja são parte
+// da plataforma VejaSeuSIte; cliente não edita (XSS em todos os posts gerados).
 const ALLOWED_PREFIXES = [
   "assets/",
   "blog/_posts/",
   "blog/images/",
-  "blog/_layouts/",
 ];
 
 const ALLOWED_BRANCHES = new Set(["main", "master"]);
@@ -34,13 +35,19 @@ const MAX_BODY_BYTES = 35 * 1024 * 1024;    // 35 MB JSON envelope (base64 expan
 const RATE_LIMIT_MAX_PER_MINUTE = 60;
 
 function corsFor(origin: string | null) {
-  const allow = origin && ALLOWED_ORIGINS.has(origin) ? origin : "null";
+  const ok = origin && ALLOWED_ORIGINS.has(origin);
   return {
-    "Access-Control-Allow-Origin": allow,
+    "Access-Control-Allow-Origin": ok ? origin! : "null",
     "Vary": "Origin",
     "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
     "Access-Control-Allow-Methods": "POST, OPTIONS",
   };
+}
+function originAllowed(origin: string | null): boolean {
+  // Sem Origin (curl, server-side, alguns user-agents): permite (compat).
+  // Com Origin: deve estar na whitelist.
+  if (!origin) return true;
+  return ALLOWED_ORIGINS.has(origin);
 }
 
 interface ActionBody {
@@ -124,6 +131,8 @@ Deno.serve(async (req) => {
 
   if (req.method === "OPTIONS") return new Response("ok", { headers: cors });
   if (req.method !== "POST") return errResp(405, "method not allowed", cors);
+  // Hard-block: Origin presente mas não permitido → 403 (curl OK pq não envia Origin)
+  if (!originAllowed(origin)) return errResp(403, "origin not allowed", cors);
 
   // Limite de tamanho do body (Content-Length pode mentir; é só primeira barreira)
   const cl = parseInt(req.headers.get("content-length") || "0", 10);

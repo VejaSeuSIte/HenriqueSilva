@@ -107,10 +107,16 @@
       if (h3) setHTML(h3, it.h3);
       const p = card.querySelector('p');
       if (p) setText(p, it.description);
-      // tags se houver
+      // tags se houver — escapa via textContent pra não permitir HTML injection
       const tagsContainer = card.querySelector('.area-tags');
       if (tagsContainer && Array.isArray(it.tags)) {
-        tagsContainer.innerHTML = it.tags.map((t) => `<span class="area-tag">${t}</span>`).join('');
+        tagsContainer.textContent = '';
+        it.tags.forEach((t) => {
+          const span = document.createElement('span');
+          span.className = 'area-tag';
+          span.textContent = String(t);
+          tagsContainer.appendChild(span);
+        });
       }
       if (it.href) card.setAttribute('data-link', it.href);
     });

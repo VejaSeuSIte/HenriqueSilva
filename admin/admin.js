@@ -470,11 +470,15 @@ function mountSaveBar(onSave, viewUrl) {
   document.body.appendChild(bar);
   dirty.onSave = onSave;
   bar.querySelector('#savebarSave').addEventListener('click', onSave);
-  bar.querySelector('#savebarDiscard').addEventListener('click', () => {
-    if (confirm('Descartar todas as alterações?')) {
-      if (dirty.autoKey) try { localStorage.removeItem(dirty.autoKey); } catch(_) {}
-      location.reload();
-    }
+  bar.querySelector('#savebarDiscard').addEventListener('click', async () => {
+    const ok = await confirmModal({
+      title: 'Descartar alterações?',
+      msg: 'Tudo que você editou desde o último Salvar vai ser perdido.',
+      confirmLabel: 'Sim, descartar', confirmKind: 'btn-danger',
+    });
+    if (!ok) return;
+    if (dirty.autoKey) try { localStorage.removeItem(dirty.autoKey); } catch(_) {}
+    location.reload();
   });
 }
 
@@ -494,9 +498,18 @@ window.addEventListener('beforeunload', (e) => {
 
 /* ===================== MODAL ===================== */
 
+// Mantém referência do listener atual pra poder remover no closeModal.
+let _modalKeyListener = null;
+function _closeAnyModal() {
+  document.querySelector('.modal-bg')?.remove();
+  if (_modalKeyListener) {
+    document.removeEventListener('keydown', _modalKeyListener);
+    _modalKeyListener = null;
+  }
+}
 function showModal({ icon = 'success', title, msg, actions = [] }) {
   const prevFocus = document.activeElement;
-  document.querySelector('.modal-bg')?.remove();
+  _closeAnyModal(); // limpa qualquer modal anterior + listener antigo
   const bg = document.createElement('div');
   bg.className = 'modal-bg';
   bg.setAttribute('role', 'dialog');
@@ -535,7 +548,10 @@ function showModal({ icon = 'success', title, msg, actions = [] }) {
   bg.addEventListener('click', (e) => { if (e.target === bg) closeModal(); });
   function closeModal() {
     bg.remove();
-    document.removeEventListener('keydown', onKey);
+    if (_modalKeyListener === onKey) {
+      document.removeEventListener('keydown', onKey);
+      _modalKeyListener = null;
+    }
     if (prevFocus && prevFocus.focus) try { prevFocus.focus(); } catch (_) {}
   }
   function onKey(e) {
@@ -548,6 +564,7 @@ function showModal({ icon = 'success', title, msg, actions = [] }) {
       else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
     }
   }
+  _modalKeyListener = onKey;
   document.addEventListener('keydown', onKey);
   document.body.appendChild(bg);
   // Foca o primeiro botão "primary" disponível
@@ -793,11 +810,15 @@ document.addEventListener('click', async (e) => {
   const t = e.target.closest && e.target.closest('button');
   if (!t) return;
   if (t.id === 'btnLogout') {
-    if (confirm('Sair?')) {
-      await supa.auth.signOut();
-      currentSession = null;
-      location.hash = '#/login';
-    }
+    const ok = await confirmModal({
+      title: 'Sair do painel?',
+      msg: dirty.isDirty ? 'Atenção: você tem alterações não salvas que serão perdidas.' : '',
+      confirmLabel: 'Sim, sair', confirmKind: dirty.isDirty ? 'btn-danger' : 'btn-primary',
+    });
+    if (!ok) return;
+    await supa.auth.signOut();
+    currentSession = null;
+    location.hash = '#/login';
   }
   if (t.id === 'btnBurger') {
     document.getElementById('topbar')?.classList.toggle('menu-open');

@@ -71,6 +71,12 @@ create table if not exists public.rate_limit_buckets (
 
 create index if not exists rate_limit_buckets_window_idx on public.rate_limit_buckets(window_start);
 
+-- RLS: bloqueia acesso de users autenticados (apenas service_role bypassa)
+alter table public.rate_limit_buckets enable row level security;
+drop policy if exists "deny all on rate_limit_buckets" on public.rate_limit_buckets;
+create policy "deny all on rate_limit_buckets" on public.rate_limit_buckets
+  for all using (false) with check (false);
+
 -- RPC pra incrementar atomicamente
 create or replace function public.bump_rate_limit(p_user_id uuid, p_max_per_minute int)
 returns table(allowed boolean, current_count int) language plpgsql as $$
