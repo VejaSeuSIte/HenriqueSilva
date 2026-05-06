@@ -86,7 +86,14 @@ CATEGORIES = {
 # Editaveis pelo painel /admin/ via Supabase + Edge Function github-proxy.
 # ===========================================================
 LANDINGS_PATH = ROOT / 'assets' / 'landings-content.json'
-LANDINGS = json.loads(LANDINGS_PATH.read_text(encoding='utf-8'))
+try:
+    LANDINGS = json.loads(LANDINGS_PATH.read_text(encoding='utf-8'))
+except FileNotFoundError:
+    print(f'ERRO: {LANDINGS_PATH} nao encontrado. Crie o arquivo ou rode `git pull`.')
+    raise SystemExit(2)
+except json.JSONDecodeError as e:
+    print(f'ERRO: {LANDINGS_PATH} contem JSON invalido (linha {e.lineno}, coluna {e.colno}): {e.msg}')
+    raise SystemExit(2)
 
 def slugify(s):
     s = s.lower()
@@ -170,9 +177,19 @@ def build(inplace=False):
             if p.exists(): p.unlink()
         if (blog_out / 'categoria').exists():
             shutil.rmtree(blog_out / 'categoria')
-        # Remove subdirs de slug antigos (qualquer pasta com index.html, exceto _posts/_layouts/images)
+        # Remove APENAS subdirs de slug que correspondem a posts atuais ou um
+        # marker de geração. Pastas com .generated dentro são consideradas
+        # nossas; pastas sem isso são deixadas em paz (proteção contra deleção
+        # acidental de conteúdo manual).
+        current_slugs = {p['slug'] for p in posts}
         for sub in blog_out.iterdir():
-            if sub.is_dir() and sub.name not in ('_posts', '_layouts', 'images') and (sub / 'index.html').exists():
+            if not sub.is_dir(): continue
+            if sub.name in ('_posts', '_layouts', 'images'): continue
+            if not (sub / 'index.html').exists(): continue
+            # Só apaga se: (a) tem marker .generated, OU (b) já tinha sido um post (não é mais)
+            has_marker = (sub / '.generated').exists()
+            was_post = sub.name not in current_slugs  # não tem post pra esse slug agora
+            if has_marker or was_post:
                 shutil.rmtree(sub)
     else:
         if DIST.exists():
@@ -230,6 +247,8 @@ def build(inplace=False):
             related = related + others
         out = DIST / 'blog' / post['slug'] / 'index.html'
         out.parent.mkdir(parents=True, exist_ok=True)
+        # Marker pra futura cleanup saber que essa pasta é gerada por nós
+        (out.parent / '.generated').write_text('build_blog.py', encoding='utf-8')
         out.write_text(post_tpl.render(
             post=post,
             prev=prev_p,

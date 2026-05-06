@@ -6,10 +6,18 @@
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.4";
 
-const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
-const SUPABASE_ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY")!;
-const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-const GITHUB_PAT = Deno.env.get("GITHUB_PAT")!;
+function requireEnv(key: string): string {
+  const v = Deno.env.get(key);
+  if (!v) {
+    console.error(`FATAL: missing env var ${key}`);
+    throw new Error(`missing env var ${key}`);
+  }
+  return v;
+}
+const SUPABASE_URL = requireEnv("SUPABASE_URL");
+const SUPABASE_ANON_KEY = requireEnv("SUPABASE_ANON_KEY");
+const SUPABASE_SERVICE_ROLE_KEY = requireEnv("SUPABASE_SERVICE_ROLE_KEY");
+const GITHUB_PAT = requireEnv("GITHUB_PAT");
 
 const ALLOWED_ORIGINS = new Set([
   "https://vejaseusite.github.io",

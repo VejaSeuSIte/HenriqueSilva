@@ -399,7 +399,7 @@ function getRichHtml(el) {
 }
 
 /* ===================== SAVE BAR + DIRTY STATE ===================== */
-const dirty = { isDirty: false, count: 0, onSave: null, autoKey: null };
+const dirty = { isDirty: false, count: 0, onSave: null, autoKey: null, isSaving: false };
 
 // Debounce helper — pra auto-save não escrever no localStorage a cada keystroke.
 // Tem .flush() pra forçar execução imediata (usado em beforeunload).
@@ -446,17 +446,21 @@ function setDirty(isDirty, count = 0) {
 }
 
 function setSaving(state) {
+  dirty.isSaving = state === 'saving';
   const bar = document.getElementById('savebar');
   if (!bar) return;
   const status = bar.querySelector('.savebar-status');
   status.classList.remove('saving','saved');
+  const saveBtn = bar.querySelector('#savebarSave');
   if (state === 'saving') {
     bar.classList.add('show');
     status.classList.add('saving');
     bar.querySelector('.savebar-msg').textContent = 'Salvando…';
+    if (saveBtn) saveBtn.disabled = true;
   } else if (state === 'saved') {
     status.classList.add('saved');
     bar.querySelector('.savebar-msg').textContent = 'Tudo salvo';
+    if (saveBtn) saveBtn.disabled = false;
     setTimeout(() => { if (!dirty.isDirty) bar.classList.remove('show'); }, 2000);
   }
 }
@@ -483,7 +487,10 @@ function mountSaveBar(onSave, viewUrl) {
   `;
   document.body.appendChild(bar);
   dirty.onSave = onSave;
-  bar.querySelector('#savebarSave').addEventListener('click', onSave);
+  bar.querySelector('#savebarSave').addEventListener('click', () => {
+    if (dirty.isSaving) return; // guard contra duplo-clique
+    onSave();
+  });
   bar.querySelector('#savebarDiscard').addEventListener('click', async () => {
     const ok = await confirmModal({
       title: 'Descartar alterações?',
@@ -503,7 +510,7 @@ function unmountSaveBar() {
 
 window.addEventListener('keydown', (e) => {
   if ((e.ctrlKey || e.metaKey) && e.key === 's') {
-    if (dirty.onSave) { e.preventDefault(); dirty.onSave(); }
+    if (dirty.onSave && !dirty.isSaving) { e.preventDefault(); dirty.onSave(); }
   }
 });
 window.addEventListener('beforeunload', (e) => {
@@ -1569,8 +1576,8 @@ async function renderSiteEditor(app) {
   }, 600);
   window.__hsa_flushDraft = saveDraft.flush;
   function markDirty() { setDirty(true); saveDraft(); }
+  // Apenas 'input' (change é redundante em browsers modernos pra inputs/textareas)
   $('#siteTabsContent').addEventListener('input', markDirty);
-  $('#siteTabsContent').addEventListener('change', markDirty);
 
   // === Save
   async function doSave() {
