@@ -191,7 +191,7 @@
 
   {% if post.cover %}
   <div class="post-cover">
-    <img src="{{ post.cover }}" alt="{{ post.title }}" />
+    <img src="{{ post.cover }}" alt="{{ post.cover_alt or post.title }}" loading="eager" />
   </div>
   {% endif %}
 
