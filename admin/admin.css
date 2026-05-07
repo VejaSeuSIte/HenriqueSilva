@@ -164,8 +164,8 @@ button.editor-tool svg{width:15px;height:15px;flex-shrink:0;stroke:currentColor;
 .editor-stats b{color:var(--gold-light);font-weight:500;margin-right:4px}
 .editor-stats .dot{color:var(--gray-700)}
 
-/* Sidebar cards */
-.sidebar-card{background:var(--black-2);border:1px solid var(--gold-faint);border-radius:2px;overflow:hidden}
+/* Sidebar cards (details/summary acessível) */
+.sidebar-card{background:var(--black-2);border:1px solid var(--gold-faint);border-radius:2px;display:block}
 .sidebar-card[open]{border-color:var(--gold-soft)}
 .sidebar-card summary{cursor:pointer;list-style:none;padding:14px 18px;font-family:'Inter Tight',sans-serif;font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);font-weight:500;display:flex;align-items:center;gap:10px;user-select:none;transition:background .2s}
 .sidebar-card summary::-webkit-details-marker{display:none}
@@ -174,18 +174,45 @@ button.editor-tool svg{width:15px;height:15px;flex-shrink:0;stroke:currentColor;
 .sidebar-card summary:hover{background:var(--gold-faint)}
 .sidebar-card .card-icon{width:18px;height:18px;color:var(--gold);display:inline-flex;flex-shrink:0}
 .sidebar-card .card-icon svg{width:100%;height:100%;stroke:currentColor;fill:none;stroke-width:1.6}
-.sidebar-card .card-body{padding:14px 18px 18px;border-top:1px solid var(--gold-faint)}
-.sidebar-card .card-body .field:last-child{margin-bottom:0}
-.sidebar-card .card-body .field label{font-size:9.5px;letter-spacing:.22em}
+.sidebar-card .card-body{padding:16px 18px 20px;border-top:1px solid var(--gold-faint);display:block}
+.sidebar-card .card-body > .field{margin-bottom:18px}
+.sidebar-card .card-body > .field:last-child{margin-bottom:0}
+.sidebar-card .card-body .field label{font-size:9.5px;letter-spacing:.22em;color:var(--gold);margin-bottom:8px;display:flex;align-items:center;gap:8px}
 .sidebar-card .card-body .field input,
 .sidebar-card .card-body .field select,
-.sidebar-card .card-body .field textarea{padding:10px 12px;font-size:13.5px;background:var(--black);color-scheme:dark}
-.sidebar-card .card-body .field input[type="date"]{min-height:38px;padding:8px 10px}
-.sidebar-card .card-body .field-help{font-size:11.5px;line-height:1.5;margin-top:6px}
-/* Em sidebar 340px, field-row vira 1 coluna pra não esmagar */
-.sidebar-card .card-body .field-row{grid-template-columns:1fr;gap:0}
-.sidebar-card .card-body .field-row .field{margin-bottom:14px}
-.sidebar-card .card-body .field-row .field:last-child{margin-bottom:0}
+.sidebar-card .card-body .field textarea{
+  width:100%;
+  padding:11px 12px;
+  font-size:14px;
+  background:var(--black-3);
+  color:var(--off-white);
+  border:1px solid var(--gold-soft);
+  border-radius:2px;
+  font-family:'Inter Tight',sans-serif;
+  color-scheme:dark;
+  outline:none;
+  display:block;
+  min-height:42px;
+}
+.sidebar-card .card-body .field input:focus,
+.sidebar-card .card-body .field select:focus,
+.sidebar-card .card-body .field textarea:focus{border-color:var(--gold);background:var(--black)}
+.sidebar-card .card-body .field input[type="date"]{
+  min-height:42px;
+  padding:10px 12px;
+  font-size:14px;
+  /* força tema escuro do picker do navegador */
+  color-scheme:dark;
+}
+/* Webkit: garante que indicator do calendário fique visível */
+.sidebar-card .card-body .field input[type="date"]::-webkit-calendar-picker-indicator{
+  filter: invert(0.8) sepia(0.6) saturate(2) hue-rotate(15deg);
+  cursor: pointer;
+}
+.sidebar-card .card-body .field textarea{min-height:80px;resize:vertical;font-family:'Fraunces',serif;font-size:14.5px;line-height:1.55}
+.sidebar-card .card-body .field-help{font-size:11.5px;line-height:1.5;margin-top:6px;color:var(--gray-500);font-family:'Fraunces',serif;font-style:italic}
+.sidebar-card .card-body .field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px}
+.sidebar-card .card-body .field-row .field{margin-bottom:0}
 .field-row.tight{gap:10px}
 
 /* Status toggle */
