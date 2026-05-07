@@ -112,6 +112,10 @@ def parse_post(path):
         raise ValueError(f'Post sem front-matter: {path}')
     _, fm, body = text.split('---', 2)
     meta = yaml.safe_load(fm)
+    # Drafts são pulados no build (não geram HTML, não entram em sitemap/RSS/posts.json)
+    is_draft = bool(meta.get('draft', False))
+    if is_draft:
+        return None
     md = markdown.Markdown(extensions=['extra', 'codehilite', 'toc', 'tables', 'fenced_code', 'sane_lists', 'smarty', 'footnotes'])
     body_html = md.convert(body.strip())
     body_html = sanitize_html(body_html)
@@ -127,14 +131,18 @@ def parse_post(path):
         date_iso = meta['date'].date().isoformat()
     else:
         date_iso = str(meta.get('date', datetime.date.today().isoformat()))
+    excerpt = meta.get('excerpt', '') or ''
     return {
         'slug': slug,
         'title': meta['title'],
-        'excerpt': meta.get('excerpt', ''),
+        'excerpt': excerpt,
         'category': cat,
         'category_label': CATEGORIES[cat],
         'tags': meta.get('tags', []) or [],
         'cover': meta.get('cover', ''),
+        'cover_alt': meta.get('cover_alt', '') or meta.get('title', ''),
+        'seo_title': meta.get('seo_title', '') or '',
+        'seo_description': meta.get('seo_description', '') or excerpt,
         'date': date_iso,
         'updated': str(meta.get('updated', date_iso)),
         'body_html': body_html,
@@ -158,12 +166,19 @@ def build(inplace=False):
         POSTS_DIR.mkdir(parents=True, exist_ok=True)
 
     posts = []
+    drafts_count = 0
     for f in sorted(POSTS_DIR.glob('*.md')):
         try:
-            posts.append(parse_post(f))
+            p = parse_post(f)
+            if p is None:
+                drafts_count += 1
+                continue
+            posts.append(p)
         except Exception as e:
             print(f'ERRO em {f.name}: {e}')
     posts.sort(key=lambda p: p['date'], reverse=True)
+    if drafts_count:
+        print(f'Skipped {drafts_count} draft post(s)')
 
     # Setup output
     global DIST
@@ -254,8 +269,8 @@ def build(inplace=False):
             prev=prev_p,
             next=next_p,
             related=related,
-            page_title=f"{post['title']} · Henrique Silva Advocacia",
-            page_description=post['excerpt'] or post['title'],
+            page_title=post['seo_title'] or f"{post['title']} · Henrique Silva Advocacia",
+            page_description=post['seo_description'] or post['excerpt'] or post['title'],
             canonical=post['absolute_url'],
             og_image=(SITE_URL + post['cover']) if post['cover'] else f'{SITE_URL}/assets/og-banner.jpg',
             site_url=SITE_URL,

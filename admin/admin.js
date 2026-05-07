@@ -203,10 +203,13 @@ function parseFrontMatter(text) {
 }
 function buildFrontMatter(meta) {
   const lines = ['---'];
-  ['title','slug','excerpt','category','tags','cover','date','updated'].forEach(k => {
+  const keys = ['title','slug','excerpt','category','tags','cover','cover_alt','date','updated','draft','seo_title','seo_description'];
+  keys.forEach(k => {
     if (meta[k] === undefined || meta[k] === null) return;
+    if (typeof meta[k] === 'string' && !meta[k]) return; // pula strings vazias
     let v = meta[k];
     if (Array.isArray(v)) v = '[' + v.map(x => `${x}`).join(', ') + ']';
+    else if (typeof v === 'boolean') v = v ? 'true' : 'false';
     else if (typeof v === 'string' && (v.includes(':') || v.includes('"') || v.includes("'"))) v = `"${v.replace(/"/g, '\\"')}"`;
     else if (typeof v === 'string' && k !== 'date' && k !== 'updated' && k !== 'slug' && k !== 'category') v = `"${v}"`;
     lines.push(`${k}: ${v}`);
@@ -2005,9 +2008,12 @@ async function renderPosts(app) {
           </div>`;
         return;
       }
-      $('#postsContainer').innerHTML = `<div class="posts-grid">` + filtered.map(p => `
-        <article class="post-row">
+      $('#postsContainer').innerHTML = `<div class="posts-grid">` + filtered.map(p => {
+        const isDraft = p.draft === true || p.draft === 'true';
+        return `
+        <article class="post-row ${isDraft ? 'is-draft' : ''}">
           <div class="post-row-meta">
+            ${isDraft ? '<span class="post-row-badge">Rascunho</span>' : ''}
             <span>${CATEGORIES[p.category] || p.category || 'Geral'}</span>
             <span class="dot">·</span>
             <span class="date">${fmtDate(p.date || '')}</span>
@@ -2016,11 +2022,11 @@ async function renderPosts(app) {
           <p>${escHtml(p.excerpt||'')}</p>
           <div class="post-row-actions">
             <a href="#/edit/${encodeURIComponent(p.fileBase)}" class="btn btn-secondary">Editar</a>
-            <a href="/HenriqueSilva/blog/${p.slug || ''}/" target="_blank" class="btn btn-secondary">Ver ↗</a>
+            ${isDraft ? '' : `<a href="/HenriqueSilva/blog/${p.slug || ''}/" target="_blank" class="btn btn-secondary">Ver ↗</a>`}
             <button class="btn btn-danger" data-del="${p.path}" data-sha="${p.sha}" data-name="${escAttr(p.title||'')}">Excluir</button>
           </div>
-        </article>
-      `).join('') + `</div>`;
+        </article>`;
+      }).join('') + `</div>`;
       $$('[data-del]').forEach(btn => btn.addEventListener('click', async () => {
         const ok = await confirmModal({
           title: 'Excluir artigo?',
@@ -2046,7 +2052,7 @@ async function renderPosts(app) {
 
 async function renderEditor(app, fileBase) {
   let sha = null;
-  let meta = { title: '', slug: '', excerpt: '', category: 'trabalhista', tags: [], cover: '', date: todayIso(), updated: todayIso() };
+  let meta = { title: '', slug: '', excerpt: '', category: 'trabalhista', tags: [], cover: '', cover_alt: '', date: todayIso(), updated: todayIso(), draft: false, seo_title: '', seo_description: '' };
   let body = '';
   if (fileBase) {
     try {
@@ -2057,103 +2063,337 @@ async function renderEditor(app, fileBase) {
         meta = { ...meta, ...parsed.meta };
         if (typeof meta.tags === 'string') meta.tags = meta.tags.split(',').map(s=>s.trim()).filter(Boolean);
         if (!Array.isArray(meta.tags)) meta.tags = [];
+        if (typeof meta.draft === 'string') meta.draft = meta.draft === 'true';
         body = parsed.body;
       }
     } catch (err) { toast(err.message, 'error'); }
   }
+  const isDraft = !!meta.draft;
   app.innerHTML = renderTopbar(fileBase ? 'posts' : 'new') + `
-    <div class="container">
-      <div class="h1">${fileBase ? 'Editar artigo' : 'Novo <em>artigo</em>'}</div>
-      <div class="h-sub">${fileBase ? 'Modifique e salve. O artigo é regenerado em ~30 segundos.' : 'Compartilhe seu conhecimento jurídico. Use uma linguagem que seu cliente entenda.'}</div>
-      <div class="card">
-        <div class="field"><label>Título do artigo</label><input id="f-title" value="${escAttr(meta.title)}" placeholder="Ex: Como provar horas extras na Justiça do Trabalho" /><div class="field-help">Aparece grande no topo do artigo e nos resultados do Google. Use uma pergunta ou afirmação que seu cliente faria.</div></div>
-        <div class="field-row">
-          <div class="field"><label>Endereço da página <span class="pill">URL</span></label><input id="f-slug" value="${escAttr(meta.slug)}" /><div class="field-help">Deixe em branco que é gerado automaticamente a partir do título. Aparece na URL: /blog/<i>endereço</i>/.</div></div>
-          <div class="field"><label>Categoria</label><select id="f-category">${Object.entries(CATEGORIES).map(([k,v]) => `<option value="${k}" ${meta.category===k?'selected':''}>${v}</option>`).join('')}</select><div class="field-help">Em qual área do direito esse artigo se encaixa. Ajuda o cliente filtrar no blog.</div></div>
+    <div class="editor-shell">
+      <div class="editor-header" id="editorHeader">
+        <a href="#/posts" class="btn-ghost editor-back" aria-label="Voltar pra lista">← Voltar</a>
+        <div class="editor-status-area">
+          <span class="status-pill ${isDraft ? 'is-draft' : 'is-published'}" id="statusPill">
+            <span class="status-dot" aria-hidden="true"></span>
+            <span class="status-label">${isDraft ? 'Rascunho' : 'Publicado'}</span>
+          </span>
+          <span class="autosave-indicator" id="autosaveText" aria-live="polite"></span>
         </div>
-        <div class="field"><label>Resumo curto</label><textarea id="f-excerpt" rows="2" placeholder="Frase que aparece nos cards e nos resultados de busca (1-2 linhas).">${escHtml(meta.excerpt||'')}</textarea><div class="field-help">Aparece nos cards do blog, no Google e nas redes sociais quando alguém compartilha. Mantenha em 1-2 linhas que dão vontade de clicar.</div></div>
-        <div class="field-row">
-          <div class="field"><label>Tags <span class="pill">opcional</span></label><input id="f-tags" value="${escAttr((meta.tags||[]).join(', '))}" placeholder="horas-extras, prova, CLT" /><div class="field-help">Palavras-chave separadas por vírgula. Ajudam a encontrar artigos relacionados. Use 3-5 tags.</div></div>
-          <div class="field"><label>Imagem de capa</label>
-            <div class="img-picker" id="coverPicker" data-isvideo="false">
-              ${meta.cover ? `<img class="img-preview" src="${previewUrl(meta.cover)}" alt="" onerror="this.style.display='none'" />` : `<div class="img-picker-empty">${I.image}</div>`}
-              <div class="img-picker-body">
-                <input type="text" id="f-cover" value="${escAttr(meta.cover)}" placeholder="/HenriqueSilva/blog/images/capa.jpg" />
-                <div class="img-picker-actions">
-                  <button type="button" class="btn btn-secondary btn-pickcover">${I.upload} Enviar</button>
-                  <span class="drop-hint">…ou arraste pra cá</span>
+        <div class="editor-actions">
+          <button type="button" class="btn btn-secondary btn-sm" id="btnPreviewDesktop">${I.help} Pré-visualizar</button>
+        </div>
+      </div>
+
+      <div class="editor-body">
+        <main class="editor-main">
+          <div class="editor-title-wrap">
+            <input class="editor-title-input" id="f-title" value="${escAttr(meta.title)}" placeholder="Título do artigo…" autocomplete="off" />
+          </div>
+
+          <div class="editor-toolbar" id="editorToolbar">
+            <div class="tool-group">
+              <select class="tool-heading" id="toolHeading" aria-label="Tipo de bloco">
+                <option value="">Texto normal</option>
+                <option value="## ">Subtítulo (H2)</option>
+                <option value="### ">Subtítulo menor (H3)</option>
+                <option value="#### ">Detalhe (H4)</option>
+              </select>
+            </div>
+            <span class="editor-tool-sep" aria-hidden="true"></span>
+            <div class="tool-group">
+              <button type="button" class="editor-tool" data-md="**" title="Negrito · Ctrl+B"><b>B</b></button>
+              <button type="button" class="editor-tool" data-md="*" title="Itálico · Ctrl+I"><i>I</i></button>
+              <button type="button" class="editor-tool" data-md="\`" title="Código">‹/›</button>
+            </div>
+            <span class="editor-tool-sep" aria-hidden="true"></span>
+            <div class="tool-group">
+              <button type="button" class="editor-tool" data-prefix="- " title="Lista com marcadores">• Lista</button>
+              <button type="button" class="editor-tool" data-prefix="1. " title="Lista numerada">1. Lista</button>
+              <button type="button" class="editor-tool" data-prefix="> " title="Citação">" Citação</button>
+            </div>
+            <span class="editor-tool-sep" aria-hidden="true"></span>
+            <div class="tool-group">
+              <button type="button" class="editor-tool" id="tool-link" title="Inserir link">${I.ext} Link</button>
+              <button type="button" class="editor-tool" id="tool-image" title="Inserir imagem">${I.image} Imagem</button>
+              <button type="button" class="editor-tool" data-prefix="---" title="Linha divisória">— Linha</button>
+            </div>
+          </div>
+
+          <button type="button" class="editor-toggle-preview" id="togglePreview" aria-pressed="false">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            <span>Ver formatado</span>
+          </button>
+
+          <div class="editor-grid" id="editorGrid">
+            <textarea id="f-body" class="editor-textarea" placeholder="Comece escrevendo…&#10;&#10;Use **negrito** e *itálico*. Cole imagens arrastando pra cá. ## Subtítulo. - Lista. > Citação.">${escHtml(body)}</textarea>
+            <div id="preview" class="editor-preview" aria-label="Pré-visualização"></div>
+          </div>
+
+          <div class="editor-stats" id="editorStats">
+            <span><b id="statWords">0</b> palavras</span>
+            <span class="dot" aria-hidden="true">·</span>
+            <span><b id="statRead">0</b> min de leitura</span>
+            <span class="dot" aria-hidden="true">·</span>
+            <span><b id="statHeadings">0</b> seções</span>
+          </div>
+        </main>
+
+        <aside class="editor-sidebar" aria-label="Configurações do artigo">
+          <details class="sidebar-card" open>
+            <summary><span class="card-icon">${I.flag}</span> Publicação</summary>
+            <div class="card-body">
+              <div class="field">
+                <label>Status</label>
+                <div class="status-toggle" role="radiogroup" aria-label="Status do artigo">
+                  <button type="button" data-status="published" class="${!isDraft?'active':''}" role="radio" aria-checked="${!isDraft}">Publicado</button>
+                  <button type="button" data-status="draft" class="${isDraft?'active':''}" role="radio" aria-checked="${isDraft}">Rascunho</button>
+                </div>
+                <div class="field-help">Rascunhos não aparecem no site público até você publicar.</div>
+              </div>
+              <div class="field-row tight">
+                <div class="field"><label>Publicado em</label><input type="date" id="f-date" value="${meta.date||todayIso()}" /></div>
+                <div class="field"><label>Atualizado em</label><input type="date" id="f-updated" value="${meta.updated||todayIso()}" /></div>
+              </div>
+            </div>
+          </details>
+
+          <details class="sidebar-card" open>
+            <summary><span class="card-icon">${I.image}</span> Imagem de capa</summary>
+            <div class="card-body">
+              <div class="cover-picker" id="coverPicker">
+                ${meta.cover ? `<div class="cover-preview"><img src="${previewUrl(meta.cover)}" alt="${escAttr(meta.cover_alt||'')}" id="coverImg" onerror="this.style.display='none'" /><button type="button" class="cover-remove" id="coverRemove" aria-label="Remover capa">×</button></div>` : `<div class="cover-empty"><div class="cover-empty-inner">${I.image}<span>Sem capa</span></div></div>`}
+                <div class="cover-controls">
+                  <button type="button" class="btn btn-secondary btn-pickcover">${I.upload} ${meta.cover ? 'Trocar' : 'Escolher imagem'}</button>
+                  <input type="text" id="f-cover" value="${escAttr(meta.cover)}" placeholder="/HenriqueSilva/blog/images/..." class="cover-url" aria-label="URL da capa" />
+                </div>
+                <div class="field" style="margin-top:8px">
+                  <label>Texto alternativo</label>
+                  <input type="text" id="f-cover-alt" value="${escAttr(meta.cover_alt||'')}" placeholder="Descreva a imagem em poucas palavras" />
+                  <div class="field-help">Pra quem usa leitor de tela e pro Google. Ex: "Mãos folheando documentos jurídicos".</div>
                 </div>
               </div>
             </div>
-            <div class="field-help">Foto que aparece no card do blog e em compartilhamentos. Horizontal funciona melhor (1200×630 ideal).</div>
-          </div>
-        </div>
-        <div class="field-row">
-          <div class="field"><label>Data de publicação</label><input type="date" id="f-date" value="${meta.date||todayIso()}" /><div class="field-help">Quando o artigo foi escrito. Usado pra ordenar do mais recente.</div></div>
-          <div class="field"><label>Última atualização</label><input type="date" id="f-updated" value="${meta.updated||todayIso()}" /><div class="field-help">Atualize ao revisar/corrigir o artigo. Mostra ao Google que o conteúdo é atual.</div></div>
-        </div>
+          </details>
+
+          <details class="sidebar-card" open>
+            <summary><span class="card-icon">${I.list}</span> Resumo</summary>
+            <div class="card-body">
+              <div class="field">
+                <textarea id="f-excerpt" rows="3" maxlength="220" placeholder="Frase de 1-2 linhas que aparece nos cards do blog e nos resultados do Google.">${escHtml(meta.excerpt||'')}</textarea>
+                <div class="field-help"><span id="excerptCount">0</span>/220 caracteres</div>
+              </div>
+            </div>
+          </details>
+
+          <details class="sidebar-card" open>
+            <summary><span class="card-icon">${I.briefcase}</span> Organização</summary>
+            <div class="card-body">
+              <div class="field">
+                <label>Categoria</label>
+                <select id="f-category">${Object.entries(CATEGORIES).map(([k,v]) => `<option value="${k}" ${meta.category===k?'selected':''}>${v}</option>`).join('')}</select>
+              </div>
+              <div class="field">
+                <label>Tags <span class="pill">opcional</span></label>
+                <input id="f-tags" value="${escAttr((meta.tags||[]).join(', '))}" placeholder="horas-extras, prova, CLT" />
+                <div class="tag-pills" id="tagPills" aria-live="polite"></div>
+                <div class="field-help">Separe por vírgula. Use 3-5 tags.</div>
+              </div>
+            </div>
+          </details>
+
+          <details class="sidebar-card">
+            <summary><span class="card-icon">${I.cog}</span> SEO <span class="pill">avançado</span></summary>
+            <div class="card-body">
+              <div class="field">
+                <label>Endereço da página (URL)</label>
+                <input id="f-slug" value="${escAttr(meta.slug)}" />
+                <div class="field-help">Aparece como <code>/blog/<span id="slugPreview">${escHtml(meta.slug||'…')}</span>/</code>. Deixa em branco pra gerar do título.</div>
+              </div>
+              <div class="field">
+                <label>Título no Google <span class="char-count" id="seoTitleCount">0/60</span></label>
+                <input id="f-seo-title" value="${escAttr(meta.seo_title||'')}" maxlength="80" placeholder="(usa o título do artigo se vazio)" />
+                <div class="field-help">O que aparece como link clicável no Google. Ideal até 60 caracteres.</div>
+              </div>
+              <div class="field">
+                <label>Descrição no Google <span class="char-count" id="seoDescCount">0/160</span></label>
+                <textarea id="f-seo-desc" rows="3" maxlength="200" placeholder="(usa o resumo se vazio)">${escHtml(meta.seo_description||'')}</textarea>
+                <div class="field-help">Texto descritivo logo abaixo do título no Google. Ideal até 160 caracteres.</div>
+              </div>
+            </div>
+          </details>
+
+          ${fileBase ? `<div class="sidebar-danger"><button type="button" class="btn btn-danger" id="btnDelete">${I.flag} Excluir artigo</button></div>` : ''}
+        </aside>
       </div>
-      <div class="card" style="margin-top:18px">
-        <label style="display:block;font-family:'Inter Tight',sans-serif;font-size:10.5px;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);font-weight:500;margin-bottom:6px">Conteúdo do artigo</label>
-        <p style="font-family:'Fraunces',serif;font-style:italic;font-size:13.5px;color:var(--gray-500);margin:0 0 14px;line-height:1.5">Escreva à esquerda — o site aparece formatado à direita. Atalhos: <b>Ctrl+B</b> negrito · <b>Ctrl+I</b> itálico. Pode arrastar imagens direto pro texto.</p>
-        <div class="editor-toolbar">
-          <button type="button" class="editor-tool" data-md="**" title="Negrito (Ctrl+B)"><b>B</b></button>
-          <button type="button" class="editor-tool" data-md="*" title="Itálico (Ctrl+I)"><i>I</i></button>
-          <span class="editor-tool-sep"></span>
-          <button type="button" class="editor-tool" data-prefix="## " title="Subtítulo">H2</button>
-          <button type="button" class="editor-tool" data-prefix="### " title="Sub-subtítulo">H3</button>
-          <span class="editor-tool-sep"></span>
-          <button type="button" class="editor-tool" data-prefix="- " title="Lista">• Lista</button>
-          <button type="button" class="editor-tool" data-prefix="1. " title="Lista numerada">1. Lista</button>
-          <button type="button" class="editor-tool" data-prefix="> " title="Citação">" Citação</button>
-          <span class="editor-tool-sep"></span>
-          <button type="button" class="editor-tool" id="tool-link" title="Link">Link</button>
-          <button type="button" class="editor-tool" id="tool-image" title="Imagem">Imagem</button>
-          <button type="button" class="editor-tool" data-md="\`" title="Código">‹/›</button>
-          <button type="button" class="editor-tool" data-prefix="---" title="Linha divisória">— Linha</button>
-        </div>
-        <button type="button" class="editor-toggle-preview" id="togglePreview" aria-pressed="false">
-          <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-          <span>Ver formatado</span>
-        </button>
-        <div class="editor-grid" id="editorGrid">
-          <textarea id="f-body" class="editor-textarea" placeholder="Escreva aqui — pode arrastar imagens direto pro texto.">${escHtml(body)}</textarea>
-          <div id="preview" class="editor-preview"></div>
-        </div>
-      </div>
-      ${fileBase ? `<div class="card" style="margin-top:18px"><button class="btn btn-danger" id="btnDelete">Excluir este artigo</button></div>` : ''}
     </div>
     <input type="file" id="fileInput" accept="image/*" style="display:none" />
   `;
   const ta = $('#f-body');
   const preview = $('#preview');
-  function updatePreview(){ preview.innerHTML = mdRender(ta.value); }
-  ta.addEventListener('input', updatePreview);
-  updatePreview();
 
-  // Toggle preview/editar (visível só em mobile via CSS)
+  // Extrai headings do markdown pra TOC e contagem
+  function extractHeadings(md) {
+    const lines = md.split('\n');
+    const out = [];
+    let inCode = false;
+    for (const ln of lines) {
+      if (ln.startsWith('```')) { inCode = !inCode; continue; }
+      if (inCode) continue;
+      const m = ln.match(/^(#{1,4})\s+(.+?)\s*$/);
+      if (m) out.push({ level: m[1].length, text: m[2].replace(/[*_`]/g, '').trim() });
+    }
+    return out;
+  }
+  function slugifyHeading(text) {
+    return slugify(text).slice(0, 60);
+  }
+
+  function updatePreview() {
+    const md = ta.value;
+    const html = mdRender(md);
+    const headings = extractHeadings(md);
+    let toc = '';
+    if (headings.length > 2) {
+      toc = `<nav class="preview-toc" aria-label="Sumário"><div class="preview-toc-title">Conteúdo</div><ul>${
+        headings.filter(h => h.level <= 3).map(h => `<li class="lvl-${h.level}">${escHtml(h.text)}</li>`).join('')
+      }</ul></nav>`;
+    }
+    const titleHtml = $('#f-title').value.trim();
+    const titleBlock = titleHtml ? `<h1 class="preview-title">${escHtml(titleHtml)}</h1>` : '';
+    const cover = $('#f-cover').value.trim();
+    const coverBlock = cover ? `<img class="preview-cover" src="${escAttr(previewUrl(cover))}" alt="" />` : '';
+    preview.innerHTML = coverBlock + titleBlock + toc + html;
+  }
+
+  function recalcStats() {
+    const text = ta.value.replace(/```[\s\S]*?```/g, ' ').replace(/[#*_`>\[\]\(\)!-]/g, ' ');
+    const words = (text.match(/\S+/g) || []).length;
+    const minutes = Math.max(1, Math.round(words / 220));
+    const headings = extractHeadings(ta.value).length;
+    $('#statWords').textContent = words.toLocaleString('pt-BR');
+    $('#statRead').textContent = minutes;
+    $('#statHeadings').textContent = headings;
+  }
+  ta.addEventListener('input', () => { updatePreview(); recalcStats(); });
+  updatePreview();
+  recalcStats();
+
+  // Toggle preview/editar (visível só em mobile via CSS, e desktop com botão)
   const togglePreview = $('#togglePreview');
-  if (togglePreview) {
-    togglePreview.addEventListener('click', () => {
-      const grid = $('#editorGrid');
-      const showing = grid.classList.toggle('show-preview');
+  const togglePreviewDesktop = $('#btnPreviewDesktop');
+  function togglePreviewMode() {
+    const grid = $('#editorGrid');
+    const showing = grid.classList.toggle('show-preview');
+    if (togglePreview) {
       togglePreview.setAttribute('aria-pressed', String(showing));
       togglePreview.querySelector('span').textContent = showing ? '← Voltar a editar' : 'Ver formatado';
-      if (showing) updatePreview();
-    });
+    }
+    if (togglePreviewDesktop) {
+      togglePreviewDesktop.innerHTML = showing ? '← Editar' : I.help + ' Pré-visualizar';
+    }
+    if (showing) updatePreview();
+  }
+  if (togglePreview) togglePreview.addEventListener('click', togglePreviewMode);
+  if (togglePreviewDesktop) togglePreviewDesktop.addEventListener('click', togglePreviewMode);
+
+  // Slug auto-gen + preview
+  function updateSlugPreview() {
+    const sp = $('#slugPreview');
+    if (sp) sp.textContent = $('#f-slug').value || '…';
   }
   $('#f-title').addEventListener('input', e => {
     const slugIn = $('#f-slug');
-    if (!slugIn.value || slugIn.dataset.auto === '1'){ slugIn.value = slugify(e.target.value); slugIn.dataset.auto = '1'; }
+    if (!slugIn.value || slugIn.dataset.auto === '1'){
+      slugIn.value = slugify(e.target.value);
+      slugIn.dataset.auto = '1';
+      updateSlugPreview();
+    }
   });
-  $('#f-slug').addEventListener('input', e => { e.target.dataset.auto = '0'; });
+  $('#f-slug').addEventListener('input', e => { e.target.dataset.auto = '0'; updateSlugPreview(); });
+  updateSlugPreview();
+
+  // Heading dropdown
+  $('#toolHeading').addEventListener('change', (e) => {
+    const prefix = e.target.value;
+    if (prefix) prefixLines(ta, prefix);
+    e.target.value = ''; // reset
+    markDirty();
+  });
+
+  // Botões de markdown da toolbar
   $$('.editor-tool[data-md]').forEach(b => b.addEventListener('click', () => { wrapSelection(ta, b.dataset.md); markDirty(); }));
   $$('.editor-tool[data-prefix]').forEach(b => b.addEventListener('click', () => { prefixLines(ta, b.dataset.prefix); markDirty(); }));
   $('#tool-link').addEventListener('click', () => {
-    const url = prompt('URL:');
+    const url = prompt('URL do link (cole aqui):');
     if (!url) return;
     const sel = ta.value.slice(ta.selectionStart, ta.selectionEnd) || 'texto do link';
     insertAtCursor(ta, `[${sel}](${url})`); markDirty();
+  });
+
+  // Atalhos de teclado dentro do textarea
+  ta.addEventListener('keydown', (e) => {
+    if (!(e.ctrlKey || e.metaKey)) return;
+    const k = e.key.toLowerCase();
+    if (k === 'b') { e.preventDefault(); wrapSelection(ta, '**'); markDirty(); }
+    if (k === 'i') { e.preventDefault(); wrapSelection(ta, '*'); markDirty(); }
+    if (k === 'k') { e.preventDefault(); $('#tool-link').click(); }
+  });
+
+  // Status toggle (Publicado / Rascunho)
+  let currentDraft = isDraft;
+  $$('.status-toggle button').forEach(b => b.addEventListener('click', () => {
+    currentDraft = b.dataset.status === 'draft';
+    $$('.status-toggle button').forEach(x => {
+      const active = x.dataset.status === b.dataset.status;
+      x.classList.toggle('active', active);
+      x.setAttribute('aria-checked', String(active));
+    });
+    const pill = $('#statusPill');
+    pill.classList.toggle('is-draft', currentDraft);
+    pill.classList.toggle('is-published', !currentDraft);
+    pill.querySelector('.status-label').textContent = currentDraft ? 'Rascunho' : 'Publicado';
+    markDirty();
+  }));
+
+  // Tag pills (visual)
+  function renderTagPills() {
+    const raw = $('#f-tags').value;
+    const tags = raw.split(',').map(t => t.trim()).filter(Boolean);
+    $('#tagPills').innerHTML = tags.map(t => `<span class="tag-pill">${escHtml(t)}</span>`).join('');
+  }
+  $('#f-tags').addEventListener('input', renderTagPills);
+  renderTagPills();
+
+  // Contadores SEO
+  function updateCounters() {
+    const seoTitle = $('#f-seo-title').value || $('#f-title').value;
+    const seoDesc = $('#f-seo-desc').value || $('#f-excerpt').value;
+    const setCount = (id, val, max) => {
+      const el = $(id);
+      if (!el) return;
+      el.textContent = `${val.length}/${max}`;
+      el.classList.toggle('over', val.length > max);
+    };
+    setCount('#seoTitleCount', seoTitle, 60);
+    setCount('#seoDescCount', seoDesc, 160);
+    const ec = $('#excerptCount');
+    if (ec) ec.textContent = $('#f-excerpt').value.length;
+  }
+  ['#f-seo-title', '#f-seo-desc', '#f-title', '#f-excerpt'].forEach(sel => $(sel)?.addEventListener('input', updateCounters));
+  updateCounters();
+
+  // Auto-save indicator
+  function setAutosaveText(s) { const el = $('#autosaveText'); if (el) el.textContent = s; }
+
+  // Cover remove
+  $('#coverRemove')?.addEventListener('click', () => {
+    $('#f-cover').value = '';
+    $('#f-cover-alt').value = '';
+    const cp = $('#coverPicker .cover-preview, #coverPicker .cover-empty');
+    if (cp) cp.outerHTML = `<div class="cover-empty"><div class="cover-empty-inner">${I.image}<span>Sem capa</span></div></div>`;
+    document.querySelector('.btn-pickcover').textContent = `${I.upload} Escolher imagem`.replace(/<\/?[^>]+>/g, ''); // simples
+    markDirty();
   });
 
   async function uploadFile(file, target) {
@@ -2175,13 +2415,17 @@ async function renderEditor(app, fileBase) {
       if (target === 'cover'){
         $('#f-cover').value = url;
         const picker = $('#coverPicker');
-        const empty = picker.querySelector('.img-picker-empty');
+        const empty = picker.querySelector('.cover-empty');
         if (empty) {
-          const img = document.createElement('img');
-          img.className = 'img-preview'; img.src = previewUrl(path);
-          empty.replaceWith(img);
+          empty.outerHTML = `<div class="cover-preview"><img src="${escAttr(previewUrl(path))}" alt="" id="coverImg" /><button type="button" class="cover-remove" id="coverRemove" aria-label="Remover capa">×</button></div>`;
+          $('#coverRemove')?.addEventListener('click', () => {
+            $('#f-cover').value = ''; $('#f-cover-alt').value = '';
+            const cp = $('#coverPicker .cover-preview');
+            if (cp) cp.outerHTML = `<div class="cover-empty"><div class="cover-empty-inner">${I.image}<span>Sem capa</span></div></div>`;
+            markDirty();
+          });
         } else {
-          const prev = picker.querySelector('.img-preview');
+          const prev = picker.querySelector('.cover-preview img');
           if (prev) prev.src = previewUrl(path);
         }
         toast('Capa definida ✓');
@@ -2221,15 +2465,23 @@ async function renderEditor(app, fileBase) {
       localStorage.setItem(dirty.autoKey, JSON.stringify({
         title: $('#f-title').value, slug: $('#f-slug').value, excerpt: $('#f-excerpt').value,
         category: $('#f-category').value, tags: $('#f-tags').value, cover: $('#f-cover').value,
+        cover_alt: $('#f-cover-alt')?.value || '',
         date: $('#f-date').value, updated: $('#f-updated').value, body: ta.value,
+        draft: currentDraft,
+        seo_title: $('#f-seo-title')?.value || '',
+        seo_description: $('#f-seo-desc')?.value || '',
       }));
+      const now = new Date();
+      const hh = String(now.getHours()).padStart(2,'0');
+      const mm = String(now.getMinutes()).padStart(2,'0');
+      setAutosaveText(`Rascunho salvo às ${hh}:${mm}`);
     } catch (e) {
       if (e && e.name === 'QuotaExceededError') toast('Armazenamento local cheio', 'error');
     }
-  }, 600);
+  }, 800);
   window.__hsa_flushDraft = saveDraft.flush;
-  function markDirty() { setDirty(true); saveDraft(); }
-  ['input','change'].forEach(ev => app.addEventListener(ev, markDirty));
+  function markDirty() { setDirty(true); saveDraft(); setAutosaveText('Editando…'); }
+  app.addEventListener('input', markDirty);
 
   async function doSave() {
     const m = {
@@ -2239,9 +2491,15 @@ async function renderEditor(app, fileBase) {
       category: $('#f-category').value,
       tags: $('#f-tags').value.split(',').map(x => x.trim()).filter(Boolean),
       cover: $('#f-cover').value.trim(),
+      cover_alt: $('#f-cover-alt').value.trim(),
       date: $('#f-date').value || todayIso(),
       updated: todayIso(),
     };
+    if (currentDraft) m.draft = true;
+    const seoTitle = $('#f-seo-title').value.trim();
+    const seoDesc = $('#f-seo-desc').value.trim();
+    if (seoTitle) m.seo_title = seoTitle;
+    if (seoDesc) m.seo_description = seoDesc;
     if (!m.title){ toast('Título obrigatório', 'error'); return; }
     if (!m.slug){ toast('Endereço inválido', 'error'); return; }
     const filename = fileBase ? `${fileBase}.md` : `${m.date}-${m.slug}.md`;
@@ -2253,14 +2511,23 @@ async function renderEditor(app, fileBase) {
       try { localStorage.removeItem(dirty.autoKey); } catch(_) {}
       setDirty(false);
       setSaving('saved');
+      setAutosaveText('Tudo salvo');
+      const isPublished = !m.draft;
+      const actions = isPublished
+        ? [
+            { label: 'Ver no site', href: `/HenriqueSilva/blog/${m.slug}/`, target: '_blank', kind: 'btn-primary' },
+            { label: 'Continuar editando', kind: 'btn-secondary' },
+            { label: 'Voltar pra lista', kind: 'btn-secondary', onClick: () => { location.hash = '#/posts'; } },
+          ]
+        : [
+            { label: 'Continuar editando', kind: 'btn-primary' },
+            { label: 'Voltar pra lista', kind: 'btn-secondary', onClick: () => { location.hash = '#/posts'; } },
+          ];
       showModal({
         icon: 'success',
-        title: fileBase ? 'Artigo atualizado' : 'Artigo publicado',
-        msg: 'Em cerca de 30 segundos o artigo estará no ar.',
-        actions: [
-          { label: 'Ver no site', href: `/HenriqueSilva/blog/${m.slug}/`, target: '_blank', kind: 'btn-primary' },
-          { label: 'Voltar pra lista', kind: 'btn-secondary', onClick: () => { location.hash = '#/posts'; } },
-        ]
+        title: isPublished ? (fileBase ? 'Artigo atualizado' : 'Artigo publicado') : 'Rascunho salvo',
+        msg: isPublished ? 'Em cerca de 30 segundos a versão atualizada estará no ar.' : 'O artigo está salvo como rascunho. Não aparece no site público até você publicar.',
+        actions,
       });
     } catch(err) {
       setSaving('saved'); setDirty(true);
@@ -2308,10 +2575,26 @@ async function renderEditor(app, fileBase) {
           msg: 'Você tinha alterações não salvas neste artigo. Deseja recuperá-las?',
           actions: [
             { label: 'Recuperar', kind: 'btn-primary', onClick: () => {
-              $('#f-title').value = d.title; $('#f-slug').value = d.slug; $('#f-excerpt').value = d.excerpt;
-              $('#f-category').value = d.category; $('#f-tags').value = d.tags; $('#f-cover').value = d.cover;
-              $('#f-date').value = d.date; $('#f-updated').value = d.updated; ta.value = d.body;
-              updatePreview(); setDirty(true);
+              $('#f-title').value = d.title || ''; $('#f-slug').value = d.slug || ''; $('#f-excerpt').value = d.excerpt || '';
+              $('#f-category').value = d.category || 'trabalhista'; $('#f-tags').value = d.tags || ''; $('#f-cover').value = d.cover || '';
+              if ($('#f-cover-alt')) $('#f-cover-alt').value = d.cover_alt || '';
+              $('#f-date').value = d.date || todayIso(); $('#f-updated').value = d.updated || todayIso(); ta.value = d.body || '';
+              if ($('#f-seo-title')) $('#f-seo-title').value = d.seo_title || '';
+              if ($('#f-seo-desc')) $('#f-seo-desc').value = d.seo_description || '';
+              if (d.draft !== undefined) {
+                currentDraft = !!d.draft;
+                $$('.status-toggle button').forEach(x => {
+                  const active = x.dataset.status === (currentDraft ? 'draft' : 'published');
+                  x.classList.toggle('active', active);
+                  x.setAttribute('aria-checked', String(active));
+                });
+                const pill = $('#statusPill');
+                pill.classList.toggle('is-draft', currentDraft);
+                pill.classList.toggle('is-published', !currentDraft);
+                pill.querySelector('.status-label').textContent = currentDraft ? 'Rascunho' : 'Publicado';
+              }
+              updatePreview(); recalcStats(); renderTagPills(); updateCounters(); updateSlugPreview();
+              setDirty(true);
             }},
             { label: 'Descartar', kind: 'btn-secondary', onClick: () => { try { localStorage.removeItem(dirty.autoKey); } catch(_) {} } },
           ]
