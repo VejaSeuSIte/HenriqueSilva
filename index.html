@@ -3308,16 +3308,14 @@
   // Form -> WhatsApp
   function sendWhats(e){
     e.preventDefault();
-    var name = document.getElementById('cf-name').value.trim();
-    var phone = document.getElementById('cf-phone').value.trim();
-    var area = document.getElementById('cf-area').value;
-    var msg = document.getElementById('cf-msg').value.trim();
-    var text =
-      'Olá, Dr. Henrique. Vim pelo site.%0A%0A' +
-      '*Nome:* ' + encodeURIComponent(name) + '%0A' +
-      '*Telefone:* ' + encodeURIComponent(phone) + '%0A' +
-      '*Área:* ' + encodeURIComponent(area) + '%0A%0A' +
-      '*Mensagem:*%0A' + encodeURIComponent(msg);
+    var name = (document.getElementById('cf-name') || {}).value || '';
+    var phone = (document.getElementById('cf-phone') || {}).value || '';
+    var msg = (document.getElementById('cf-msg') || {}).value || '';
+    name = name.trim(); phone = phone.trim(); msg = msg.trim();
+    if (!name || !phone) { return false; }
+    var lines = ['Olá, Dr. Henrique. Vim pelo site.', '', '*Nome:* ' + name, '*Telefone:* ' + phone];
+    if (msg) { lines.push('', '*Mensagem:*', msg); }
+    var text = encodeURIComponent(lines.join('\n'));
     window.open('https://wa.me/5581987134878?text=' + text, '_blank', 'noopener');
     return false;
   }
