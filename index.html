@@ -3182,22 +3182,16 @@
       <p>Preencha o formulário abaixo que entraremos em contato o mais breve possível.</p>
     </div>
     <form class="contact-cta-form" data-reveal="up" data-delay="160" id="contactForm" onsubmit="return sendWhats(event)">
-      <div class="form-grid">
-        <div class="form-row">
-          <label for="cf-name">Nome</label>
-          <input type="text" id="cf-name" name="name" required autocomplete="name" />
-        </div>
-        <div class="form-row">
-          <label for="cf-phone">Telefone</label>
-          <input type="tel" id="cf-phone" name="phone" required autocomplete="tel" />
-        </div>
+      <div class="form-row">
+        <label for="cf-name">Nome</label>
+        <input type="text" id="cf-name" name="name" required autocomplete="name" />
       </div>
       <div class="form-row">
         <label for="cf-msg">Mensagem</label>
-        <textarea id="cf-msg" name="message" required rows="4"></textarea>
+        <textarea id="cf-msg" name="message" required rows="5" placeholder="Conte brevemente seu caso ou dúvida"></textarea>
       </div>
-      <button class="contact-cta-submit" type="submit">Enviar Mensagem</button>
-      <div class="contact-cta-disclaimer">Ao enviar, você concorda em receber retorno pelo número informado. Resposta em até 2h úteis.</div>
+      <button class="contact-cta-submit" type="submit">Enviar Mensagem pelo WhatsApp</button>
+      <div class="contact-cta-disclaimer">Você será levado direto ao WhatsApp do Dr. Henrique. Resposta em até 2h úteis.</div>
     </form>
   </div>
 </section>
@@ -3308,13 +3302,10 @@
   // Form -> WhatsApp
   function sendWhats(e){
     e.preventDefault();
-    var name = (document.getElementById('cf-name') || {}).value || '';
-    var phone = (document.getElementById('cf-phone') || {}).value || '';
-    var msg = (document.getElementById('cf-msg') || {}).value || '';
-    name = name.trim(); phone = phone.trim(); msg = msg.trim();
-    if (!name || !phone) { return false; }
-    var lines = ['Olá, Dr. Henrique. Vim pelo site.', '', '*Nome:* ' + name, '*Telefone:* ' + phone];
-    if (msg) { lines.push('', '*Mensagem:*', msg); }
+    var name = ((document.getElementById('cf-name') || {}).value || '').trim();
+    var msg = ((document.getElementById('cf-msg') || {}).value || '').trim();
+    if (!name || !msg) { return false; }
+    var lines = ['Olá, Dr. Henrique. Vim pelo site.', '', '*Nome:* ' + name, '', '*Mensagem:*', msg];
     var text = encodeURIComponent(lines.join('\n'));
     window.open('https://wa.me/5581987134878?text=' + text, '_blank', 'noopener');
     return false;
