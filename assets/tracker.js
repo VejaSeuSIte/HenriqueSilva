@@ -160,6 +160,33 @@
       scrollTimer = setTimeout(function () { scrollTimer = null; onScrollRaw(); }, 250);
     }, { passive: true });
 
+    // ----- Submissão de form (lead). Detecta forms de contato pelo id/classe/atributo.
+    // Hoje o form do site tem id="contactForm" e dispara um sendWhats(); aqui capturamos
+    // o submit (event propaga antes do default handler), mesmo que ele não envie de fato.
+    function isLeadForm(form) {
+      if (!form || form.tagName !== 'FORM') return false;
+      var id = (form.id || '').toLowerCase();
+      var cls = (form.className || '').toString().toLowerCase();
+      return /contact|contato|lead|whats/.test(id) || /contact|contato|lead|whats/.test(cls)
+          || !!form.querySelector('input[type="tel"], input[name*="whats" i], input[name*="telefone" i]');
+    }
+    document.addEventListener('submit', function (e) {
+      var form = e.target;
+      if (!isLeadForm(form)) return;
+      // Pega um label representativo: data-name, id, ou primeiro h3/h4 dentro
+      var label = form.getAttribute('data-name') || form.id || '';
+      if (!label) {
+        var h = form.closest('section, div')?.querySelector('h2, h3, h4');
+        if (h) label = (h.textContent || '').trim().slice(0, 100);
+      }
+      enqueue({
+        kind: 'lead',
+        click_kind: 'form',
+        click_text: label || 'formulário de contato',
+        click_href: null,
+      }, { flushNow: true });
+    }, true);
+
     // ----- Cliques (delegado, links + botões)
     document.addEventListener('click', function (e) {
       var el = e.target && e.target.closest && e.target.closest('a, button, [role="button"]');
