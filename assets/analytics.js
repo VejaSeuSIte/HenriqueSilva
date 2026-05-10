@@ -1,6 +1,15 @@
-/* HSA Analytics injector — lê site-config.json e ativa Clarity / Plausible / GA4 se configurados */
+/* HSA Analytics injector — lê site-config.json e ativa Clarity / Plausible / GA4 se configurados.
+   Também carrega tracker.js (analytics próprio: referrer, scroll, tempo, cliques). */
 (function(){
-  var configUrl = (location.pathname.indexOf('/HenriqueSilva/') === 0 ? '/HenriqueSilva/' : '/') + 'assets/site-config.json';
+  var basePath = (location.pathname.indexOf('/HenriqueSilva/') === 0 ? '/HenriqueSilva/' : '/');
+  // Tracker próprio — independe de qualquer ID configurado.
+  if (location.pathname.indexOf('/admin') === -1) {
+    var tk = document.createElement('script');
+    tk.src = basePath + 'assets/tracker.js';
+    tk.defer = true;
+    document.head.appendChild(tk);
+  }
+  var configUrl = basePath + 'assets/site-config.json';
   fetch(configUrl, {cache: 'no-cache'}).then(function(r){ return r.ok ? r.json() : {}; }).then(function(cfg){
     if (!cfg) return;
     // Microsoft Clarity

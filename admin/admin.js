@@ -687,6 +687,11 @@ const I = {
   list: '<svg viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>',
   upload: '<svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>',
   burger: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>',
+  chart: '<svg viewBox="0 0 24 24"><polyline points="3 17 9 11 13 15 21 7"/><polyline points="14 7 21 7 21 14"/></svg>',
+  eye: '<svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>',
+  cursor: '<svg viewBox="0 0 24 24"><path d="M3 3l7.07 16.97 2.51-7.39 7.39-2.51L3 3z"/></svg>',
+  globe: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>',
+  clock: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',
   building: '<svg viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20"/><line x1="9" y1="6" x2="9" y2="6"/><line x1="15" y1="6" x2="15" y2="6"/><line x1="9" y1="10" x2="9" y2="10"/><line x1="15" y1="10" x2="15" y2="10"/><line x1="9" y1="14" x2="15" y2="14"/></svg>',
   briefcase: '<svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>',
   pen: '<svg viewBox="0 0 24 24"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg>',
@@ -755,6 +760,7 @@ async function route() {
   if (path === '/site') return renderSiteEditor(app);
   if (path === '/landings') return renderLandings(app);
   if (path.startsWith('/landing/')) return renderLandingEditor(app, decodeURIComponent(path.slice(9)));
+  if (path === '/analytics') return renderAnalytics(app);
   if (path === '/config') return renderConfig(app);
   app.innerHTML = '<div class="container"><div class="empty"><h3>Página não encontrada</h3><a href="#/" class="btn btn-primary">Voltar</a></div></div>';
 }
@@ -822,6 +828,7 @@ function renderTopbar(active) {
         ${item('landings', 'Páginas', I.pages, '#/landings')}
         ${item('posts', 'Blog', I.posts, '#/posts')}
         ${item('imagens', 'Imagens', I.image, '#/imagens')}
+        ${item('analytics', 'Visitas', I.chart, '#/analytics')}
         ${item('config', 'Configurações', I.cog, '#/config')}
         <a href="/HenriqueSilva/" target="_blank" rel="noopener">${I.ext}<span>Ver site</span></a>
       </div>
@@ -910,6 +917,12 @@ async function renderDashboard(app) {
           <div class="dash-label">Imagens enviadas</div>
           <div class="dash-sublabel">Fotos do escritório, capas</div>
         </a>
+        <a class="dash-card" href="#/analytics">
+          <div class="dash-icon">${I.chart}</div>
+          <div class="dash-num" id="dashViews"><span class="skeleton" style="width:50px;height:32px;display:inline-block"></span></div>
+          <div class="dash-label">Visitas (30 dias)</div>
+          <div class="dash-sublabel">Origem, leitura e cliques</div>
+        </a>
       </div>
       <div class="dash-sections">
         <div class="card">
@@ -973,6 +986,16 @@ async function renderDashboard(app) {
     const imgs = await listDir(REPO_PATHS.IMAGES);
     $('#dashImages').textContent = (imgs || []).filter(x => /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(x.name)).length;
   } catch (e) { $('#dashImages').textContent = '0'; }
+  try {
+    const slug = await getClientSlug();
+    if (slug) {
+      const { data } = await supa.rpc('analytics_summary', { p_slug: slug, p_days: 30 });
+      const r = Array.isArray(data) ? data[0] : data;
+      $('#dashViews').textContent = r ? (r.total_pageviews || 0) : '0';
+    } else {
+      $('#dashViews').textContent = '—';
+    }
+  } catch (e) { $('#dashViews').textContent = '—'; }
 }
 
 /* ===================== SITE EDITOR (HOME) ===================== */
@@ -2740,6 +2763,242 @@ async function renderGallery(app) {
   } catch(err){
     $('#galContainer').innerHTML = `<p style="color:var(--danger)">${err.message}</p>`;
   }
+}
+
+/* ===================== ANALYTICS ===================== */
+
+let _clientSlugCache = null;
+async function getClientSlug() {
+  if (_clientSlugCache) return _clientSlugCache;
+  try {
+    const r = await callProxy('whoami');
+    _clientSlugCache = r?.client?.slug || null;
+    return _clientSlugCache;
+  } catch (_) { return null; }
+}
+
+function fmtDuration(seconds) {
+  const s = Number(seconds || 0);
+  if (s < 60) return s.toFixed(0) + 's';
+  const m = Math.floor(s / 60);
+  const r = Math.round(s - m * 60);
+  return `${m}m ${r}s`;
+}
+function fmtRelative(iso) {
+  try {
+    const d = new Date(iso);
+    const diff = (Date.now() - d.getTime()) / 1000;
+    if (diff < 60) return 'agora';
+    if (diff < 3600) return Math.floor(diff / 60) + 'min atrás';
+    if (diff < 86400) return Math.floor(diff / 3600) + 'h atrás';
+    if (diff < 604800) return Math.floor(diff / 86400) + 'd atrás';
+    return d.toLocaleDateString('pt-BR');
+  } catch { return ''; }
+}
+function pathLabel(p) {
+  if (!p) return '/';
+  const clean = p.replace(/^\/HenriqueSilva\//, '/').replace(/\/index\.html$/, '/').replace(/\/$/, '') || '/';
+  if (clean === '/') return 'Home';
+  return clean;
+}
+function sourceLabel(s, kind) {
+  if (!s) return '(direto)';
+  if (kind === 'utm') return 'UTM: ' + s;
+  if (kind === 'direct') return '(direto)';
+  return s;
+}
+function clickKindLabel(k) {
+  return ({
+    whatsapp: 'WhatsApp', tel: 'Telefone', email: 'E-mail',
+    outbound: 'Link externo', internal: 'Link interno',
+    button: 'Botão', link: 'Link', other: 'Outro'
+  })[k] || k || '—';
+}
+
+async function renderAnalytics(app) {
+  unmountSaveBar();
+  app.innerHTML = renderTopbar('analytics') + `
+    <div class="container">
+      <div class="h1">Visitas <em>do site</em></div>
+      <div class="h-sub">De onde vem cada visitante, quanto tempo ficou, até onde rolou e onde clicou. Tudo seu — sem depender de Google Analytics.</div>
+
+      <div class="anly-toolbar">
+        <div class="anly-period" role="tablist" aria-label="Período">
+          <button data-days="7"   class="anly-period-btn">7 dias</button>
+          <button data-days="30"  class="anly-period-btn active">30 dias</button>
+          <button data-days="90"  class="anly-period-btn">90 dias</button>
+        </div>
+        <button class="btn btn-secondary btn-sm" id="anlyRefresh">Atualizar</button>
+      </div>
+
+      <div class="anly-stats" id="anlyStats">
+        ${[1,2,3,4].map(()=>'<div class="anly-stat"><div class="skeleton" style="width:60%;height:32px"></div></div>').join('')}
+      </div>
+
+      <div class="anly-grid">
+        <section class="card anly-card">
+          <h3 class="anly-card-title">${I.globe} De onde vieram</h3>
+          <div class="anly-card-sub">Quem chegou pelo Google, redes sociais, link direto…</div>
+          <div id="anlySources"><div class="skeleton skel-row"></div><div class="skeleton skel-row"></div></div>
+        </section>
+
+        <section class="card anly-card">
+          <h3 class="anly-card-title">${I.eye} O que estão lendo</h3>
+          <div class="anly-card-sub">Página por página: visitas, tempo médio e até onde rolaram.</div>
+          <div id="anlyPaths"><div class="skeleton skel-row"></div><div class="skeleton skel-row"></div></div>
+        </section>
+
+        <section class="card anly-card">
+          <h3 class="anly-card-title">${I.cursor} Onde clicaram</h3>
+          <div class="anly-card-sub">Botões e links mais clicados — vê o que prende e o que está sendo ignorado.</div>
+          <div id="anlyClicks"><div class="skeleton skel-row"></div><div class="skeleton skel-row"></div></div>
+        </section>
+
+        <section class="card anly-card">
+          <h3 class="anly-card-title">${I.clock} Visitas recentes</h3>
+          <div class="anly-card-sub">As últimas 30 visitas em tempo quase real.</div>
+          <div id="anlyRecent"><div class="skeleton skel-row"></div><div class="skeleton skel-row"></div></div>
+        </section>
+      </div>
+
+      <p class="anly-foot">
+        Os dados são guardados no seu próprio Supabase, com retenção de 90 dias. Cada visitante recebe um identificador anônimo (sem nome, sem IP).
+      </p>
+    </div>
+  `;
+
+  let currentDays = 30;
+  const slug = await getClientSlug();
+  if (!slug) {
+    $('#anlyStats').innerHTML = `<div style="color:var(--danger);grid-column:1/-1">Não foi possível identificar o cliente. Recarregue a página e tente de novo.</div>`;
+    return;
+  }
+
+  async function load(days) {
+    currentDays = days;
+    $$('.anly-period-btn').forEach(b => b.classList.toggle('active', String(days) === b.dataset.days));
+    $('#anlyStats').innerHTML = `${[1,2,3,4].map(()=>'<div class="anly-stat"><div class="skeleton" style="width:60%;height:32px"></div></div>').join('')}`;
+    $('#anlySources').innerHTML = '<div class="skeleton skel-row"></div>';
+    $('#anlyPaths').innerHTML = '<div class="skeleton skel-row"></div>';
+    $('#anlyClicks').innerHTML = '<div class="skeleton skel-row"></div>';
+    $('#anlyRecent').innerHTML = '<div class="skeleton skel-row"></div>';
+
+    try {
+      const [{ data: sumData }, { data: sources }, { data: paths }, { data: clicks }, { data: recent }] = await Promise.all([
+        supa.rpc('analytics_summary',     { p_slug: slug, p_days: days }),
+        supa.rpc('analytics_top_sources', { p_slug: slug, p_days: days, p_limit: 12 }),
+        supa.rpc('analytics_top_paths',   { p_slug: slug, p_days: days, p_limit: 15 }),
+        supa.rpc('analytics_top_clicks',  { p_slug: slug, p_days: days, p_limit: 20 }),
+        supa.rpc('analytics_recent',      { p_slug: slug, p_limit: 30 }),
+      ]);
+
+      const s = (Array.isArray(sumData) ? sumData[0] : sumData) || {};
+      $('#anlyStats').innerHTML = `
+        <div class="anly-stat">
+          <div class="anly-stat-num">${(s.total_pageviews||0).toLocaleString('pt-BR')}</div>
+          <div class="anly-stat-label">páginas vistas</div>
+        </div>
+        <div class="anly-stat">
+          <div class="anly-stat-num">${(s.total_visitors||0).toLocaleString('pt-BR')}</div>
+          <div class="anly-stat-label">pessoas diferentes</div>
+        </div>
+        <div class="anly-stat">
+          <div class="anly-stat-num">${fmtDuration(s.avg_active_seconds||0)}</div>
+          <div class="anly-stat-label">leitura média / página</div>
+        </div>
+        <div class="anly-stat">
+          <div class="anly-stat-num">${Math.round(s.avg_scroll_pct||0)}%</div>
+          <div class="anly-stat-label">rolagem média</div>
+        </div>
+      `;
+
+      // Sources
+      if (!sources || !sources.length) {
+        $('#anlySources').innerHTML = `<p class="anly-empty">Sem visitas no período.</p>`;
+      } else {
+        const max = Math.max(...sources.map(x => Number(x.visits||0)));
+        $('#anlySources').innerHTML = sources.map(r => {
+          const pct = max ? Math.round((r.visits / max) * 100) : 0;
+          return `<div class="anly-row">
+            <div class="anly-row-bar" style="width:${pct}%"></div>
+            <div class="anly-row-label">${escHtml(sourceLabel(r.source, r.kind))}</div>
+            <div class="anly-row-meta">
+              <strong>${(r.visits||0).toLocaleString('pt-BR')}</strong>
+              <span>· ${(r.visitors||0)} pessoa${r.visitors==1?'':'s'}</span>
+            </div>
+          </div>`;
+        }).join('');
+      }
+
+      // Paths
+      if (!paths || !paths.length) {
+        $('#anlyPaths').innerHTML = `<p class="anly-empty">Sem páginas vistas no período.</p>`;
+      } else {
+        const max = Math.max(...paths.map(x => Number(x.views||0)));
+        $('#anlyPaths').innerHTML = paths.map(r => {
+          const pct = max ? Math.round((r.views / max) * 100) : 0;
+          return `<div class="anly-row anly-row-rich">
+            <div class="anly-row-bar" style="width:${pct}%"></div>
+            <div class="anly-row-label" title="${escAttr(r.path)}">${escHtml(pathLabel(r.path))}</div>
+            <div class="anly-row-meta">
+              <strong>${(r.views||0).toLocaleString('pt-BR')}</strong>
+              <span>· ${fmtDuration(r.avg_active_seconds||0)} · rolagem ${Math.round(r.avg_scroll_pct||0)}%</span>
+            </div>
+          </div>`;
+        }).join('');
+      }
+
+      // Clicks
+      if (!clicks || !clicks.length) {
+        $('#anlyClicks').innerHTML = `<p class="anly-empty">Ninguém clicou em nada ainda. Quando começar, você vê os botões mais usados aqui.</p>`;
+      } else {
+        const max = Math.max(...clicks.map(x => Number(x.hits||0)));
+        $('#anlyClicks').innerHTML = clicks.map(r => {
+          const pct = max ? Math.round((r.hits / max) * 100) : 0;
+          const text = r.click_text || '(sem texto)';
+          const sub = r.click_href ? r.click_href.replace(/^https?:\/\//, '').slice(0, 70) : '';
+          return `<div class="anly-row anly-row-rich">
+            <div class="anly-row-bar" style="width:${pct}%"></div>
+            <div class="anly-row-kind">${escHtml(clickKindLabel(r.click_kind))}</div>
+            <div class="anly-row-label" title="${escAttr(sub)}">${escHtml(text)}${sub ? `<small>${escHtml(sub)}</small>` : ''}</div>
+            <div class="anly-row-meta">
+              <strong>${(r.hits||0).toLocaleString('pt-BR')}</strong>
+              <span>· ${(r.visitors||0)} pessoa${r.visitors==1?'':'s'}</span>
+            </div>
+          </div>`;
+        }).join('');
+      }
+
+      // Recent
+      if (!recent || !recent.length) {
+        $('#anlyRecent').innerHTML = `<p class="anly-empty">Sem visitas ainda.</p>`;
+      } else {
+        $('#anlyRecent').innerHTML = recent.map(r => {
+          const src = r.utm_source ? 'UTM ' + r.utm_source : (r.referrer_host || '(direto)');
+          const time = r.active_ms ? fmtDuration(Math.round(r.active_ms / 1000)) : '—';
+          const scroll = (r.max_scroll_pct != null) ? `rolagem ${r.max_scroll_pct}%` : '';
+          return `<div class="anly-recent">
+            <div class="anly-recent-when">${escHtml(fmtRelative(r.created_at))}</div>
+            <div class="anly-recent-body">
+              <div class="anly-recent-path">${escHtml(pathLabel(r.path))}</div>
+              <div class="anly-recent-meta">
+                <span>de <strong>${escHtml(src)}</strong></span>
+                <span>· ${escHtml(time)} de leitura</span>
+                ${scroll ? `<span>· ${escHtml(scroll)}</span>` : ''}
+              </div>
+            </div>
+          </div>`;
+        }).join('');
+      }
+    } catch (err) {
+      const msg = (err && err.message) || 'erro';
+      $('#anlyStats').innerHTML = `<div style="color:var(--danger);grid-column:1/-1">Não foi possível carregar os dados: ${escHtml(msg)}</div>`;
+    }
+  }
+
+  $$('.anly-period-btn').forEach(b => b.addEventListener('click', () => load(parseInt(b.dataset.days, 10))));
+  $('#anlyRefresh').addEventListener('click', () => load(currentDays));
+  load(30);
 }
 
 /* ===================== CONFIG ===================== */
