@@ -692,6 +692,9 @@ const I = {
   cursor: '<svg viewBox="0 0 24 24"><path d="M3 3l7.07 16.97 2.51-7.39 7.39-2.51L3 3z"/></svg>',
   globe: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>',
   clock: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',
+  link: '<svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.07 0l3-3a5 5 0 0 0-7.07-7.07L11 5"/><path d="M14 11a5 5 0 0 0-7.07 0l-3 3a5 5 0 0 0 7.07 7.07L13 19"/></svg>',
+  copy: '<svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>',
+  trash: '<svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/></svg>',
   building: '<svg viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20"/><line x1="9" y1="6" x2="9" y2="6"/><line x1="15" y1="6" x2="15" y2="6"/><line x1="9" y1="10" x2="9" y2="10"/><line x1="15" y1="10" x2="15" y2="10"/><line x1="9" y1="14" x2="15" y2="14"/></svg>',
   briefcase: '<svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>',
   pen: '<svg viewBox="0 0 24 24"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg>',
@@ -761,6 +764,7 @@ async function route() {
   if (path === '/landings') return renderLandings(app);
   if (path.startsWith('/landing/')) return renderLandingEditor(app, decodeURIComponent(path.slice(9)));
   if (path === '/analytics') return renderAnalytics(app);
+  if (path === '/links') return renderLinks(app);
   if (path === '/config') return renderConfig(app);
   app.innerHTML = '<div class="container"><div class="empty"><h3>Página não encontrada</h3><a href="#/" class="btn btn-primary">Voltar</a></div></div>';
 }
@@ -829,6 +833,7 @@ function renderTopbar(active) {
         ${item('posts', 'Blog', I.posts, '#/posts')}
         ${item('imagens', 'Imagens', I.image, '#/imagens')}
         ${item('analytics', 'Visitas', I.chart, '#/analytics')}
+        ${item('links', 'Links', I.link, '#/links')}
         ${item('config', 'Configurações', I.cog, '#/config')}
         <a href="/HenriqueSilva/" target="_blank" rel="noopener">${I.ext}<span>Ver site</span></a>
       </div>
@@ -2877,6 +2882,285 @@ function fmtAge(seconds) {
 function shortVisitor(id) {
   if (!id) return '—';
   return String(id).slice(0, 8);
+}
+
+/* ===================== LINKS CURTOS (bity próprio) ===================== */
+
+const LINK_TARGETS = [
+  { path: '/', label: 'Página inicial (home)' },
+  { path: '/trabalhista/', label: 'Trabalhista' },
+  { path: '/previdenciario/', label: 'Previdenciário (INSS)' },
+  { path: '/familia/', label: 'Família' },
+  { path: '/empresarial/', label: 'Empresarial' },
+  { path: '/imobiliario/', label: 'Imobiliário' },
+  { path: '/civel/', label: 'Cível' },
+  { path: '/consumidor/', label: 'Consumidor' },
+  { path: '/juizados/', label: 'Juizados' },
+  { path: '/criminal/', label: 'Criminal' },
+  { path: '/tributario/', label: 'Tributário' },
+  { path: '/sobre/', label: 'Sobre' },
+  { path: '/contato/', label: 'Contato' },
+  { path: '/blog/', label: 'Blog' },
+];
+
+const UTM_SOURCE_OPTIONS = ['instagram', 'whatsapp', 'facebook', 'linkedin', 'tiktok', 'youtube', 'google', 'email', 'cartao', 'qr-code'];
+const UTM_MEDIUM_OPTIONS = ['bio', 'stories', 'post', 'reel', 'status', 'grupo', 'dm', 'assinatura', 'organic', 'paid', 'qr'];
+
+function buildShortUrl(slug) {
+  return `https://vejaseusite.github.io/HenriqueSilva/?l=${encodeURIComponent(slug)}`;
+}
+
+async function renderLinks(app) {
+  unmountSaveBar();
+  app.innerHTML = renderTopbar('links') + `
+    <div class="container">
+      <div class="h1">Links <em>rastreáveis</em></div>
+      <div class="h-sub">Crie um link curto pra cada lugar onde você divulga (bio do Insta, status do WhatsApp, cartão). O painel mostra quantas pessoas clicaram em cada um — assim você sabe de onde vem o cliente.</div>
+
+      <div class="links-toolbar">
+        <div class="links-base">
+          <span class="links-base-label">Base dos links</span>
+          <code class="links-base-url">vejaseusite.github.io/HenriqueSilva/?l=<em>seu-atalho</em></code>
+        </div>
+        <button class="btn btn-primary" id="btnNewLink">${I.plus} Criar link</button>
+      </div>
+
+      <div id="linksList"><div class="skeleton skel-row"></div><div class="skeleton skel-row"></div></div>
+
+      <p class="anly-foot">Os cliques são registrados em tempo real (robôs filtrados). Você pode editar destino, descrição e UTMs sem trocar o atalho — quem já tem o link continua chegando no lugar certo.</p>
+    </div>
+  `;
+
+  const slug = await getClientSlug();
+  if (!slug) {
+    $('#linksList').innerHTML = `<p style="color:var(--danger)">Não foi possível identificar o cliente.</p>`;
+    return;
+  }
+
+  async function load() {
+    $('#linksList').innerHTML = '<div class="skeleton skel-row"></div><div class="skeleton skel-row"></div>';
+    try {
+      const { data, error } = await supa.rpc('list_short_links', { p_slug: slug });
+      if (error) throw error;
+      if (!data || !data.length) {
+        $('#linksList').innerHTML = `
+          <div class="empty" style="padding:50px 20px;text-align:center">
+            <div style="font-size:48px;opacity:.4;margin-bottom:14px">${I.link}</div>
+            <h3 style="font-family:'Fraunces',serif;color:var(--off-white);font-weight:300;font-size:22px;margin-bottom:6px">Nenhum link ainda</h3>
+            <p style="font-family:'Fraunces',serif;font-style:italic;color:var(--gray-300);margin-bottom:20px">Comece criando o link da sua bio do Instagram.</p>
+            <button class="btn btn-primary" id="btnFirstLink">${I.plus} Criar primeiro link</button>
+          </div>
+        `;
+        $('#btnFirstLink')?.addEventListener('click', () => openLinkModal(slug, null, load));
+        return;
+      }
+      $('#linksList').innerHTML = data.map(l => {
+        const target = (LINK_TARGETS.find(t => t.path === l.target_path) || {}).label || l.target_path;
+        const utmBits = [l.utm_source, l.utm_medium, l.utm_campaign].filter(Boolean).join(' · ');
+        return `<div class="link-card ${!l.active ? 'is-inactive' : ''}" data-id="${escAttr(l.id)}">
+          <div class="link-card-head">
+            <div class="link-card-title">
+              <strong>${escHtml(l.description || '(sem descrição)')}</strong>
+              ${!l.active ? '<span class="link-card-tag inactive">desativado</span>' : ''}
+            </div>
+            <div class="link-card-counts">
+              <div class="link-count-big" title="Total de cliques">${(l.clicks_total||0).toLocaleString('pt-BR')}</div>
+              <div class="link-count-lbl">clique${l.clicks_total==1?'':'s'}</div>
+            </div>
+          </div>
+          <div class="link-card-url">
+            <code>vejaseusite.github.io/HenriqueSilva/?l=<strong>${escHtml(l.slug)}</strong></code>
+          </div>
+          <div class="link-card-meta">
+            <span>→ ${escHtml(target)}</span>
+            ${utmBits ? `<span>· UTM: ${escHtml(utmBits)}</span>` : ''}
+            <span>· últimos 30d: <strong>${l.clicks_30d||0}</strong></span>
+            <span>· 7d: <strong>${l.clicks_7d||0}</strong></span>
+            ${l.last_click_at ? `<span>· último clique ${escHtml(fmtRelative(l.last_click_at))}</span>` : ''}
+          </div>
+          <div class="link-card-actions">
+            <button class="btn btn-secondary btn-sm" data-copy="${escAttr(buildShortUrl(l.slug))}">${I.copy} Copiar link</button>
+            <a class="btn btn-secondary btn-sm" href="${escAttr(buildShortUrl(l.slug))}" target="_blank" rel="noopener">${I.ext} Testar</a>
+            <button class="btn btn-secondary btn-sm" data-edit="${escAttr(l.id)}">${I.pen} Editar</button>
+            <button class="btn btn-danger btn-sm" data-del="${escAttr(l.id)}" data-name="${escAttr(l.slug)}">${I.trash} Excluir</button>
+          </div>
+        </div>`;
+      }).join('');
+
+      $$('#linksList [data-copy]').forEach(b => b.addEventListener('click', async () => {
+        try { await navigator.clipboard.writeText(b.dataset.copy); toast('Link copiado!'); }
+        catch { toast('Não consegui copiar', 'error'); }
+      }));
+      $$('#linksList [data-edit]').forEach(b => b.addEventListener('click', () => {
+        const item = data.find(x => x.id === b.dataset.edit);
+        openLinkModal(slug, item, load);
+      }));
+      $$('#linksList [data-del]').forEach(b => b.addEventListener('click', async () => {
+        const ok = await confirmModal({
+          title: `Excluir o link "${b.dataset.name}"?`,
+          msg: 'Quem tiver esse link salvo vai ver uma página normal do site (sem redirecionamento). Os cliques registrados também serão apagados.',
+          confirmLabel: 'Sim, excluir', confirmKind: 'btn-danger',
+        });
+        if (!ok) return;
+        const { data: r, error } = await supa.rpc('delete_short_link', { p_slug: slug, p_id: b.dataset.del });
+        if (error || r?.error) { toast(r?.error || error.message, 'error'); return; }
+        toast('Excluído.');
+        load();
+      }));
+    } catch (err) {
+      $('#linksList').innerHTML = `<p style="color:var(--danger)">Erro: ${escHtml(err.message || err)}</p>`;
+    }
+  }
+
+  $('#btnNewLink').addEventListener('click', () => openLinkModal(slug, null, load));
+  load();
+}
+
+function openLinkModal(slug, existing, onSaved) {
+  document.querySelector('.modal-bg')?.remove();
+  const isEdit = !!existing;
+  const bg = document.createElement('div');
+  bg.className = 'modal-bg';
+  bg.setAttribute('role', 'dialog');
+  bg.setAttribute('aria-modal', 'true');
+  bg.innerHTML = `
+    <div class="modal-box modal-wide">
+      <div class="modal-title">${isEdit ? 'Editar' : 'Novo'} link rastreável</div>
+      <form id="linkForm" class="link-form">
+        <div class="field">
+          <label>Descrição <span class="field-help-inline">— pra você lembrar onde usou</span></label>
+          <input type="text" id="lf_desc" maxlength="200" placeholder="Ex: Bio do Instagram, Status WhatsApp, Cartão pessoal" value="${escAttr(existing?.description || '')}" />
+        </div>
+
+        <div class="field">
+          <label>Atalho <span class="field-help-inline">— vira o final do link curto</span></label>
+          <div class="link-slug-wrap">
+            <span class="link-slug-prefix">vejaseusite.github.io/HenriqueSilva/?l=</span>
+            <input type="text" id="lf_slug" maxlength="48" pattern="[a-z0-9-]+" required value="${escAttr(existing?.slug || '')}" placeholder="insta" />
+          </div>
+          <div class="field-help">Só letras minúsculas, números e hífen. Curto e fácil de lembrar — ex: "insta", "card", "promo".</div>
+        </div>
+
+        <div class="field">
+          <label>Pra onde leva</label>
+          <select id="lf_target_choice">
+            ${LINK_TARGETS.map(t => `<option value="${escAttr(t.path)}" ${existing?.target_path === t.path ? 'selected' : ''}>${escHtml(t.label)} (${escHtml(t.path)})</option>`).join('')}
+            <option value="__custom__" ${existing && !LINK_TARGETS.find(t => t.path === existing.target_path) ? 'selected' : ''}>Outro endereço…</option>
+          </select>
+          <input type="text" id="lf_target_custom" placeholder="/caminho/ ou https://outro-site.com" maxlength="300" value="${escAttr(existing && !LINK_TARGETS.find(t => t.path === existing.target_path) ? existing.target_path : '')}" style="margin-top:8px;display:none" />
+        </div>
+
+        <details class="link-utm-details" ${(existing?.utm_source || existing?.utm_medium || existing?.utm_campaign) ? 'open' : ''}>
+          <summary>Marcas de origem (UTM) — opcional</summary>
+          <div class="field-help" style="margin:8px 0 14px">Aparecem no painel de Visitas como origem da pessoa que clicou. Útil pra comparar Instagram × WhatsApp × outros.</div>
+          <div class="field-row">
+            <div class="field">
+              <label>Origem (utm_source)</label>
+              <input type="text" id="lf_source" maxlength="100" list="lf_source_opts" value="${escAttr(existing?.utm_source || '')}" placeholder="instagram" />
+              <datalist id="lf_source_opts">${UTM_SOURCE_OPTIONS.map(o => `<option value="${o}">`).join('')}</datalist>
+            </div>
+            <div class="field">
+              <label>Meio (utm_medium)</label>
+              <input type="text" id="lf_medium" maxlength="100" list="lf_medium_opts" value="${escAttr(existing?.utm_medium || '')}" placeholder="bio" />
+              <datalist id="lf_medium_opts">${UTM_MEDIUM_OPTIONS.map(o => `<option value="${o}">`).join('')}</datalist>
+            </div>
+          </div>
+          <div class="field">
+            <label>Campanha (utm_campaign)</label>
+            <input type="text" id="lf_campaign" maxlength="100" value="${escAttr(existing?.utm_campaign || '')}" placeholder="lancamento, outubro-2026, bpc-autismo" />
+          </div>
+        </details>
+
+        ${isEdit ? `
+        <div class="field">
+          <label class="link-toggle">
+            <input type="checkbox" id="lf_active" ${existing.active ? 'checked' : ''} /> Ativo
+          </label>
+          <div class="field-help">Desativado: quem tem o link cai numa página normal do site, sem ser rastreado.</div>
+        </div>` : ''}
+
+        <div class="link-preview">
+          <span class="link-preview-label">Vai ficar:</span>
+          <code id="lf_preview"></code>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" id="lf_cancel">Cancelar</button>
+          <button type="submit" class="btn btn-primary" id="lf_save">${isEdit ? 'Salvar alterações' : 'Criar link'}</button>
+        </div>
+      </form>
+    </div>
+  `;
+  bg.addEventListener('click', e => { if (e.target === bg) bg.remove(); });
+  document.body.appendChild(bg);
+  function onKey(e) { if (e.key === 'Escape') { bg.remove(); document.removeEventListener('keydown', onKey); } }
+  document.addEventListener('keydown', onKey);
+
+  const $$$ = (s) => bg.querySelector(s);
+
+  const targetSel = $$$('#lf_target_choice');
+  const targetCustom = $$$('#lf_target_custom');
+  function syncCustom() {
+    targetCustom.style.display = targetSel.value === '__custom__' ? 'block' : 'none';
+  }
+  targetSel.addEventListener('change', syncCustom);
+  syncCustom();
+
+  function getTarget() {
+    return targetSel.value === '__custom__' ? targetCustom.value.trim() : targetSel.value;
+  }
+
+  function updatePreview() {
+    const s = $$$('#lf_slug').value.trim().toLowerCase().replace(/[^a-z0-9-]/g, '');
+    $$$('#lf_slug').value = s;
+    const t = getTarget();
+    const src = $$$('#lf_source').value.trim();
+    const med = $$$('#lf_medium').value.trim();
+    const cmp = $$$('#lf_campaign').value.trim();
+    const utmBits = [src && `utm_source=${src}`, med && `utm_medium=${med}`, cmp && `utm_campaign=${cmp}`].filter(Boolean).join(' & ');
+    $$$('#lf_preview').textContent = s ? `vejaseusite.github.io/HenriqueSilva/?l=${s}  →  ${t || '(escolha o destino)'}${utmBits ? '  +  ' + utmBits : ''}` : '(preencha o atalho)';
+  }
+  ['lf_slug','lf_source','lf_medium','lf_campaign'].forEach(id => $$$('#'+id).addEventListener('input', updatePreview));
+  targetSel.addEventListener('change', updatePreview);
+  targetCustom.addEventListener('input', updatePreview);
+  updatePreview();
+
+  $$$('#lf_cancel').addEventListener('click', () => bg.remove());
+  $$$('#linkForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const linkSlug = $$$('#lf_slug').value.trim();
+    const target = getTarget();
+    const desc = $$$('#lf_desc').value.trim();
+    const src = $$$('#lf_source').value.trim();
+    const med = $$$('#lf_medium').value.trim();
+    const cmp = $$$('#lf_campaign').value.trim();
+    if (!linkSlug || !target) { toast('Preencha atalho e destino', 'error'); return; }
+    const btn = $$$('#lf_save');
+    btn.disabled = true; btn.textContent = 'Salvando…';
+    try {
+      let r;
+      if (isEdit) {
+        const active = $$$('#lf_active').checked;
+        ({ data: r } = await supa.rpc('update_short_link', {
+          p_slug: slug, p_id: existing.id, p_link: linkSlug, p_description: desc, p_target: target,
+          p_utm_source: src, p_utm_medium: med, p_utm_campaign: cmp, p_active: active,
+        }));
+      } else {
+        ({ data: r } = await supa.rpc('create_short_link', {
+          p_slug: slug, p_link: linkSlug, p_description: desc, p_target: target,
+          p_utm_source: src, p_utm_medium: med, p_utm_campaign: cmp,
+        }));
+      }
+      if (r?.error) { toast(r.error, 'error'); btn.disabled = false; btn.textContent = isEdit ? 'Salvar alterações' : 'Criar link'; return; }
+      toast(isEdit ? 'Atualizado.' : 'Link criado!');
+      bg.remove();
+      if (onSaved) onSaved();
+    } catch (err) {
+      toast('Erro: ' + (err.message || err), 'error');
+      btn.disabled = false; btn.textContent = isEdit ? 'Salvar alterações' : 'Criar link';
+    }
+  });
+  setTimeout(() => $$$('#lf_desc').focus(), 50);
 }
 
 async function renderAnalytics(app) {

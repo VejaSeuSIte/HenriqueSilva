@@ -18,9 +18,58 @@
     .then(function (r) { return r.ok ? r.json() : null; })
     .then(function (cfg) {
       if (!cfg || !cfg.supabase_url || !cfg.supabase_anon_key) return;
+      // Short link: ?l=slug — resolve e redireciona ANTES de inicializar o tracker normal.
+      var lp;
+      try { lp = new URL(location.href).searchParams.get('l'); } catch (_) { lp = null; }
+      if (lp && /^[a-z0-9-]{1,48}$/.test(lp)) {
+        resolveShortLink(cfg, lp).then(function (handled) {
+          if (!handled) {
+            // Link inválido/inativo: limpa o param e segue normal.
+            try {
+              var u = new URL(location.href);
+              u.searchParams.delete('l');
+              history.replaceState(null, '', u.toString());
+            } catch (_) {}
+            try { init(cfg); } catch (e) { /* silencia */ }
+          }
+        });
+        return;
+      }
       try { init(cfg); } catch (e) { /* silencia falhas */ }
     })
     .catch(function () { });
+
+  function resolveShortLink(cfg, link) {
+    var url = cfg.supabase_url.replace(/\/+$/, '') + '/rest/v1/rpc/resolve_short_link';
+    return fetch(url, {
+      method: 'POST',
+      headers: {
+        'apikey': cfg.supabase_anon_key,
+        'Authorization': 'Bearer ' + cfg.supabase_anon_key,
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+      body: JSON.stringify({ p_slug: SLUG, p_link: link }),
+      credentials: 'omit',
+    }).then(function (r) { return r.ok ? r.json() : null; }).then(function (data) {
+      if (!data || data.error || !data.target_path) return false;
+      var target = String(data.target_path || '/');
+      // Aceita só targets internos (mesmo basePath) ou absolutos http(s).
+      var dest;
+      if (/^https?:\/\//i.test(target)) {
+        try { dest = new URL(target); } catch (_) { return false; }
+      } else {
+        var path = target.charAt(0) === '/' ? target : (basePath + target);
+        if (path.indexOf('/HenriqueSilva/') !== 0 && path.indexOf('/') !== 0) return false;
+        try { dest = new URL(path, location.origin); } catch (_) { return false; }
+      }
+      if (data.utm_source) dest.searchParams.set('utm_source', data.utm_source);
+      if (data.utm_medium) dest.searchParams.set('utm_medium', data.utm_medium);
+      if (data.utm_campaign) dest.searchParams.set('utm_campaign', data.utm_campaign);
+      location.replace(dest.toString());
+      return true;
+    }).catch(function () { return false; });
+  }
 
   function uuid() {
     if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
