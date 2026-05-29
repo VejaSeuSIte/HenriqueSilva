@@ -170,6 +170,20 @@
     .post-cta h3{font-size:22px}
     .post-author-avatar{width:56px; height:56px; font-size:26px}
   }
+
+  /* ═══ Mobile polish v10 (2026-05-29) — post ═══ */
+  @media(max-width:780px){
+    .post-share-btn{min-height:44px !important}
+    .post-cta-btn{min-height:48px !important}
+    .post-cat{min-height:36px !important; align-items:center; display:inline-flex !important}
+    .post-nav a{min-height:88px !important}
+    /* Tabela do post pode estourar — scroll horizontal */
+    .post-body table{display:block; overflow-x:auto; -webkit-overflow-scrolling:touch}
+    /* Pre/code overflow horizontal */
+    .post-body pre{font-size:13px}
+    /* Code inline não quebra layout */
+    .post-body code{word-break:break-word}
+  }
 {% endblock %}
 
 {% block content %}

@@ -88,6 +88,26 @@
     .wordmark-text small{font-size:6.5px !important}
   }
 
+  /* ═══ Mobile polish v10 (2026-05-29) — base ═══ */
+  @media(max-width:780px){
+    input, textarea, select{font-size:16px !important}
+    html, body{max-width:100% !important; overflow-x:hidden !important}
+    body{padding-bottom:72px !important}
+    .nav-cta{min-height:44px !important; box-sizing:border-box !important}
+    .nav-burger{min-width:44px !important; min-height:44px !important; padding:9px !important}
+    .social-icons a{min-width:44px !important; min-height:44px !important}
+    .footer-contact a{display:inline-block !important; padding:4px 0 !important; min-height:32px !important}
+    section[id]{scroll-margin-top:72px !important}
+  }
+  @media(max-width:480px){
+    body{padding-bottom:64px !important}
+  }
+  @supports(padding:max(0px)){
+    @media(max-width:780px){
+      .wa-fab{bottom:max(18px, env(safe-area-inset-bottom)) !important}
+    }
+  }
+
   /* ═════ FOOTER ═════ */
   .footer{background:var(--black);border-top:1px solid rgba(212,175,55,.15);color:var(--gray-300);padding:80px 0 36px;margin-top:80px}
   .footer-grid{display:grid;grid-template-columns:1fr 1fr;gap:64px;margin-bottom:60px}
@@ -252,6 +272,20 @@
     .post-body h3{font-size:18px}
     .post-cta h3{font-size:22px}
     .post-author-avatar{width:56px; height:56px; font-size:26px}
+  }
+
+  /* ═══ Mobile polish v10 (2026-05-29) — post ═══ */
+  @media(max-width:780px){
+    .post-share-btn{min-height:44px !important}
+    .post-cta-btn{min-height:48px !important}
+    .post-cat{min-height:36px !important; align-items:center; display:inline-flex !important}
+    .post-nav a{min-height:88px !important}
+    /* Tabela do post pode estourar — scroll horizontal */
+    .post-body table{display:block; overflow-x:auto; -webkit-overflow-scrolling:touch}
+    /* Pre/code overflow horizontal */
+    .post-body pre{font-size:13px}
+    /* Code inline não quebra layout */
+    .post-body code{word-break:break-word}
   }
 </style>
 <script type="application/ld+json">

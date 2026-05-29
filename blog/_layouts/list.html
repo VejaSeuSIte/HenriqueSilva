@@ -54,10 +54,27 @@
     .blog-hero p{font-size:16px}
     .blog-filters{padding:24px 22px;gap:6px}
     .blog-filter{font-size:10px;letter-spacing:.16em;padding:7px 14px}
-    .blog-search input{padding:13px 18px 13px 46px;font-size:14px}
+    .blog-search input{padding:13px 18px 13px 46px;font-size:16px}
     .post-card-body{padding:24px 22px 28px;gap:12px}
     .post-card h2{font-size:20px}
     .post-card-excerpt{font-size:14.5px}
+  }
+
+  /* ═══ Mobile polish v10 (2026-05-29) — list ═══ */
+  @media(max-width:780px){
+    .blog-filter{min-height:36px !important; display:inline-flex !important; align-items:center !important}
+    .blog-search input{font-size:16px !important}
+    .post-card{min-height:44px !important}
+    /* Filtros: scroll horizontal pra não empilhar 11 botões */
+    .blog-filters{
+      flex-wrap:nowrap !important;
+      overflow-x:auto !important;
+      justify-content:flex-start !important;
+      -webkit-overflow-scrolling:touch;
+      scrollbar-width:none;
+    }
+    .blog-filters::-webkit-scrollbar{display:none}
+    .blog-filter{flex-shrink:0 !important}
   }
 {% endblock %}
 
