@@ -139,6 +139,20 @@
         cards = $$('.review-card', container);
       }
     }
+    // Helpers pra auto-gerar avatar (iniciais do nome + cor estável por hash)
+    const initialsOf = (name) => {
+      const parts = String(name || '').trim().split(/\s+/).filter(Boolean);
+      if (!parts.length) return '·';
+      const first = parts[0][0] || '';
+      const last = parts.length > 1 ? (parts[parts.length - 1][0] || '') : '';
+      return (first + last).toUpperCase();
+    };
+    const avClassFor = (name) => {
+      const s = String(name || '');
+      let h = 0;
+      for (let i = 0; i < s.length; i++) h = ((h << 5) - h + s.charCodeAt(i)) | 0;
+      return 'av' + (Math.abs(h) % 6 + 1); // av1..av6
+    };
     items.forEach((rev, i) => {
       const card = cards[i];
       if (!card) return;
@@ -146,10 +160,17 @@
       const date = card.querySelector('.review-date');
       const stars = card.querySelector('.review-stars');
       const quote = card.querySelector('.review-quote, blockquote');
+      const avatar = card.querySelector('.review-avatar, .testi-avatar');
       if (name) setText(name, rev.name);
       if (date) setText(date, rev.date);
       if (stars) setText(stars, rev.stars);
       if (quote) setText(quote, rev.quote);
+      // Avatar: iniciais do nome novo + classe de cor baseada no nome (estável)
+      if (avatar) {
+        setText(avatar, initialsOf(rev.name));
+        const baseClass = avatar.classList.contains('testi-avatar') ? 'testi-avatar' : 'review-avatar';
+        avatar.className = `${baseClass} ${avClassFor(rev.name)}`;
+      }
     });
     // Se JSON tem MENOS reviews, esconde os cards extras
     cards.forEach((card, i) => { card.style.display = i < items.length ? '' : 'none'; });

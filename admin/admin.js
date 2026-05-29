@@ -2433,7 +2433,8 @@ async function renderEditor(app, fileBase) {
     $('#f-cover-alt').value = '';
     const cp = $('#coverPicker .cover-preview, #coverPicker .cover-empty');
     if (cp) cp.outerHTML = `<div class="cover-empty"><div class="cover-empty-inner">${I.image}<span>Sem capa</span></div></div>`;
-    document.querySelector('.btn-pickcover').textContent = `${I.upload} Escolher imagem`.replace(/<\/?[^>]+>/g, ''); // simples
+    const pickBtn = document.querySelector('.btn-pickcover');
+    if (pickBtn) pickBtn.innerHTML = `${I.upload} Escolher imagem`; // mantém o SVG do ícone
     markDirty();
   });
 
