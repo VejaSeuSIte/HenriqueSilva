@@ -218,7 +218,8 @@ function buildFrontMatter(meta) {
   return lines.join('\n');
 }
 
-function toast(message, kind = 'success') {
+function toast(message, kind = 'success', durationMs = 2400) {
+  const d = Math.max(800, Math.min(15000, Number(durationMs) || 2400));
   const el = document.createElement('div');
   el.className = `toast ${kind}`;
   el.setAttribute('role', kind === 'error' ? 'alert' : 'status');
@@ -231,8 +232,8 @@ function toast(message, kind = 'success') {
   el.innerHTML = icon;
   el.appendChild(span);
   document.body.appendChild(el);
-  setTimeout(() => { el.style.opacity = '0'; el.style.transform = 'translateY(10px)'; }, 2400);
-  setTimeout(() => el.remove(), 2800);
+  setTimeout(() => { el.style.opacity = '0'; el.style.transform = 'translateY(10px)'; }, d);
+  setTimeout(() => el.remove(), d + 400);
 }
 
 /* ===================== RICH TEXT EDITOR (WYSIWYG sem HTML cru) ===================== */
@@ -1534,6 +1535,8 @@ async function renderSiteEditor(app) {
       const path = `${folder}/${safeName}`;
       await putBinaryFile(path, b64, `Upload: ${safeName}`);
       targetInput.value = path;
+      // Dispara 'input' pro markDirty pegar via delegate listener — caso contrário, value setado via JS não emite event
+      try { targetInput.dispatchEvent(new Event('input', { bubbles: true })); } catch (_) {}
       const picker = targetInput.closest('.img-picker');
       if (picker) {
         const empty = picker.querySelector('.img-picker-empty');
@@ -1547,7 +1550,7 @@ async function renderSiteEditor(app) {
           if (prev) prev.src = previewUrl(path);
         }
       }
-      toast('Imagem enviada ✓');
+      toast('Imagem enviada — clique em SALVAR pra aplicar no site ✓', 'success', 6000);
       markDirty();
     } catch (err) { toast(err.message, 'error'); }
   }
@@ -1560,6 +1563,16 @@ async function renderSiteEditor(app) {
       pickerTarget = { input: inp, isVideo: t.dataset.isvideo === 'true' };
       const fp = $('#picker-file');
       fp.accept = pickerTarget.isVideo ? 'video/*' : 'image/*';
+      fp.click();
+    }
+    // "Trocar" nos cards de Áreas: o input fica como sibling sem id, pega via .img-picker
+    if (t.classList.contains('btn-pickimg-area')) {
+      const picker = t.closest('.img-picker');
+      const inp = picker && picker.querySelector('input[type="text"]');
+      if (!inp) { toast('Erro: input da imagem não encontrado', 'error'); return; }
+      pickerTarget = { input: inp, isVideo: false };
+      const fp = $('#picker-file');
+      fp.accept = 'image/*';
       fp.click();
     }
   });
@@ -2667,6 +2680,11 @@ async function renderGallery(app) {
     <div class="container">
       <div class="h1">Imagens <em>do site</em></div>
       <div class="h-sub">Suas fotos disponíveis. Arraste arquivos pra qualquer lugar dessa página pra enviar.</div>
+      <div class="callout" style="margin:14px 0 22px;padding:14px 18px;background:rgba(212,175,55,.08);border:1px solid rgba(212,175,55,.35);border-radius:0;font-family:'Inter Tight',sans-serif;font-size:13.5px;color:#e6c869;line-height:1.5">
+        <strong style="font-weight:600;letter-spacing:.04em">Atenção:</strong>
+        esta tela só <em>guarda</em> as fotos. Pra <strong>trocar uma foto numa seção do site</strong>
+        (hero, escritório, retrato, áreas...), vá em <a href="#/site" style="color:#d4af37;border-bottom:1px solid rgba(212,175,55,.4)">Home</a> ou <a href="#/landings" style="color:#d4af37;border-bottom:1px solid rgba(212,175,55,.4)">Páginas</a>, clique em <em>"Trocar"</em> ou <em>"Enviar arquivo"</em> e depois em <strong>SALVAR</strong>.
+      </div>
       <div class="posts-toolbar">
         <input class="posts-search" id="galSearch" placeholder="Buscar por nome…" />
         <button class="btn btn-primary" id="btnUpload">${I.upload} Enviar imagem</button>
