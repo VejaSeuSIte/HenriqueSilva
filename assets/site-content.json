@@ -2,13 +2,34 @@
   "nav": {
     "brand_text": "Henrique Silva Advocacia",
     "links": [
-      {"label": "O Escritório", "href": "#escritorio"},
-      {"label": "Áreas", "href": "#areas"},
-      {"label": "Quem Sou", "href": "sobre/"},
-      {"label": "Avaliações", "href": "#depoimentos"},
-      {"label": "Blog", "href": "blog/"},
-      {"label": "Dúvidas", "href": "#faq"},
-      {"label": "Contato", "href": "contato/"}
+      {
+        "label": "O Escritório",
+        "href": "#escritorio"
+      },
+      {
+        "label": "Áreas",
+        "href": "#areas"
+      },
+      {
+        "label": "Quem Sou",
+        "href": "sobre/"
+      },
+      {
+        "label": "Avaliações",
+        "href": "#depoimentos"
+      },
+      {
+        "label": "Blog",
+        "href": "blog/"
+      },
+      {
+        "label": "Dúvidas",
+        "href": "#faq"
+      },
+      {
+        "label": "Contato",
+        "href": "contato/"
+      }
     ],
     "cta_label": "WhatsApp"
   },
@@ -29,28 +50,136 @@
       "Para o setor corporativo, oferecemos <strong>modelos de consultoria fixa</strong>, focados em compliance e na segurança jurídica das operações empresariais diárias — garantindo gestão de riscos eficiente e orgânica."
     ],
     "pillars": [
-      {"num": "14 anos", "label": "Atuação multidisciplinar desde 2010."},
-      {"num": "10 áreas", "label": "Trabalhista, Previdenciário, Empresarial e mais."},
-      {"num": "Análise gratuita", "label": "Conte o caso pelo WhatsApp sem custo."}
+      {
+        "num": "14 anos",
+        "label": "Atuação multidisciplinar desde 2010."
+      },
+      {
+        "num": "10 áreas",
+        "label": "Trabalhista, Previdenciário, Empresarial e mais."
+      },
+      {
+        "num": "Análise gratuita",
+        "label": "Conte o caso pelo WhatsApp sem custo."
+      }
     ],
     "photo_src": "assets/escritorio-1.jpg",
-    "photo_stamp": "Atendo<br/>há mais de<br/>14 anos"
+    "photo_stamp": "Atendo há mais de 14 anos"
   },
   "areas": {
     "eyebrow": "Áreas de Atuação",
     "h2": "Dois pilares <em>de destaque</em> e oito frentes complementares.",
     "sub": "Trabalhista e Assessoria Empresarial são nossas frentes principais. Atendemos ainda em mais oito áreas do Direito — todas com a mesma profundidade técnica.",
     "items": [
-      {"slug": "trabalhista", "featured": true, "label": "Trabalhista", "h3": "Direito <em>Trabalhista</em>", "description": "Execuções e litígios trabalhistas de alta complexidade, judicial e extrajudicial. Verbas rescisórias, horas extras, assédio moral, equiparação salarial, vínculo, adesão a normas coletivas e estabilidades. Atuação para empregados e empregadores.", "tags": ["Execuções", "Rescisões", "Horas extras", "Assédio"], "image": "assets/area-trabalhista.jpg", "href": "trabalhista/"},
-      {"slug": "empresarial", "featured": true, "label": "Empresarial", "h3": "Assessoria <em>Empresarial</em>", "description": "Consultoria fixa para empresas: compliance trabalhista, análise contratual, pareceres técnicos, palestras orientativas, gestão de riscos e suporte estratégico nas operações do dia a dia.", "tags": ["Compliance", "Pareceres", "Palestras"], "image": "assets/area-empresarial.jpg", "href": "empresarial/"},
-      {"slug": "previdenciario", "featured": false, "label": "Previdenciário", "h3": "Direito <em>Previdenciário</em>", "description": "Ações contra o INSS: aposentadorias por idade, tempo de contribuição, especial e BPC/LOAS. Auxílios por incapacidade, revisões e conversões.", "tags": [], "image": "assets/area-previdenciario.jpg", "href": "previdenciario/"},
-      {"slug": "civel", "featured": false, "label": "Cível", "h3": "Direito <em>Cível</em>", "description": "Contratos, indenizações, responsabilidade civil, danos morais e materiais. Cobranças, despejos, locatício e demais questões patrimoniais.", "tags": [], "image": "assets/area-civel.jpg", "href": "civel/"},
-      {"slug": "familia", "featured": false, "label": "Família", "h3": "Direito de <em>Família</em>", "description": "Divórcios consensuais e litigiosos, alimentos, partilha, guarda, regulamentação de vivência, reconhecimento de paternidade.", "tags": [], "image": "assets/area-familia.jpg", "href": "familia/"},
-      {"slug": "consumidor", "featured": false, "label": "Consumidor", "h3": "Direito do <em>Consumidor</em>", "description": "Defesa em relações de consumo: cobranças indevidas, bancos, planos de saúde, viagens, telefonia, vícios de produto e serviço.", "tags": [], "image": "assets/area-consumidor.jpg", "href": "consumidor/"},
-      {"slug": "imobiliario", "featured": false, "label": "Imobiliário", "h3": "Direito <em>Imobiliário</em>", "description": "Compra e venda, usucapião, regularização de imóvel, condomínio, distratos, despejos, ações possessórias e contratos de locação.", "tags": [], "image": "assets/area-imobiliario.jpg", "href": "imobiliario/"},
-      {"slug": "juizados", "featured": false, "label": "Juizados Especiais", "h3": "Juizados <em>Especiais</em>", "description": "Ações cíveis até 40 salários mínimos: cobranças, pequenos litígios de consumo, indenizações e demandas de menor complexidade.", "tags": [], "image": "assets/area-juizados.jpg", "href": "juizados/"},
-      {"slug": "criminal", "featured": false, "label": "Criminal", "h3": "Direito <em>Criminal</em>", "description": "Consultoria estratégica em matéria criminal mediante análise técnica criteriosa, com prioridade a clientes do portfólio em outros segmentos.", "tags": [], "image": "assets/area-criminal.jpg", "href": "criminal/"},
-      {"slug": "tributario", "featured": false, "label": "Tributário", "h3": "Direito <em>Tributário</em>", "description": "Defesa em execuções fiscais, planejamento tributário, parcelamentos, exclusões de tributos da base de cálculo e repetição de indébito.", "tags": [], "image": "assets/area-tributario.jpg", "href": "tributario/"}
+      {
+        "label": "Trabalhista",
+        "description": "Execuções e litígios trabalhistas de alta complexidade, judicial e extrajudicial. Verbas rescisórias, horas extras, assédio moral, equiparação salarial, vínculo, adesão a normas coletivas e estabilidades. Atuação para empregados e empregadores.",
+        "image": "assets/area-trabalhista.jpg",
+        "tags": [
+          "Execuções",
+          "Rescisões",
+          "Horas extras",
+          "Assédio"
+        ],
+        "slug": "trabalhista",
+        "h3": "Direito <em>Trabalhista</em>",
+        "featured": true,
+        "href": "trabalhista/"
+      },
+      {
+        "label": "Empresarial",
+        "description": "Consultoria fixa para empresas: compliance trabalhista, análise contratual, pareceres técnicos, palestras orientativas, gestão de riscos e suporte estratégico nas operações do dia a dia.",
+        "image": "assets/area-empresarial.jpg",
+        "tags": [
+          "Compliance",
+          "Pareceres",
+          "Palestras"
+        ],
+        "slug": "empresarial",
+        "h3": "Assessoria <em>Empresarial</em>",
+        "featured": true,
+        "href": "empresarial/"
+      },
+      {
+        "label": "Previdenciário",
+        "description": "Ações contra o INSS: aposentadorias por idade, tempo de contribuição, especial e BPC/LOAS. Auxílios por incapacidade, revisões e conversões.",
+        "image": "assets/area-previdenciario.jpg",
+        "slug": "previdenciario",
+        "h3": "Direito <em>Previdenciário</em>",
+        "featured": false,
+        "href": "previdenciario/",
+        "tags": []
+      },
+      {
+        "label": "Cível",
+        "description": "Contratos, indenizações, responsabilidade civil, danos morais e materiais. Cobranças, despejos, locatício e demais questões patrimoniais.",
+        "image": "assets/area-civel.jpg",
+        "slug": "civel",
+        "h3": "Direito <em>Cível</em>",
+        "featured": false,
+        "href": "civel/",
+        "tags": []
+      },
+      {
+        "label": "Família",
+        "description": "Divórcios consensuais e litigiosos, alimentos, partilha, guarda, regulamentação de vivência, reconhecimento de paternidade.",
+        "image": "assets/area-familia.jpg",
+        "slug": "familia",
+        "h3": "Direito de <em>Família</em>",
+        "featured": false,
+        "href": "familia/",
+        "tags": []
+      },
+      {
+        "label": "Consumidor",
+        "description": "Defesa em relações de consumo: cobranças indevidas, bancos, planos de saúde, viagens, telefonia, vícios de produto e serviço.",
+        "image": "assets/area-consumidor.jpg",
+        "slug": "consumidor",
+        "h3": "Direito do <em>Consumidor</em>",
+        "featured": false,
+        "href": "consumidor/",
+        "tags": []
+      },
+      {
+        "label": "Imobiliário",
+        "description": "Compra e venda, usucapião, regularização de imóvel, condomínio, distratos, despejos, ações possessórias e contratos de locação.",
+        "image": "assets/area-imobiliario.jpg",
+        "slug": "imobiliario",
+        "h3": "Direito <em>Imobiliário</em>",
+        "featured": false,
+        "href": "imobiliario/",
+        "tags": []
+      },
+      {
+        "label": "Juizados Especiais",
+        "description": "Ações cíveis até 40 salários mínimos: cobranças, pequenos litígios de consumo, indenizações e demandas de menor complexidade.",
+        "image": "assets/area-juizados.jpg",
+        "slug": "juizados",
+        "h3": "Juizados <em>Especiais</em>",
+        "featured": false,
+        "href": "juizados/",
+        "tags": []
+      },
+      {
+        "label": "Criminal",
+        "description": "Consultoria estratégica em matéria criminal mediante análise técnica criteriosa, com prioridade a clientes do portfólio em outros segmentos.",
+        "image": "assets/area-criminal.jpg",
+        "slug": "criminal",
+        "h3": "Direito <em>Criminal</em>",
+        "featured": false,
+        "href": "criminal/",
+        "tags": []
+      },
+      {
+        "label": "Tributário",
+        "description": "Defesa em execuções fiscais, planejamento tributário, parcelamentos, exclusões de tributos da base de cálculo e repetição de indébito.",
+        "image": "assets/area-tributario.jpg",
+        "slug": "tributario",
+        "h3": "Direito <em>Tributário</em>",
+        "featured": false,
+        "href": "tributario/",
+        "tags": []
+      }
     ]
   },
   "reviews": {
@@ -58,14 +187,54 @@
     "rating_stars": "★★★★★",
     "meta_html": "Excelente · com base em <strong>16 avaliações</strong> no Google",
     "items": [
-      {"name": "Jefferson Sobral", "date": "há 1 dia · Google", "stars": "★★★★★", "quote": "Ótimo advogado trabalhista, bom atendimento e resultados satisfatórios."},
-      {"name": "Giliard Silva", "date": "há 1 dia · Google", "stars": "★★★★★", "quote": "Recomendo o escritório do Dr. Henrique. Já tive uma causa resolvida pelo mesmo. Suporte e atendimento — super recomendo."},
-      {"name": "Samuel Silva", "date": "há 1 dia · Google", "stars": "★★★★★", "quote": "Excelente profissional. Trabalha com muito empenho e tem respostas rápidas nos processos."},
-      {"name": "Rafael Lima Silva", "date": "há 5 horas · Google", "stars": "★★★★★", "quote": "Profissional excelente, honesto e transparente."},
-      {"name": "Henrique Barbosa", "date": "há 1 dia · Google", "stars": "★★★★★", "quote": "Profissional muito bom, bom atendimento e trabalho excelente."},
-      {"name": "Patrícia Morais", "date": "há 1 ano · Google", "stars": "★★★★★", "quote": "Ótimo advogado."},
-      {"name": "Ismael Silva", "date": "há 1 dia · Google", "stars": "★★★★★", "quote": "Excelente."},
-      {"name": "Ervany Gracyane", "date": "há 1 dia · Google", "stars": "★★★★★", "quote": "Ótimo."}
+      {
+        "name": "Jefferson Sobral",
+        "date": "há 1 dia · Google",
+        "stars": "★★★★★",
+        "quote": "Ótimo advogado trabalhista, bom atendimento e resultados satisfatórios."
+      },
+      {
+        "name": "Giliard Silva",
+        "date": "há 1 dia · Google",
+        "stars": "★★★★★",
+        "quote": "Recomendo o escritório do Dr. Henrique. Já tive uma causa resolvida pelo mesmo. Suporte e atendimento — super recomendo."
+      },
+      {
+        "name": "Samuel Silva",
+        "date": "há 1 dia · Google",
+        "stars": "★★★★★",
+        "quote": "Excelente profissional. Trabalha com muito empenho e tem respostas rápidas nos processos."
+      },
+      {
+        "name": "Rafael Lima Silva",
+        "date": "há 5 horas · Google",
+        "stars": "★★★★★",
+        "quote": "Profissional excelente, honesto e transparente."
+      },
+      {
+        "name": "Henrique Barbosa",
+        "date": "há 1 dia · Google",
+        "stars": "★★★★★",
+        "quote": "Profissional muito bom, bom atendimento e trabalho excelente."
+      },
+      {
+        "name": "Patrícia Morais",
+        "date": "há 1 ano · Google",
+        "stars": "★★★★★",
+        "quote": "Ótimo advogado."
+      },
+      {
+        "name": "Ismael Silva",
+        "date": "há 1 dia · Google",
+        "stars": "★★★★★",
+        "quote": "Excelente."
+      },
+      {
+        "name": "Ervany Gracyane",
+        "date": "há 1 dia · Google",
+        "stars": "★★★★★",
+        "quote": "Ótimo."
+      }
     ],
     "cta_label": "Ver todas as 16 avaliações no Google",
     "cta_href": "https://www.google.com/search?q=Henrique+Silva+Advocacia+Cabo+de+Santo+Agostinho"
@@ -79,9 +248,18 @@
       "Acredito que advocacia é antes de tudo <strong>escuta técnica</strong>: ler o caso por inteiro, entender o que está em jogo, e devolver ao cliente um diagnóstico honesto antes de qualquer peça processual. Cada cliente é atendido pessoalmente, com sigilo absoluto e relatórios claros do andamento."
     ],
     "credentials": [
-      {"num": "14+", "label": "Anos de Atuação"},
-      {"num": "10", "label": "Áreas do Direito"},
-      {"num": "PE", "label": "OAB 31.742"}
+      {
+        "num": "14+",
+        "label": "Anos de Atuação"
+      },
+      {
+        "num": "10",
+        "label": "Áreas do Direito"
+      },
+      {
+        "num": "PE",
+        "label": "OAB 31.742"
+      }
     ],
     "portrait_src": "assets/henrique-portrait.jpg",
     "portrait_plaque": "Dr. Henrique Silva · OAB/PE 31.742"
@@ -98,12 +276,30 @@
     "sub": "Se a sua dúvida não estiver aqui, mande pelo WhatsApp — respondo pessoalmente em até <strong>2 horas úteis</strong>.",
     "search_placeholder": "Procurar por palavra-chave (ex: prazo, honorários, inventário)…",
     "items": [
-      {"q": "A primeira análise é gratuita?", "a": "Sim. A análise inicial pelo WhatsApp ou videoconferência não tem custo. Você só contrata se quiser avançar, com proposta de honorários formal antes de qualquer assinatura."},
-      {"q": "Em quais áreas o escritório atua?", "a": "<strong>Trabalhista</strong> (foco em causas de alta complexidade), <strong>Previdenciário</strong>, <strong>Cível</strong>, <strong>Família</strong>, <strong>Empresarial</strong>, <strong>Imobiliário</strong>, <strong>Tributário</strong>, <strong>Consumidor</strong>, <strong>Juizados Especiais</strong> e <strong>Criminal</strong> (consultoria estratégica)."},
-      {"q": "Atende fora de Pernambuco?", "a": "Sim. Presencialmente em Cabo de Santo Agostinho/PE com agendamento, e <strong>100% online</strong> em todo o Brasil via WhatsApp e videoconferência."},
-      {"q": "Quanto custa contratar?", "a": "Honorários combinados por escrito antes de qualquer trabalho. Trabalhista e Previdenciário comumente por êxito; demais áreas valor fixo ou percentual conforme a ação."},
-      {"q": "Quanto tempo demora um processo?", "a": "Trabalhistas: 6 a 18 meses · Previdenciários: 6 a 24 meses · Cíveis simples: 6 a 12 meses. No início do caso te passo projeção realista."},
-      {"q": "O escritório atende empresas?", "a": "Sim. Oferecemos consultoria fixa em compliance trabalhista, análise contratual, pareceres técnicos e palestras orientativas. Trabalho preventivo e responsivo."}
+      {
+        "q": "A primeira análise é gratuita?",
+        "a": "Sim. A análise inicial pelo WhatsApp ou videoconferência não tem custo. Você só contrata se quiser avançar, com proposta de honorários formal antes de qualquer assinatura."
+      },
+      {
+        "q": "Em quais áreas o escritório atua?",
+        "a": "<strong>Trabalhista</strong> (foco em causas de alta complexidade), <strong>Previdenciário</strong>, <strong>Cível</strong>, <strong>Família</strong>, <strong>Empresarial</strong>, <strong>Imobiliário</strong>, <strong>Tributário</strong>, <strong>Consumidor</strong>, <strong>Juizados Especiais</strong> e <strong>Criminal</strong> (consultoria estratégica)."
+      },
+      {
+        "q": "Atende fora de Pernambuco?",
+        "a": "Sim. Presencialmente em Cabo de Santo Agostinho/PE com agendamento, e <strong>100% online</strong> em todo o Brasil via WhatsApp e videoconferência."
+      },
+      {
+        "q": "Quanto custa contratar?",
+        "a": "Honorários combinados por escrito antes de qualquer trabalho. Trabalhista e Previdenciário comumente por êxito; demais áreas valor fixo ou percentual conforme a ação."
+      },
+      {
+        "q": "Quanto tempo demora um processo?",
+        "a": "Trabalhistas: 6 a 18 meses · Previdenciários: 6 a 24 meses · Cíveis simples: 6 a 12 meses. No início do caso te passo projeção realista."
+      },
+      {
+        "q": "O escritório atende empresas?",
+        "a": "Sim. Oferecemos consultoria fixa em compliance trabalhista, análise contratual, pareceres técnicos e palestras orientativas. Trabalho preventivo e responsivo."
+      }
     ]
   },
   "contact_cta": {
