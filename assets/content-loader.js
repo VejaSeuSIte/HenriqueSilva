@@ -20,6 +20,14 @@
     return;
   }
 
+  // Lê site-config.json em paralelo (best-effort) — campos globais editados em /admin/#/config
+  // como schedule, social links, analytics IDs. Falha silenciosa se não carregar.
+  let siteCfg = null;
+  try {
+    const rc = await fetch(BASE + 'assets/site-config.json?v=' + Date.now(), { cache: 'no-store' });
+    if (rc.ok) siteCfg = await rc.json();
+  } catch (_) {}
+
   const $ = (s, ctx = document) => ctx.querySelector(s);
   const $$ = (s, ctx = document) => Array.from(ctx.querySelectorAll(s));
   const setHTML = (sel, html) => { const el = typeof sel === 'string' ? $(sel) : sel; if (el && html != null) el.innerHTML = html; };
@@ -294,5 +302,23 @@
   // ========== WhatsApp FAB ==========
   if (cfg.wa_fab) {
     setText('.wa-fab-label', cfg.wa_fab.label);
+  }
+
+  // ========== SITE-CONFIG (footer schedule + outros campos globais) ==========
+  if (siteCfg) {
+    const sch = String(siteCfg.schedule || '').trim();
+    const schEl = $('.footer-schedule');
+    const schLab = $('.footer-schedule-label');
+    if (schEl) {
+      if (sch) {
+        setText(schEl, sch);
+        if (schLab) schLab.style.display = '';
+        schEl.style.display = '';
+      } else {
+        // Schedule vazio no admin: esconde label + valor
+        if (schLab) schLab.style.display = 'none';
+        schEl.style.display = 'none';
+      }
+    }
   }
 })();

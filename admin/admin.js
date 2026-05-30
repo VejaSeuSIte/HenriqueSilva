@@ -1264,6 +1264,9 @@ async function renderSiteEditor(app) {
         <div class="field" data-areas="${sectionId}.${field.key}">
           <label>${field.label}</label>
           ${hintHtml(field.hint)}
+          <div class="callout" style="margin:6px 0 14px;padding:12px 16px;background:rgba(212,175,55,.07);border:1px solid rgba(212,175,55,.28);font-family:'Inter Tight',sans-serif;font-size:12.5px;color:#c9b272;line-height:1.55">
+            <strong style="font-weight:600">Atenção:</strong> a marca "DESTAQUE" e a página de destino (link) de cada área são fixas — definidas no momento da criação do site. Você pode editar o texto, a imagem e as tags livremente.
+          </div>
           <div class="areas-list">
             ${items.map((a, i) => `
               <details class="card-mini" data-idx="${i}" ${i < 2 ? 'open' : ''}>
