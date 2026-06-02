@@ -19,11 +19,11 @@
 <meta name="twitter:card" content="summary_large_image" />
 <link rel="icon" type="image/png" href="assets/favicon-hsa.png?v=1" />
 <link rel="apple-touch-icon" href="assets/favicon-hsa.png?v=1" />
-<link rel="preload" as="image" href="assets/seal-hsa.png?v=1" fetchpriority="high" />
+<link rel="preload" as="image" href="assets/seal-hsa.png?v=2" fetchpriority="high" />
 <link rel="preload" as="video" href="assets/hero-video.mp4" type="video/mp4" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=Cormorant+SC:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,500;1,600&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=Cormorant+SC:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,500;1,600&family=Cinzel:wght@400;500;600;700&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="assets/common.css" />
 <script src="assets/analytics.js" defer></script>
 <style>
@@ -277,7 +277,7 @@
   .credential{padding-right:24px;border-right:1px solid rgba(212,175,55,.18)}
   .credential:last-child{border-right:0;padding-right:0;padding-left:24px}
   .credential:nth-child(2){padding-left:24px}
-  .credential-num{font-family:'Cormorant Garamond',serif;font-size:42px;color:var(--gold-l);font-weight:500;line-height:1;margin-bottom:6px}
+  .credential-num{font-family:'Cormorant Garamond',serif;font-size:33px;color:var(--gold-l);font-weight:500;line-height:1;margin-bottom:6px}
   .credential-num em{font-style:italic}
   .credential-label{font-family:'Cormorant SC',serif;font-size:10px;letter-spacing:.28em;text-transform:uppercase;color:#b4c2d6;font-weight:500}
 
@@ -286,8 +286,9 @@
     .about-photo-wrap{justify-content:center}
     .about-photo-bg,.about-photo-circle{width:340px;height:340px}
     .about-photo{width:300px}
-    .about-credentials{grid-template-columns:1fr;gap:18px;padding-top:24px}
-    .credential{border-right:0;border-bottom:1px solid rgba(212,175,55,.18);padding:0 0 18px 0!important}
+    .about-credentials{grid-template-columns:repeat(3,1fr);gap:12px;padding-top:22px}
+    .credential{border-right:1px solid rgba(212,175,55,.18);border-bottom:0;padding:0 8px 0 0!important}
+    .credential:last-child{border-right:0;padding-right:0!important}
     .credential:last-child{border-bottom:0;padding-bottom:0!important}
   }
 
@@ -551,8 +552,8 @@
     .about-photo-bg,.about-photo-circle{width:300px;height:300px}
     .about-photo{width:260px}
     .about-watermark{width:420px}
-    .credential-num{font-size:32px}
-    .credential-label{font-size:9px;letter-spacing:.2em}
+    .credential-num{font-size:22px;margin-bottom:3px}
+    .credential-label{font-size:8px;letter-spacing:.1em;line-height:1.32}
 
     /* PUBS */
     .pubs{padding:110px 0}
@@ -1465,16 +1466,16 @@
   }
   em{font-style:italic !important; color:var(--gold-light) !important; font-weight:300 !important}
 
-  /* Wordmark refinado */
+  /* Wordmark refinado — fonte real da marca (Cinzel ≈ Trajan da logo) */
   .wordmark-text{
     color:var(--off-white) !important;
-    letter-spacing:.04em !important;
-    font-family:'Fraunces', serif !important;
-    text-transform:none !important;
+    letter-spacing:.09em !important;
+    font-family:'Cinzel', 'Cormorant SC', serif !important;
+    text-transform:uppercase !important;
     text-shadow:none !important;
-    font-weight:400 !important;
+    font-weight:500 !important;
   }
-  .wordmark-text .wm-line1{font-weight:400 !important; font-size:1em !important; letter-spacing:.02em !important}
+  .wordmark-text .wm-line1{font-weight:600 !important; font-size:1em !important; letter-spacing:.05em !important}
   .wordmark-text .wm-line2,
   .wordmark-text small{
     color:var(--gold) !important;
@@ -2548,7 +2549,7 @@
 <nav class="nav" id="nav">
   <div class="nav-inner">
     <a href="#top" class="brand" aria-label="Henrique Silva Advocacia">
-      <img class="brand-seal" src="assets/seal-hsa.png?v=1" alt="Selo Henrique Silva Advocacia" width="54" height="54" />
+      <img class="brand-seal" src="assets/seal-hsa.png?v=2" alt="Selo Henrique Silva Advocacia" width="54" height="54" />
       <span class="brand-wordmark wordmark-text" aria-label="Henrique Silva Advocacia"><span class="wm-line1">Henrique Silva</span><span class="wm-line2">Advocacia</span></span>
     </a>
     <button class="nav-burger" aria-label="Abrir menu" aria-expanded="false" aria-controls="nav-links-menu" id="navBurger">
@@ -2600,7 +2601,7 @@
   <div class="hero-corner br"><svg viewBox="0 0 80 80"><path d="M2 32 L2 2 L32 2"/><path d="M2 14 L14 2"/><circle cx="2" cy="2" r="3" class="corner-star" fill="currentColor" stroke="none"/></svg></div>
 
   <div class="hero-logo">
-    <img class="hero-seal" src="assets/seal-hsa.png?v=1" alt="Selo heráldico Henrique Silva Advocacia" width="280" height="280" fetchpriority="high" />
+    <img class="hero-seal" src="assets/seal-hsa.png?v=2" alt="Selo heráldico Henrique Silva Advocacia" width="280" height="280" fetchpriority="high" />
     <div class="hero-divider" aria-hidden="true"></div>
     <h1 class="hero-wordmark wordmark-text wordmark-hero" aria-label="Henrique Silva Advocacia"><span class="wm-line1">Henrique Silva</span><span class="wm-line2">Advocacia</span></h1>
   </div>
@@ -2874,7 +2875,7 @@
 
 <!-- ============= QUEM SOU ============= -->
 <section class="about" id="sobre">
-  <img class="about-watermark" src="assets/seal-hsa.png?v=1" alt="" aria-hidden="true" />
+  <img class="about-watermark" src="assets/seal-hsa.png?v=2" alt="" aria-hidden="true" />
   <div class="wrap">
     <div class="about-grid portrait-layout">
       <div class="about-portrait" data-reveal="left">
@@ -3018,10 +3019,11 @@
     .about-text h2{font-size:30px !important; line-height:1.12 !important}
     .about-text .lead{font-size:17px !important; padding-left:18px !important}
     .about-text p{font-size:14.5px !important}
-    .about-credentials{grid-template-columns:1fr !important; gap:0 !important; padding-top:24px !important; margin-top:32px !important}
-    .credential{padding:18px 0 !important; border-right:0 !important; border-bottom:1px solid rgba(212,175,55,.15) !important; text-align:left !important}
-    .credential:last-child{border-bottom:0 !important}
-    .credential-num{font-size:36px !important}
+    .about-credentials{grid-template-columns:repeat(3,1fr) !important; gap:10px !important; padding-top:22px !important; margin-top:30px !important}
+    .credential{padding:0 8px 0 0 !important; border-right:1px solid rgba(212,175,55,.15) !important; border-bottom:0 !important; text-align:left !important}
+    .credential:last-child{border-right:0 !important; padding-right:0 !important}
+    .credential-num{font-size:21px !important; margin-bottom:3px !important}
+    .credential-label{font-size:8px !important; letter-spacing:.08em !important; line-height:1.3 !important}
 
     /* FAQ */
     .faq-search input{padding:14px 18px 14px 46px !important; font-size:14px !important}
@@ -3241,6 +3243,31 @@
   .q summary::before,.q summary::after{background:var(--gold-cl)!important}
   .q-body{color:var(--ink-cl-soft)!important}
   .q-body strong{color:var(--ink-cl)!important}
+
+  /* ═══════════════════════════════════════════════════════════
+     LOCALIZAÇÃO — carrossel do Novo Mundo Empresarial + endereço
+     ═══════════════════════════════════════════════════════════ */
+  .location{padding:120px 0;background:linear-gradient(180deg,#070f1d 0%,#040912 100%);position:relative;overflow:hidden}
+  .location .shead-sub strong{color:#f4ead0}
+  .loc-carousel{display:flex;gap:18px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding:10px 0 6px;margin-top:30px;scroll-padding-left:24px}
+  .loc-carousel::-webkit-scrollbar{display:none}
+  .loc-carousel figure{flex:0 0 auto;width:min(580px,82%);margin:0;scroll-snap-align:center}
+  .loc-carousel img{width:100%;height:360px;object-fit:cover;display:block;border:1px solid rgba(212,175,55,.25);box-shadow:0 20px 44px rgba(0,0,0,.45);transition:transform .5s, box-shadow .5s}
+  .loc-carousel figure:hover img{transform:translateY(-4px);box-shadow:0 28px 56px rgba(0,0,0,.55);border-color:var(--gold-bright)}
+  .loc-hint{text-align:center;font-family:'Cormorant SC',serif;font-size:10px;letter-spacing:.32em;text-transform:uppercase;color:rgba(212,175,55,.55);margin:18px 0 0}
+  .loc-info{display:flex;align-items:center;justify-content:space-between;gap:28px;flex-wrap:wrap;margin-top:36px;border-top:1px solid rgba(212,175,55,.2);padding-top:30px}
+  .loc-address{font-size:15px;line-height:1.75;color:#cbd5e4;max-width:580px}
+  .loc-address strong{display:block;font-family:'Cormorant SC',serif;font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:var(--gold-bright);margin-bottom:8px}
+  .loc-map-btn{display:inline-flex;align-items:center;gap:12px;background:var(--gold-bright);color:#0a1322;padding:16px 32px;font-family:'Cormorant SC',serif;font-size:11px;letter-spacing:.28em;text-transform:uppercase;font-weight:600;white-space:nowrap;transition:background .3s, transform .3s, box-shadow .3s;box-shadow:0 12px 28px rgba(212,175,55,.22)}
+  .loc-map-btn:hover{background:#f4e7c5;transform:translateY(-3px);box-shadow:0 16px 36px rgba(212,175,55,.34)}
+  @media(max-width:780px){
+    .location{padding:80px 0}
+    .loc-carousel{gap:12px;margin-top:24px}
+    .loc-carousel figure{width:86%}
+    .loc-carousel img{height:240px}
+    .loc-info{flex-direction:column;align-items:stretch;gap:18px;margin-top:28px;padding-top:24px}
+    .loc-map-btn{justify-content:center}
+  }
 </style>
 <script>
   (function(){
@@ -3273,7 +3300,7 @@
 
 <!-- ============= FAQ ============= -->
 <section class="faq-section" id="faq">
-  <img class="faq-watermark" src="assets/seal-hsa.png?v=1" alt="" aria-hidden="true" />
+  <img class="faq-watermark" src="assets/seal-hsa.png?v=2" alt="" aria-hidden="true" />
   <div class="wrap">
     <div class="shead" data-reveal="up">
       <div class="shead-eye"><span>Dúvidas Frequentes</span></div>
@@ -3293,6 +3320,36 @@
       <details class="q"><summary>Quanto custa contratar?</summary><div class="q-body">Honorários combinados por escrito antes de qualquer trabalho. Trabalhista e Previdenciário comumente por êxito; demais áreas valor fixo ou percentual conforme a ação.</div></details>
       <details class="q"><summary>Quanto tempo demora um processo?</summary><div class="q-body">Trabalhistas: 6 a 18 meses · Previdenciários: 6 a 24 meses · Cíveis simples: 6 a 12 meses. No início do caso te passo projeção realista.</div></details>
       <details class="q"><summary>O escritório atende empresas?</summary><div class="q-body">Sim. Oferecemos consultoria fixa em compliance trabalhista, análise contratual, pareceres técnicos e palestras orientativas. Trabalho preventivo e responsivo.</div></details>
+    </div>
+  </div>
+</section>
+
+<!-- ============= LOCALIZAÇÃO / ESCRITÓRIO ============= -->
+<section class="location" id="localizacao">
+  <div class="wrap">
+    <div class="shead" data-reveal="up">
+      <div class="shead-eye"><span>Onde Estamos</span></div>
+      <h2>Escritório no <em>Novo Mundo Empresarial</em>.</h2>
+      <p class="shead-sub">Reserva do Paiva, Cabo de Santo Agostinho/PE — endereço corporativo de referência no litoral sul. Atendimento presencial com hora marcada e <strong>100% online</strong> para todo o Brasil.</p>
+    </div>
+    <div class="loc-carousel" data-reveal="up" role="region" aria-label="Fotos do escritório e do Novo Mundo Empresarial">
+      <figure><img src="assets/empresarial-fachada.webp" alt="Fachada do Novo Mundo Empresarial — Reserva do Paiva" loading="lazy" /></figure>
+      <figure><img src="assets/empresarial-interno.webp" alt="Área interna do Novo Mundo Empresarial" loading="lazy" /></figure>
+      <figure><img src="assets/empresarial-vista.webp" alt="Vista externa do Novo Mundo Empresarial" loading="lazy" /></figure>
+      <figure><img src="assets/escritorio-1.jpg" alt="Escritório Henrique Silva Advocacia por dentro" loading="lazy" /></figure>
+      <figure><img src="assets/escritorio-2.jpg" alt="Sala de atendimento do escritório" loading="lazy" /></figure>
+      <figure><img src="assets/escritorio-3.jpg" alt="Ambiente do escritório Henrique Silva Advocacia" loading="lazy" /></figure>
+    </div>
+    <p class="loc-hint" aria-hidden="true">&#8592;&nbsp;&nbsp;arraste para ver mais&nbsp;&nbsp;&#8594;</p>
+    <div class="loc-info" data-reveal="up">
+      <div class="loc-address">
+        <strong>Sede</strong>
+        Cond. Novo Mundo Empresarial · Torre 05, Sala 318 · Av. A, 4165<br/>
+        Reserva do Paiva · Cabo de Santo Agostinho/PE · CEP 54522-005
+      </div>
+      <a class="loc-map-btn" href="https://www.google.com/maps/search/?api=1&query=Novo%20Mundo%20Empresarial%20Reserva%20do%20Paiva%20Cabo%20de%20Santo%20Agostinho%20PE" target="_blank" rel="noopener">
+        Como chegar <span aria-hidden="true">&#8594;</span>
+      </a>
     </div>
   </div>
 </section>
@@ -3327,7 +3384,7 @@
     <div class="footer-grid">
       <div>
         <div class="footer-brand">
-          <img src="assets/seal-hsa.png?v=1" alt="" width="54" height="54" />
+          <img src="assets/seal-hsa.png?v=2" alt="" width="54" height="54" />
           <span class="footer-brand-wm wordmark-text" aria-label="Henrique Silva Advocacia"><span class="wm-line1">Henrique Silva</span><span class="wm-line2">Advocacia</span></span>
         </div>
         <div class="footer-tag">14 anos de atuação multidisciplinar — Direito Trabalhista, Previdenciário, Cível, de Família, Empresarial e Tributário, com pareceres técnicos, palestras e consultoria preventiva.</div>
