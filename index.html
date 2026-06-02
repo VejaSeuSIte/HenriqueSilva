@@ -2991,9 +2991,12 @@
     /* Office: foto sem altura fixa, antes do texto pra mobile */
     .office-grid{grid-template-columns:1fr !important; gap:36px !important}
     .office-photo-img{height:auto !important; max-height:320px !important; width:100% !important}
-    .office-pillars{grid-template-columns:1fr !important; gap:0 !important; margin-top:32px !important}
-    .office-pillars .pillar{padding:18px 0 !important; border-top:1px solid rgba(212,175,55,.15) !important}
-    .office-pillars .pillar:first-child{border-top:0 !important}
+    .office-pillars{grid-template-columns:1fr 1fr !important; gap:4px 18px !important; margin-top:26px !important}
+    .office-pillars .pillar{padding:11px 0 !important; border-top:1px solid rgba(212,175,55,.12) !important}
+    .office-pillars .pillar:nth-child(1),.office-pillars .pillar:nth-child(2){border-top:0 !important}
+    .office-pillars .pillar:last-child{grid-column:1 / -1}
+    .office-pillars .pillar-title{font-size:9.5px !important; letter-spacing:.16em !important; margin-bottom:4px !important}
+    .office-pillars .pillar-text{font-size:12px !important; line-height:1.42 !important}
 
     /* Áreas: 1 col em ambas as fileiras */
     .areas-featured, .areas-secondary{grid-template-columns:1fr !important; gap:14px !important; max-width:100% !important}
