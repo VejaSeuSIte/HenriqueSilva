@@ -46,6 +46,9 @@
   .brand-seal{height:46px;width:46px;object-fit:contain}
   .wordmark-text{display:inline-flex;flex-direction:column;line-height:1;font-family:'Cinzel','Cormorant SC',serif;color:var(--off-white);font-size:17px;font-weight:600;letter-spacing:.08em;text-transform:uppercase}
   .wordmark-text small{font-size:8px;color:var(--gold);letter-spacing:.42em;margin-top:2px;font-family:'Inter Tight',sans-serif;text-transform:uppercase}
+  .brand-logo{height:42px;width:auto;object-fit:contain;display:block}
+  .footer-logo-img{height:48px;width:auto;object-fit:contain;display:block}
+  @media(max-width:780px){.brand-logo{height:34px}.footer-logo-img{height:42px}}
   .nav-links{display:flex;gap:34px;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:#fff;font-weight:500;font-family:'Inter Tight',sans-serif}
   .nav-links a{position:relative;opacity:.85;transition:all .25s}
   .nav-links a:hover,.nav-links a.active{opacity:1;color:var(--gold-light)}
@@ -142,8 +145,7 @@
 <nav class="nav" id="nav">
   <div class="nav-inner">
     <a href="/HenriqueSilva/" class="brand">
-      <img class="brand-seal" src="/HenriqueSilva/assets/seal-hsa.png?v=2" alt="HSA" />
-      <span class="wordmark-text">Henrique Silva<small>Advocacia</small></span>
+      <img class="brand-logo" src="/HenriqueSilva/assets/logo-hsa.png?v=3" alt="Henrique Silva Advocacia" />
     </a>
     <button class="nav-burger" id="navBurger" aria-label="Menu" aria-expanded="false">
       <svg viewBox="0 0 26 26"><line x1="3" y1="6" x2="23" y2="6"/><line x1="3" y1="13" x2="23" y2="13"/><line x1="3" y1="20" x2="23" y2="20"/></svg>
@@ -169,8 +171,7 @@
     <div class="footer-grid">
       <div>
         <div class="footer-brand">
-          <img src="/HenriqueSilva/assets/seal-hsa.png?v=2" alt="HSA" />
-          <span class="wordmark-text">Henrique Silva<small>Advocacia</small></span>
+          <img class="footer-logo-img" src="/HenriqueSilva/assets/logo-hsa.png?v=3" alt="Henrique Silva Advocacia" />
         </div>
         <div class="footer-tag">14 anos de atuação multidisciplinar — Direito Trabalhista, Previdenciário, Cível, de Família, Empresarial e Tributário, com pareceres técnicos, palestras e consultoria preventiva.</div>
         <div class="social-icons">

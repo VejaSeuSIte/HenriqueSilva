@@ -2549,8 +2549,7 @@
 <nav class="nav" id="nav">
   <div class="nav-inner">
     <a href="#top" class="brand" aria-label="Henrique Silva Advocacia">
-      <img class="brand-seal" src="assets/seal-hsa.png?v=2" alt="Selo Henrique Silva Advocacia" width="54" height="54" />
-      <span class="brand-wordmark wordmark-text" aria-label="Henrique Silva Advocacia"><span class="wm-line1">Henrique Silva</span><span class="wm-line2">Advocacia</span></span>
+      <img class="brand-logo" src="assets/logo-hsa.png?v=3" alt="Henrique Silva Advocacia" width="918" height="224" />
     </a>
     <button class="nav-burger" aria-label="Abrir menu" aria-expanded="false" aria-controls="nav-links-menu" id="navBurger">
       <svg viewBox="0 0 26 26" aria-hidden="true">
@@ -2601,9 +2600,8 @@
   <div class="hero-corner br"><svg viewBox="0 0 80 80"><path d="M2 32 L2 2 L32 2"/><path d="M2 14 L14 2"/><circle cx="2" cy="2" r="3" class="corner-star" fill="currentColor" stroke="none"/></svg></div>
 
   <div class="hero-logo">
-    <img class="hero-seal" src="assets/seal-hsa.png?v=2" alt="Selo heráldico Henrique Silva Advocacia" width="280" height="280" fetchpriority="high" />
-    <div class="hero-divider" aria-hidden="true"></div>
-    <h1 class="hero-wordmark wordmark-text wordmark-hero" aria-label="Henrique Silva Advocacia"><span class="wm-line1">Henrique Silva</span><span class="wm-line2">Advocacia</span></h1>
+    <img class="hero-logo-img" src="assets/logo-hsa.png?v=3" alt="Henrique Silva Advocacia" width="918" height="224" fetchpriority="high" />
+    <h1 class="visually-hidden">Henrique Silva Advocacia</h1>
   </div>
 
   <div class="hero-tagline">
@@ -3271,6 +3269,15 @@
     .loc-info{flex-direction:column;align-items:stretch;gap:18px;margin-top:28px;padding-top:24px}
     .loc-map-btn{justify-content:center}
   }
+
+  /* ═══ LOGO REAL (imagem) — navbar / hero / rodapé ═══ */
+  .brand-logo{height:44px;width:auto;object-fit:contain;display:block}
+  .hero-logo-img{display:block;width:min(600px,86vw);height:auto;margin:0 auto;filter:drop-shadow(0 14px 38px rgba(0,0,0,.55));animation:vs-fadeScale 1.6s cubic-bezier(.22,.8,.24,1) both}
+  .footer-logo-img{height:52px;width:auto;object-fit:contain;display:block}
+  .visually-hidden{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+  @media(max-width:900px){.hero-logo-img{width:min(480px,84vw)}}
+  @media(max-width:780px){.brand-logo{height:38px}.hero-logo-img{width:min(430px,82vw)}.footer-logo-img{height:46px}}
+  @media(max-width:480px){.brand-logo{height:33px}.hero-logo-img{width:80vw}}
 </style>
 <script>
   (function(){
@@ -3387,8 +3394,7 @@
     <div class="footer-grid">
       <div>
         <div class="footer-brand">
-          <img src="assets/seal-hsa.png?v=2" alt="" width="54" height="54" />
-          <span class="footer-brand-wm wordmark-text" aria-label="Henrique Silva Advocacia"><span class="wm-line1">Henrique Silva</span><span class="wm-line2">Advocacia</span></span>
+          <img class="footer-logo-img" src="assets/logo-hsa.png?v=3" alt="Henrique Silva Advocacia" width="918" height="224" />
         </div>
         <div class="footer-tag">14 anos de atuação multidisciplinar — Direito Trabalhista, Previdenciário, Cível, de Família, Empresarial e Tributário, com pareceres técnicos, palestras e consultoria preventiva.</div>
       </div>
