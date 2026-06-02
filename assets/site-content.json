@@ -35,7 +35,7 @@
   },
   "hero": {
     "tagline_quote": "Mais de 14 anos de atuação multidisciplinar — <br/>do contencioso à consultoria preventiva.",
-    "cta_primary_label": "Análise Gratuita pelo WhatsApp",
+    "cta_primary_label": "Agende sua Consulta pelo WhatsApp",
     "cta_secondary_label": "",
     "video_src": "assets/hero-video.mp4",
     "poster_src": "assets/og-banner.jpg",
@@ -52,15 +52,15 @@
     "pillars": [
       {
         "num": "14 anos",
-        "label": "Atuação multidisciplinar desde 2010."
+        "label": "Atuação multidisciplinar desde 2012."
       },
       {
         "num": "10 áreas",
         "label": "Trabalhista, Previdenciário, Empresarial e mais."
       },
       {
-        "num": "Análise gratuita",
-        "label": "Conte o caso pelo WhatsApp sem custo."
+        "num": "Agende sua consulta",
+        "label": "Converse sobre o seu caso pelo WhatsApp."
       }
     ],
     "photo_src": "assets/sem-titulo-mpr8t95u.png",
@@ -277,8 +277,8 @@
     "search_placeholder": "Procurar por palavra-chave (ex: prazo, honorários, inventário)…",
     "items": [
       {
-        "q": "A primeira análise é gratuita?",
-        "a": "Sim. A análise inicial pelo WhatsApp ou videoconferência não tem custo. Você só contrata se quiser avançar, com proposta de honorários formal antes de qualquer assinatura."
+        "q": "Como funciona a primeira consulta?",
+        "a": "Você fala diretamente comigo pelo WhatsApp ou em videoconferência para expor o caso. Apresento uma proposta de honorários por escrito antes de qualquer trabalho — e você decide com calma se quer avançar."
       },
       {
         "q": "Em quais áreas o escritório atua?",
