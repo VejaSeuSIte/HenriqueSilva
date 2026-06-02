@@ -2628,7 +2628,7 @@
       <div class="office-text" data-reveal="left">
         <div class="shead-eye"><span>Sobre o escritório</span></div>
         <h2>Advocacia <em>multidisciplinar</em>, técnica e estratégica.</h2>
-        <p>O <strong>Henrique Silva Advocacia</strong> destaca-se por mais de <strong>14 anos de sólida atuação</strong>, com expertise na condução estratégica de execuções e litígios trabalhistas de alta complexidade, oferecendo soluções jurídicas de excelência para pessoas físicas e jurídicas em todo o estado de Pernambuco.</p>
+        <p>O <strong>Henrique Silva Advocacia</strong> destaca-se por mais de <strong>14 anos de sólida atuação</strong>, com expertise na condução estratégica de execuções e litígios trabalhistas de alta complexidade, oferecendo soluções jurídicas de excelência para pessoas físicas e jurídicas em todo o estado de Pernambuco — com sede no <strong>Novo Mundo Empresarial</strong>, na Reserva do Paiva.</p>
         <p>A atuação da banca <strong>transcende o contencioso</strong>: abrange uma sólida estrutura de assessoria extrajudicial, consultoria preventiva, elaboração de pareceres técnicos aprofundados e palestras orientativas voltadas a trabalhadores e gestores — visando à mitigação de passivos e à disseminação de boas práticas no ambiente laboral.</p>
         <p>Para o setor corporativo, oferecemos <strong>modelos de consultoria fixa</strong>, focados em compliance e na segurança jurídica das operações empresariais diárias — garantindo gestão de riscos eficiente e orgânica.</p>
         <div class="office-pillars">
@@ -2646,12 +2646,20 @@
           </div>
         </div>
       </div>
-      <div class="office-photo" data-reveal="right" data-delay="200">
-        <div class="office-photo-frame">
-          <img class="office-photo-img" src="assets/escritorio-1.jpg" alt="Sala de espera do escritório Henrique Silva Advocacia" loading="lazy" />
+      <div class="office-media" data-reveal="right" data-delay="200">
+        <div class="loc-carousel" role="region" aria-label="Fotos do escritório e do Novo Mundo Empresarial">
+          <figure><img src="assets/empresarial-fachada.webp" alt="Fachada do Novo Mundo Empresarial — Reserva do Paiva" loading="lazy" /></figure>
+          <figure><img src="assets/empresarial-interno.webp" alt="Área interna do Novo Mundo Empresarial" loading="lazy" /></figure>
+          <figure><img src="assets/empresarial-vista.webp" alt="Vista externa do Novo Mundo Empresarial" loading="lazy" /></figure>
+          <figure><img src="assets/escritorio-1.jpg" alt="Escritório Henrique Silva Advocacia por dentro" loading="lazy" /></figure>
+          <figure><img src="assets/escritorio-2.jpg" alt="Sala de atendimento do escritório" loading="lazy" /></figure>
+          <figure><img src="assets/escritorio-3.jpg" alt="Ambiente do escritório" loading="lazy" /></figure>
         </div>
-        <div class="office-photo-stamp">Atendo<br/>há mais de<br/>14 anos</div>
+        <div class="office-loc">
+          <p class="office-loc-addr"><strong>Torre 05, Sala 318</strong> · Av. A, 4165 — Reserva do Paiva, Cabo de Santo Agostinho/PE</p>
+          <a class="office-loc-btn" href="https://www.google.com/maps/search/?api=1&query=Novo%20Mundo%20Empresarial%20Reserva%20do%20Paiva%20Cabo%20de%20Santo%20Agostinho%20PE" target="_blank" rel="noopener">Como chegar <span aria-hidden="true">&#8594;</span></a>
         </div>
+      </div>
     </div>
   </div>
 </section>
@@ -3302,6 +3310,24 @@
   .review-avatar.av6{background:linear-gradient(135deg,#F4511E,#c93e14) !important}
   .reviews .review-card{box-shadow:0 6px 20px rgba(40,30,10,.06) !important}
   .reviews .review-card:hover{box-shadow:0 16px 38px rgba(40,30,10,.13) !important}
+
+  /* ═══ SOBRE O ESCRITÓRIO — localização integrada (carrossel + endereço) ═══ */
+  .office-grid:has(.office-media){align-items:start}
+  .office-media{display:flex;flex-direction:column;min-width:0}
+  .office-media .loc-carousel{margin-top:0;padding:2px 0 8px;gap:14px}
+  .office-media .loc-carousel figure{width:min(440px,80%)}
+  .office-media .loc-carousel img{height:300px;box-shadow:0 12px 30px rgba(40,30,10,.14)!important;border-color:var(--line-cl)!important}
+  .office-loc{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-top:16px;padding-top:16px;border-top:1px solid var(--line-cl)}
+  .office-loc-addr{margin:0;font-size:12.5px;line-height:1.5;color:var(--ink-cl-soft);flex:1;min-width:180px}
+  .office-loc-addr strong{color:var(--ink-cl);font-weight:600}
+  .office-loc-btn{display:inline-flex;align-items:center;gap:8px;background:var(--gold-cl);color:#fff;padding:12px 22px;font-family:'Cormorant SC',serif;font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;font-weight:600;white-space:nowrap;transition:background .3s,transform .3s}
+  .office-loc-btn:hover{background:#7d5f1f;transform:translateY(-2px)}
+  @media(max-width:780px){
+    .office-media .loc-carousel figure{width:84%}
+    .office-media .loc-carousel img{height:230px}
+    .office-loc{flex-direction:column;align-items:stretch;gap:12px}
+    .office-loc-btn{justify-content:center}
+  }
 </style>
 <script>
   (function(){
@@ -3354,36 +3380,6 @@
       <details class="q"><summary>Quanto custa contratar?</summary><div class="q-body">Honorários combinados por escrito antes de qualquer trabalho. Trabalhista e Previdenciário comumente por êxito; demais áreas valor fixo ou percentual conforme a ação.</div></details>
       <details class="q"><summary>Quanto tempo demora um processo?</summary><div class="q-body">Trabalhistas: 6 a 18 meses · Previdenciários: 6 a 24 meses · Cíveis simples: 6 a 12 meses. No início do caso te passo projeção realista.</div></details>
       <details class="q"><summary>O escritório atende empresas?</summary><div class="q-body">Sim. Oferecemos consultoria fixa em compliance trabalhista, análise contratual, pareceres técnicos e palestras orientativas. Trabalho preventivo e responsivo.</div></details>
-    </div>
-  </div>
-</section>
-
-<!-- ============= LOCALIZAÇÃO / ESCRITÓRIO ============= -->
-<section class="location" id="localizacao">
-  <div class="wrap">
-    <div class="shead" data-reveal="up">
-      <div class="shead-eye"><span>Onde Estamos</span></div>
-      <h2>Escritório no <em>Novo Mundo Empresarial</em>.</h2>
-      <p class="shead-sub">Reserva do Paiva, Cabo de Santo Agostinho/PE — endereço corporativo de referência no litoral sul. Atendimento presencial com hora marcada e <strong>100% online</strong> para todo o Brasil.</p>
-    </div>
-    <div class="loc-carousel" data-reveal="up" role="region" aria-label="Fotos do escritório e do Novo Mundo Empresarial">
-      <figure><img src="assets/empresarial-fachada.webp" alt="Fachada do Novo Mundo Empresarial — Reserva do Paiva" loading="lazy" /></figure>
-      <figure><img src="assets/empresarial-interno.webp" alt="Área interna do Novo Mundo Empresarial" loading="lazy" /></figure>
-      <figure><img src="assets/empresarial-vista.webp" alt="Vista externa do Novo Mundo Empresarial" loading="lazy" /></figure>
-      <figure><img src="assets/escritorio-1.jpg" alt="Escritório Henrique Silva Advocacia por dentro" loading="lazy" /></figure>
-      <figure><img src="assets/escritorio-2.jpg" alt="Sala de atendimento do escritório" loading="lazy" /></figure>
-      <figure><img src="assets/escritorio-3.jpg" alt="Ambiente do escritório Henrique Silva Advocacia" loading="lazy" /></figure>
-    </div>
-    <p class="loc-hint" aria-hidden="true">&#8592;&nbsp;&nbsp;arraste para ver mais&nbsp;&nbsp;&#8594;</p>
-    <div class="loc-info" data-reveal="up">
-      <div class="loc-address">
-        <strong>Sede</strong>
-        Cond. Novo Mundo Empresarial · Torre 05, Sala 318 · Av. A, 4165<br/>
-        Reserva do Paiva · Cabo de Santo Agostinho/PE · CEP 54522-005
-      </div>
-      <a class="loc-map-btn" href="https://www.google.com/maps/search/?api=1&query=Novo%20Mundo%20Empresarial%20Reserva%20do%20Paiva%20Cabo%20de%20Santo%20Agostinho%20PE" target="_blank" rel="noopener">
-        Como chegar <span aria-hidden="true">&#8594;</span>
-      </a>
     </div>
   </div>
 </section>
