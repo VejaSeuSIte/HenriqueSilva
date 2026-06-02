@@ -1163,17 +1163,22 @@
   .pillar-title{color:var(--gold-bright)!important}
   .pillar-text{color:#a8b3c8!important}
 
-  /* Areas dark cards */
+  /* Areas dark cards — COR POR ÁREA (joia iluminada no escuro).
+     --cl = versão clara da cor da área (brilha sobre o navy). */
   .areas{background:linear-gradient(180deg,var(--bg-dark) 0%,var(--bg-darker) 100%)!important}
-  .area-card{background:var(--bg-card)!important;border-color:rgba(212,175,55,.18)!important}
-  .area-card:hover{background:var(--bg-card-hover)!important;border-color:var(--gold-bright)!important;box-shadow:0 28px 56px rgba(0,0,0,.5),0 0 0 1px rgba(212,175,55,.5)!important;transform:translateY(-10px) scale(1.015)!important}
+  .area-card{--cl:color-mix(in srgb,var(--c,#e8c547) 74%,#ffffff);background:color-mix(in srgb,var(--c,#000) 9%,var(--bg-card))!important;border-color:color-mix(in srgb,var(--c,var(--gold-bright)) 34%,transparent)!important;border-top:4px solid var(--cl)!important}
+  .area-card:hover{background:color-mix(in srgb,var(--c,#000) 14%,var(--bg-card-hover))!important;border-color:var(--cl)!important;box-shadow:0 26px 54px rgba(0,0,0,.5),0 0 0 1px color-mix(in srgb,var(--cl) 55%,transparent),0 16px 48px color-mix(in srgb,var(--c,#000) 34%,transparent)!important;transform:translateY(-10px) scale(1.015)!important}
   .area-card p{background:linear-gradient(90deg,rgba(12,23,41,.95) 0%,rgba(12,23,41,.7) 60%,rgba(12,23,41,.4) 100%)!important}
-  .area-card.featured{background:linear-gradient(160deg,#0c1729 0%,#142340 100%)!important;border:1px solid var(--gold-bright)!important}
-  /* badge DESTAQUE agora é via h3::before — sem override aqui */
-  .area-tag{background:rgba(212,175,55,.1)!important;color:var(--gold-bright)!important;border-color:rgba(212,175,55,.4)!important}
-  .area-icon{background:radial-gradient(circle,rgba(212,175,55,.18),transparent)!important;border-color:var(--gold-bright)!important;color:var(--gold-bright)!important}
-  .area-card:hover .area-icon{background:radial-gradient(circle,rgba(212,175,55,.32),transparent)!important;transform:rotate(-8deg) scale(1.12)!important}
-  .area-num{color:var(--gold-bright)!important}
+  .area-card.featured{background:linear-gradient(160deg,#0c1729 0%,#142340 100%)!important;border:1px solid color-mix(in srgb,var(--c,var(--gold-bright)) 42%,transparent)!important;border-top:3px solid var(--cl)!important}
+  .area-card.featured h3::before{color:var(--cl)!important}
+  .area-tag{background:color-mix(in srgb,var(--c,var(--gold-bright)) 15%,transparent)!important;color:var(--cl)!important;border-color:color-mix(in srgb,var(--c,var(--gold-bright)) 42%,transparent)!important}
+  .area-icon{background:linear-gradient(140deg,var(--cl) 0%,color-mix(in srgb,var(--c,var(--gold-bright)) 88%,#000) 100%)!important;border:none!important;color:#0a1322!important;box-shadow:0 6px 18px color-mix(in srgb,var(--c,#000) 45%,transparent)!important}
+  .area-icon svg{stroke-width:1.7!important}
+  .area-card:hover .area-icon{transform:rotate(-8deg) scale(1.12)!important;box-shadow:0 10px 26px color-mix(in srgb,var(--c,#000) 60%,transparent)!important}
+  .area-num{color:var(--cl)!important}
+  .area-card h3 em{color:var(--cl)!important}
+  .area-saiba:hover{color:var(--cl)!important}
+  .area-card:hover .area-arrow{color:var(--cl)!important}
 
   /* FAQ dark */
   .faq-section{background:var(--bg-darker)!important}
