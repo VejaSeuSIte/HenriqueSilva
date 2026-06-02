@@ -3701,5 +3701,36 @@
   })();
 </script>
 
+<script>
+  /* auto-play dos carrosséis (escritório + avaliações): passa sozinho e volta ao início */
+  (function(){
+    function autoCarousel(el, interval){
+      if(!el) return;
+      if(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      var paused=false;
+      function targetLeft(){
+        var kids=el.children, c=el.getBoundingClientRect();
+        var max=el.scrollWidth-el.clientWidth-4;
+        if(el.scrollLeft>=max) return 0;              /* chegou no fim → volta ao início */
+        for(var i=0;i<kids.length;i++){
+          var r=kids[i].getBoundingClientRect();
+          if(r.left-c.left>8) return el.scrollLeft+(r.left-c.left);  /* próximo item */
+        }
+        return 0;
+      }
+      function go(){ if(!paused) el.scrollTo({left:targetLeft(), behavior:'smooth'}); }
+      setInterval(go, interval);
+      el.addEventListener('mouseenter',function(){paused=true;});
+      el.addEventListener('mouseleave',function(){paused=false;});
+      el.addEventListener('touchstart',function(){paused=true;},{passive:true});
+      el.addEventListener('touchend',function(){clearTimeout(el._r);el._r=setTimeout(function(){paused=false;},4500);},{passive:true});
+      el.addEventListener('focusin',function(){paused=true;});
+      document.addEventListener('visibilitychange',function(){paused=document.hidden;});
+    }
+    autoCarousel(document.getElementById('officeCarousel'), 4500);
+    autoCarousel(document.querySelector('.reviews-scroll'), 4200);
+  })();
+</script>
+
 </body>
 </html>
