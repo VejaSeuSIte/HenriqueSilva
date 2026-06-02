@@ -2633,30 +2633,37 @@
         <p>Para o setor corporativo, oferecemos <strong>modelos de consultoria fixa</strong>, focados em compliance e na segurança jurídica das operações empresariais diárias — garantindo gestão de riscos eficiente e orgânica.</p>
         <div class="office-pillars">
           <div class="pillar">
+            <div class="pillar-ico"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 3 L27 8 V16 C27 23 16 29 16 29 C16 29 5 23 5 16 V8 Z"/><path d="M11 16 l3 3 l7-7"/></svg></div>
             <div class="pillar-title">14 anos</div>
             <div class="pillar-text">Atuação multidisciplinar desde 2010.</div>
           </div>
           <div class="pillar">
+            <div class="pillar-ico"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 4 V28"/><path d="M8 28 H24"/><path d="M6 9 H26"/><path d="M6 9 L3 16 a3 3 0 0 0 6 0 Z"/><path d="M26 9 L23 16 a3 3 0 0 0 6 0 Z"/></svg></div>
             <div class="pillar-title">10 áreas</div>
             <div class="pillar-text">Trabalhista, Previdenciário, Empresarial e mais.</div>
           </div>
           <div class="pillar">
+            <div class="pillar-ico"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M5 7 H27 V21 H12 L6 27 V21 H5 Z"/><path d="M11 12 H21 M11 16 H17"/></svg></div>
             <div class="pillar-title">Análise gratuita</div>
             <div class="pillar-text">Conte o caso pelo WhatsApp sem custo.</div>
           </div>
         </div>
       </div>
       <div class="office-media" data-reveal="right" data-delay="200">
-        <div class="loc-carousel" role="region" aria-label="Fotos do escritório e do Novo Mundo Empresarial">
-          <figure><img src="assets/empresarial-fachada.webp" alt="Fachada do Novo Mundo Empresarial — Reserva do Paiva" loading="lazy" /></figure>
-          <figure><img src="assets/empresarial-interno.webp" alt="Área interna do Novo Mundo Empresarial" loading="lazy" /></figure>
-          <figure><img src="assets/empresarial-vista.webp" alt="Vista externa do Novo Mundo Empresarial" loading="lazy" /></figure>
-          <figure><img src="assets/escritorio-1.jpg" alt="Escritório Henrique Silva Advocacia por dentro" loading="lazy" /></figure>
-          <figure><img src="assets/escritorio-2.jpg" alt="Sala de atendimento do escritório" loading="lazy" /></figure>
-          <figure><img src="assets/escritorio-3.jpg" alt="Ambiente do escritório" loading="lazy" /></figure>
+        <div class="loc-carousel" id="officeCarousel" role="region" aria-label="Fotos do escritório e do Novo Mundo Empresarial">
+          <figure data-cap="Fachada · Novo Mundo Empresarial"><img src="assets/empresarial-fachada.webp" alt="Fachada do Novo Mundo Empresarial — Reserva do Paiva" loading="lazy" /></figure>
+          <figure data-cap="Área interna · Novo Mundo Empresarial"><img src="assets/empresarial-interno.webp" alt="Área interna do Novo Mundo Empresarial" loading="lazy" /></figure>
+          <figure data-cap="Vista externa · Novo Mundo Empresarial"><img src="assets/empresarial-vista.webp" alt="Vista externa do Novo Mundo Empresarial" loading="lazy" /></figure>
+          <figure data-cap="Recepção do escritório"><img src="assets/escritorio-1.jpg" alt="Escritório Henrique Silva Advocacia por dentro" loading="lazy" /></figure>
+          <figure data-cap="Sala de atendimento"><img src="assets/escritorio-2.jpg" alt="Sala de atendimento do escritório" loading="lazy" /></figure>
+          <figure data-cap="Ambiente do escritório"><img src="assets/escritorio-3.jpg" alt="Ambiente do escritório" loading="lazy" /></figure>
+        </div>
+        <div class="loc-cap">
+          <div class="loc-dots" id="officeDots" aria-hidden="true"></div>
+          <div class="loc-cap-text" id="officeCap">Fachada · Novo Mundo Empresarial</div>
         </div>
         <div class="office-loc">
-          <p class="office-loc-addr"><strong>Torre 05, Sala 318</strong> · Av. A, 4165 — Reserva do Paiva, Cabo de Santo Agostinho/PE</p>
+          <p class="office-loc-addr"><svg class="loc-pin" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2c-4 0-7 3-7 7 0 5 7 13 7 13s7-8 7-13c0-4-3-7-7-7Z"/><circle cx="12" cy="9" r="2.5"/></svg><span><strong>Torre 05, Sala 318</strong> · Av. A, 4165 — Reserva do Paiva, Cabo de Santo Agostinho/PE</span></p>
           <a class="office-loc-btn" href="https://www.google.com/maps/search/?api=1&query=Novo%20Mundo%20Empresarial%20Reserva%20do%20Paiva%20Cabo%20de%20Santo%20Agostinho%20PE" target="_blank" rel="noopener">Como chegar <span aria-hidden="true">&#8594;</span></a>
         </div>
       </div>
@@ -3322,7 +3329,18 @@
   .office-loc-addr strong{color:var(--ink-cl);font-weight:600}
   .office-loc-btn{display:inline-flex;align-items:center;gap:8px;background:var(--gold-cl);color:#fff;padding:12px 22px;font-family:'Cormorant SC',serif;font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;font-weight:600;white-space:nowrap;transition:background .3s,transform .3s}
   .office-loc-btn:hover{background:#7d5f1f;transform:translateY(-2px)}
+  .office-pillars .pillar{padding-top:16px}
+  .pillar-ico{width:27px;height:27px;color:var(--gold-cl);margin-bottom:9px}
+  .pillar-ico svg{width:100%;height:100%;stroke:currentColor;fill:none;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round}
+  .loc-cap{display:flex;align-items:center;gap:14px;margin-top:12px;min-height:18px}
+  .loc-dots{display:flex;gap:7px;flex-shrink:0}
+  .loc-dot{width:8px;height:8px;border-radius:50%;border:0;padding:0;background:rgba(153,117,41,.3);cursor:pointer;transition:transform .3s,background .3s}
+  .loc-dot.is-on{background:var(--gold-cl);transform:scale(1.3)}
+  .loc-cap-text{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:14.5px;color:var(--ink-cl-soft)}
+  .office-loc-addr{display:flex;align-items:flex-start;gap:7px}
+  .loc-pin{width:16px;height:16px;flex-shrink:0;stroke:var(--gold-cl);fill:none;stroke-width:1.5;stroke-linejoin:round;margin-top:1px}
   @media(max-width:780px){
+    .loc-cap-text{font-size:13.5px}
     .office-media .loc-carousel figure{width:84%}
     .office-media .loc-carousel img{height:230px}
     .office-loc{flex-direction:column;align-items:stretch;gap:12px}
@@ -3582,6 +3600,32 @@
 </script>
 
 <script defer src="assets/content-loader.js"></script>
+
+<script>
+  /* carrossel do escritório: indicadores (dots) + legenda que acompanham o scroll */
+  (function(){
+    var car = document.getElementById('officeCarousel');
+    var dotsBox = document.getElementById('officeDots');
+    var capEl = document.getElementById('officeCap');
+    if(!car || !dotsBox) return;
+    var figs = Array.prototype.slice.call(car.querySelectorAll('figure'));
+    figs.forEach(function(f,i){
+      var d = document.createElement('button');
+      d.type = 'button'; d.className = 'loc-dot'; d.setAttribute('aria-label','Ver foto '+(i+1));
+      d.addEventListener('click', function(){ f.scrollIntoView({inline:'center',block:'nearest',behavior:'smooth'}); });
+      dotsBox.appendChild(d);
+    });
+    var dots = Array.prototype.slice.call(dotsBox.children);
+    function update(){
+      var cx = car.scrollLeft + car.clientWidth/2, best=0, bd=Infinity;
+      figs.forEach(function(f,i){ var dd=Math.abs((f.offsetLeft+f.offsetWidth/2)-cx); if(dd<bd){bd=dd;best=i;} });
+      dots.forEach(function(d,i){ d.classList.toggle('is-on', i===best); });
+      if(capEl && figs[best]) capEl.textContent = figs[best].getAttribute('data-cap') || '';
+    }
+    car.addEventListener('scroll', function(){ window.requestAnimationFrame(update); }, {passive:true});
+    update();
+  })();
+</script>
 
 </body>
 </html>
