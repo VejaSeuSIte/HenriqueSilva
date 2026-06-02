@@ -3339,6 +3339,19 @@
   @media(max-width:780px){.brand-seal-only{height:38px}}
   @media(max-width:480px){.brand-seal-only{height:34px}}
 
+  /* ═══ setas dos carrosséis (escritório + avaliações) ═══ */
+  .carousel-wrap{position:relative}
+  .carousel-arrow{position:absolute;top:50%;transform:translateY(-50%);width:42px;height:42px;border-radius:50%;
+    background:rgba(12,12,14,.5);border:1px solid rgba(212,175,55,.5);color:#e6c869;
+    font-size:24px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;
+    z-index:6;transition:background .25s,color .25s,opacity .25s,box-shadow .25s;backdrop-filter:blur(5px);
+    opacity:.9;padding:0 0 3px;font-family:Georgia,serif;box-shadow:0 4px 14px rgba(0,0,0,.3)}
+  .carousel-arrow:hover{background:#d4af37;color:#0a0a0a;opacity:1;box-shadow:0 6px 20px rgba(212,175,55,.4)}
+  .carousel-arrow:active{transform:translateY(-50%) scale(.93)}
+  .carousel-arrow.prev{left:8px}
+  .carousel-arrow.next{right:8px}
+  @media(max-width:780px){.carousel-arrow{width:38px;height:38px;font-size:21px;opacity:.92}}
+
   /* ═══ AVALIAÇÕES GOOGLE — embelezamento (ícone G + estrelas Google + avatares coloridos) ═══ */
   .review-head{position:relative;padding-right:26px}
   .review-google{position:absolute;top:1px;right:0;width:19px;height:19px;flex-shrink:0}
@@ -3702,33 +3715,35 @@
 </script>
 
 <script>
-  /* auto-play dos carrosséis (escritório + avaliações): passa sozinho e volta ao início */
+  /* carrosséis (escritório + avaliações): setas ‹ › + auto-play que passa por TODAS e volta ao início */
   (function(){
-    function autoCarousel(el, interval){
-      if(!el) return;
-      if(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-      var paused=false;
-      function targetLeft(){
-        var kids=el.children, c=el.getBoundingClientRect();
-        var max=el.scrollWidth-el.clientWidth-4;
-        if(el.scrollLeft>=max) return 0;              /* chegou no fim → volta ao início */
-        for(var i=0;i<kids.length;i++){
-          var r=kids[i].getBoundingClientRect();
-          if(r.left-c.left>8) return el.scrollLeft+(r.left-c.left);  /* próximo item */
-        }
-        return 0;
-      }
-      function go(){ if(!paused) el.scrollTo({left:targetLeft(), behavior:'smooth'}); }
-      setInterval(go, interval);
-      el.addEventListener('mouseenter',function(){paused=true;});
-      el.addEventListener('mouseleave',function(){paused=false;});
-      el.addEventListener('touchstart',function(){paused=true;},{passive:true});
-      el.addEventListener('touchend',function(){clearTimeout(el._r);el._r=setTimeout(function(){paused=false;},4500);},{passive:true});
-      el.addEventListener('focusin',function(){paused=true;});
-      document.addEventListener('visibilitychange',function(){paused=document.hidden;});
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    function setupCarousel(el, interval){
+      if(!el || el.children.length < 2) return;
+      function step(){ return Math.max(1, el.children[1].offsetLeft - el.children[0].offsetLeft); } /* largura de 1 item + gap */
+      function atEnd(){ return el.scrollLeft >= el.scrollWidth - el.clientWidth - 4; }
+      function atStart(){ return el.scrollLeft <= 4; }
+      function next(){ if(atEnd()) el.scrollTo({left:0, behavior:'smooth'}); else el.scrollBy({left:step(), behavior:'smooth'}); }
+      function prev(){ if(atStart()) el.scrollTo({left:el.scrollWidth, behavior:'smooth'}); else el.scrollBy({left:-step(), behavior:'smooth'}); }
+      /* envolve o carrossel pra ancorar as setas */
+      var wrap=document.createElement('div'); wrap.className='carousel-wrap';
+      el.parentNode.insertBefore(wrap, el); wrap.appendChild(el);
+      var bp=document.createElement('button'); bp.type='button'; bp.className='carousel-arrow prev'; bp.setAttribute('aria-label','Anterior'); bp.innerHTML='‹';
+      var bn=document.createElement('button'); bn.type='button'; bn.className='carousel-arrow next'; bn.setAttribute('aria-label','Próximo'); bn.innerHTML='›';
+      wrap.appendChild(bp); wrap.appendChild(bn);
+      var paused=false, rt;
+      function hold(ms){ paused=true; clearTimeout(rt); rt=setTimeout(function(){ paused=false; }, ms||6000); }
+      bp.addEventListener('click', function(){ prev(); hold(); });
+      bn.addEventListener('click', function(){ next(); hold(); });
+      el.addEventListener('mouseenter', function(){ paused=true; });
+      el.addEventListener('mouseleave', function(){ paused=false; });
+      el.addEventListener('touchstart', function(){ paused=true; }, {passive:true});
+      el.addEventListener('touchend', function(){ hold(6000); }, {passive:true});
+      document.addEventListener('visibilitychange', function(){ if(document.hidden) paused=true; });
+      if(!reduce){ setInterval(function(){ if(!paused && !document.hidden) next(); }, interval); }
     }
-    autoCarousel(document.getElementById('officeCarousel'), 4500);
-    autoCarousel(document.querySelector('.reviews-scroll'), 4200);
+    setupCarousel(document.getElementById('officeCarousel'), 4500);
+    setupCarousel(document.querySelector('.reviews-scroll'), 4200);
   })();
 </script>
 
