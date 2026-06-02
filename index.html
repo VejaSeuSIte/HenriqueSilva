@@ -3023,13 +3023,17 @@
     .office-pillars .pillar-title{font-size:9.5px !important; letter-spacing:.16em !important; margin-bottom:4px !important}
     .office-pillars .pillar-text{font-size:12px !important; line-height:1.42 !important}
 
-    /* Áreas: 1 col em ambas as fileiras */
-    .areas-featured, .areas-secondary{grid-template-columns:1fr !important; gap:14px !important; max-width:100% !important}
+    /* Áreas mobile: featured 1 col; secundárias em 2 col (mini-cards de atalho) */
+    .areas-featured{grid-template-columns:1fr !important; gap:14px !important; max-width:100% !important}
+    .areas-secondary{grid-template-columns:repeat(2,1fr) !important; gap:12px !important; max-width:100% !important}
     .area-card.featured{padding:34px 26px !important}
     .area-card.featured h3{font-size:24px !important}
-    .area-card.compact{padding:26px 22px !important}
-    .area-card.compact h3{font-size:18px !important}
-    .area-card.compact p{font-size:13px !important; line-height:1.55 !important}
+    .area-card.compact{padding:20px 16px 18px !important; display:flex !important; flex-direction:column !important}
+    .area-card.compact .area-icon{width:42px !important; height:42px !important; margin-bottom:12px !important}
+    .area-card.compact .area-icon svg{width:20px !important; height:20px !important}
+    .area-card.compact h3{font-size:15.5px !important; line-height:1.22 !important; margin-bottom:0 !important}
+    .area-card.compact p{display:none !important}
+    .area-card.compact .area-saiba{font-size:9px !important; letter-spacing:.16em !important; margin-top:12px !important; padding-top:0 !important}
 
     /* Reviews carrossel ja funciona — só ajustar o card width */
     .reviews-scroll{padding:8px 22px 28px !important; margin:0 -22px !important}
