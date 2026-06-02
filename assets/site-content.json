@@ -241,10 +241,10 @@
   },
   "about": {
     "eyebrow": "Quem Sou",
-    "h2": "Dr. <em>José Henrique da Silva</em>, advogado.",
+    "h2": "<em>José Henrique da Silva</em>, advogado.",
     "lead": "\"Advocacia de excelência não se mede pelo número de ações, mas pela profundidade com que cada caso é estudado e a clareza com que cada decisão é explicada ao cliente.\"",
     "paragraphs": [
-      "Sou advogado inscrito na <strong>OAB/PE 31.742</strong>, com mais de <strong>14 anos de atuação multidisciplinar</strong> no Direito brasileiro. Minha prática concentra-se em causas trabalhistas de alta complexidade, demandas previdenciárias contra o INSS, litígios cíveis, questões imobiliárias, tributárias e de Direito das Famílias — com atenção especial à condução estratégica e à mitigação de riscos.",
+      "Sou advogado inscrito na <strong>OAB/PE 31.742</strong>, com <strong>especialização em Direito do Trabalho e Processo do Trabalho</strong> e mais de <strong>14 anos de atuação multidisciplinar</strong> no Direito brasileiro. Minha prática concentra-se em causas trabalhistas de alta complexidade, demandas previdenciárias contra o INSS, litígios cíveis, questões imobiliárias, tributárias e de Direito das Famílias — com atenção especial à condução estratégica e à mitigação de riscos.",
       "Acredito que advocacia é antes de tudo <strong>escuta técnica</strong>: ler o caso por inteiro, entender o que está em jogo, e devolver ao cliente um diagnóstico honesto antes de qualquer peça processual. Cada cliente é atendido pessoalmente, com sigilo absoluto e relatórios claros do andamento."
     ],
     "credentials": [
@@ -262,7 +262,7 @@
       }
     ],
     "portrait_src": "assets/henrique-portrait.jpg",
-    "portrait_plaque": "Dr. Henrique Silva · OAB/PE 31.742"
+    "portrait_plaque": "Henrique Silva · OAB/PE 31.742"
   },
   "latest": {
     "eyebrow": "Blog · Henrique Silva",
@@ -329,6 +329,6 @@
   },
   "wa_fab": {
     "label": "Falar agora",
-    "wa_text": "Olá, Dr. Henrique. Vim pelo site."
+    "wa_text": "Olá, Henrique. Vim pelo site."
   }
 }

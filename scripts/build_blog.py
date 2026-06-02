@@ -244,7 +244,7 @@ def build(inplace=False):
         posts=posts,
         categories=CATEGORIES,
         page_title='Blog · Henrique Silva Advocacia',
-        page_description='Artigos sobre Direito Trabalhista, Previdenciário, Empresarial e mais. Conteúdo prático escrito pelo Dr. José Henrique da Silva (OAB/PE 31.742).',
+        page_description='Artigos sobre Direito Trabalhista, Previdenciário, Empresarial e mais. Conteúdo prático escrito por José Henrique da Silva (OAB/PE 31.742).',
         canonical=f'{SITE_URL}/blog/',
         og_image=f'{SITE_URL}/assets/og-banner.jpg',
         site_url=SITE_URL,
@@ -292,7 +292,7 @@ def build(inplace=False):
                 category_label=cat_label,
                 categories=CATEGORIES,
                 page_title=f'{cat_label} · Blog · Henrique Silva Advocacia',
-                page_description=f'Artigos sobre Direito {cat_label} no blog do Dr. José Henrique da Silva.',
+                page_description=f'Artigos sobre Direito {cat_label} no blog de José Henrique da Silva.',
                 canonical=f'{SITE_URL}/blog/categoria/{cat_slug}/',
                 og_image=f'{SITE_URL}/assets/og-banner.jpg',
                 site_url=SITE_URL,
@@ -333,7 +333,7 @@ def build(inplace=False):
 <channel>
   <title>Henrique Silva Advocacia · Blog</title>
   <link>{SITE_URL}/blog/</link>
-  <description>Artigos sobre Direito Trabalhista, Previdenciário, Empresarial e mais. Dr. José Henrique da Silva, OAB/PE 31.742.</description>
+  <description>Artigos sobre Direito Trabalhista, Previdenciário, Empresarial e mais. José Henrique da Silva, OAB/PE 31.742.</description>
   <language>pt-br</language>
 {chr(10).join(rss_items)}
 </channel>

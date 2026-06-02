@@ -225,21 +225,21 @@
   .areas{background:linear-gradient(180deg,var(--cream) 0%,#f3ecd5 100%);padding:140px 0;position:relative;overflow:hidden}
   .areas::before{content:"";position:absolute;top:0;left:50%;transform:translateX(-50%);width:1200px;height:1200px;border-radius:50%;border:1px dashed rgba(168,134,50,.12);pointer-events:none}
   .areas-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:32px;position:relative;z-index:2;max-width:1080px;margin:0 auto}
-  .area-card{background:#fbf9f0;border:1px solid var(--line);padding:48px 40px 44px;position:relative;transition:transform .5s cubic-bezier(.22,.8,.24,1), box-shadow .5s, border-color .5s;overflow:hidden}
-  .area-card::before{content:"";position:absolute;top:0;left:0;width:100%;height:3px;background:linear-gradient(90deg,transparent,var(--gold),transparent);transform:scaleX(0);transform-origin:left;transition:transform .8s cubic-bezier(.22,.8,.24,1)}
-  .area-card:hover{transform:translateY(-6px);box-shadow:0 24px 48px rgba(5,15,31,.12);border-color:var(--gold)}
+  .area-card{background:#fbf9f0;border:1px solid var(--line);border-top:3px solid var(--c,var(--gold-d));padding:46px 40px 44px;position:relative;transition:transform .5s cubic-bezier(.22,.8,.24,1), box-shadow .5s, border-color .5s;overflow:hidden}
+  .area-card::before{content:"";position:absolute;top:0;left:0;width:100%;height:3px;background:linear-gradient(90deg,transparent,var(--c,var(--gold)),transparent);transform:scaleX(0);transform-origin:left;transition:transform .8s cubic-bezier(.22,.8,.24,1)}
+  .area-card:hover{transform:translateY(-6px);box-shadow:0 24px 48px rgba(5,15,31,.14);border-color:var(--c,var(--gold))}
   .area-card:hover::before{transform:scaleX(1)}
-  .area-num{font-family:'Cormorant SC',serif;font-size:11px;letter-spacing:.42em;color:var(--gold-d);margin-bottom:12px;font-weight:500}
-  .area-icon{width:64px;height:64px;border:1px solid var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:24px;color:var(--navy-2);background:radial-gradient(circle, rgba(212,175,55,.06), transparent);transition:transform .5s, background .5s}
-  .area-card:hover .area-icon{transform:rotate(-6deg) scale(1.06);background:radial-gradient(circle, rgba(212,175,55,.18), transparent)}
+  .area-num{font-family:'Cormorant SC',serif;font-size:11px;letter-spacing:.42em;color:var(--c,var(--gold-d));margin-bottom:12px;font-weight:500}
+  .area-icon{width:64px;height:64px;border:1px solid var(--c,var(--gold));border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:24px;color:var(--c,var(--navy-2));background:radial-gradient(circle, color-mix(in srgb,var(--c,var(--gold)) 10%,transparent), transparent);transition:transform .5s, background .5s}
+  .area-card:hover .area-icon{transform:rotate(-6deg) scale(1.06);background:radial-gradient(circle, color-mix(in srgb,var(--c,var(--gold)) 22%,transparent), transparent)}
   .area-icon svg{width:28px;height:28px;stroke:currentColor;fill:none;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round}
   .area-card h3{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:600;color:var(--ink);margin-bottom:14px;line-height:1.18}
-  .area-card h3 em{font-style:italic;color:var(--gold-d);font-weight:500}
+  .area-card h3 em{font-style:italic;color:var(--c,var(--gold-d));font-weight:500}
   .area-card p{font-size:15px;color:var(--gray);line-height:1.7;font-weight:300;margin-bottom:22px}
   .area-tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
-  .area-tag{font-family:'Cormorant SC',serif;font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:var(--navy-2);padding:6px 12px;border:1px solid rgba(168,134,50,.4);font-weight:500;background:rgba(212,175,55,.05)}
+  .area-tag{font-family:'Cormorant SC',serif;font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:var(--c,var(--navy-2));padding:6px 12px;border:1px solid color-mix(in srgb,var(--c,var(--gold)) 38%,transparent);font-weight:500;background:color-mix(in srgb,var(--c,var(--gold)) 6%,transparent)}
   .area-arrow{position:absolute;bottom:36px;right:40px;color:var(--navy-2);opacity:.4;transition:transform .5s, opacity .5s}
-  .area-card:hover .area-arrow{opacity:1;transform:translateX(8px)}
+  .area-card:hover .area-arrow{opacity:1;transform:translateX(8px);color:var(--c,var(--navy-2))}
   .area-arrow svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.5}
 
   @media(max-width:900px){
@@ -268,6 +268,8 @@
   .about-text .shead-eye::before{display:none}
   .about-text h2{font-family:'Cormorant Garamond',serif;font-weight:500;font-size:clamp(36px,4vw,52px);line-height:1.14;color:#fff;margin-bottom:24px}
   .about-text h2 em{font-style:italic;color:var(--gold-l);font-weight:500}
+  .about-spec{margin:-6px 0 26px;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:18px;color:#e7d9b3;line-height:1.4}
+  .about-spec span{font-style:normal;font-family:'Inter Tight','Inter',sans-serif;font-size:10px;letter-spacing:.26em;text-transform:uppercase;color:var(--gold-l);font-weight:600;margin-right:11px;padding-right:11px;border-right:1px solid rgba(212,175,55,.38)}
   .about-text .lead{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:22px;line-height:1.55;color:#e7d9b3;margin-bottom:28px;font-weight:400;border-left:2px solid var(--gold);padding-left:22px}
   .about-text p{font-size:16px;color:#cbd5e4;line-height:1.78;margin-bottom:18px;font-weight:300}
   .about-text p strong{color:#fff;font-weight:500}
@@ -1084,16 +1086,17 @@
     margin-bottom:32px;max-width:1080px;margin-left:auto;margin-right:auto;
   }
   .area-card.featured{
-    padding:54px 44px 48px;
+    padding:51px 44px 48px;
     background:linear-gradient(160deg,#fbf9f0 0%,#f6efd8 100%);
-    border:1px solid var(--gold);
+    border:1px solid color-mix(in srgb,var(--c,var(--gold)) 45%,var(--line));
+    border-top:3px solid var(--c,var(--gold-d));
     box-shadow:0 18px 44px rgba(168,134,50,.12);
   }
   .area-card.featured h3::before{
     content:"DESTAQUE";
     display:block;
     font-family:'Inter Tight',sans-serif;font-size:10px;letter-spacing:.32em;
-    color:var(--gold);
+    color:var(--c,var(--gold));
     margin-bottom:14px;font-weight:500;
   }
   .area-card.featured h3{font-size:34px}
@@ -2503,7 +2506,7 @@
     transition:all .35s cubic-bezier(.22,.8,.24,1);
     width:fit-content;
   }
-  .area-saiba:hover{color:var(--gold);gap:14px}
+  .area-saiba:hover{color:var(--c,var(--gold));gap:14px}
   .area-saiba span{display:inline-block;transition:transform .35s}
   .area-card[data-link]:hover .area-saiba span{transform:translateX(4px)}
   .area-card.compact .area-saiba{font-size:9.5px;letter-spacing:.22em;padding:10px 0 0;margin-top:14px}
@@ -2570,7 +2573,7 @@
       <a href="#faq">Dúvidas</a>
       <a href="contato/">Contato</a>
     </div>
-    <a class="nav-cta" href="https://wa.me/5581987134878?text=Ol%C3%A1%2C%20Dr.%20Henrique.%20Vim%20pelo%20site." target="_blank" rel="noopener">
+    <a class="nav-cta" href="https://wa.me/5581987134878?text=Ol%C3%A1%2C%20Henrique.%20Vim%20pelo%20site." target="_blank" rel="noopener">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.5 14.4c-.3-.1-1.6-.8-1.9-.9-.3-.1-.4-.1-.6.1s-.7.9-.9 1.1c-.2.2-.3.2-.6.1-.3-.1-1.2-.5-2.3-1.4-.8-.7-1.4-1.6-1.6-1.9-.2-.3 0-.4.1-.6.1-.1.3-.3.4-.5.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5 0-.1-.6-1.5-.9-2.1-.2-.5-.5-.5-.6-.5h-.5c-.2 0-.5.1-.7.4-.2.3-.9 1-.9 2.4 0 1.4 1 2.8 1.1 3 .1.2 1.9 3 4.7 4.2.7.3 1.2.4 1.6.6.7.2 1.3.2 1.8.1.5-.1 1.6-.7 1.9-1.3.2-.6.2-1.2.2-1.3 0-.1-.2-.2-.5-.3M12 21.7c-1.7 0-3.3-.4-4.7-1.3l-.3-.2-3.5.9.9-3.4-.2-.4c-.9-1.5-1.4-3.2-1.4-4.9 0-5.1 4.2-9.3 9.2-9.3 2.5 0 4.8 1 6.6 2.7 1.7 1.8 2.7 4.1 2.7 6.6-.1 5.1-4.2 9.3-9.3 9.3M20 4c-2.1-2.1-5-3.3-8-3.3-6.2 0-11.3 5.1-11.3 11.3 0 2 .5 3.9 1.5 5.6L.6 23.4l5.9-1.5c1.6.9 3.5 1.4 5.4 1.4 6.2 0 11.3-5.1 11.3-11.3 0-3-1.2-5.9-3.2-8z"/></svg>
       WhatsApp
     </a>
@@ -2602,7 +2605,7 @@
   </div>
 
   <div class="hero-actions">
-    <a class="hero-cta-primary" href="https://wa.me/5581987134878?text=Ol%C3%A1%2C%20Dr.%20Henrique.%20Vim%20pelo%20site%20e%20gostaria%20de%20uma%20an%C3%A1lise%20gratuita." target="_blank" rel="noopener">
+    <a class="hero-cta-primary" href="https://wa.me/5581987134878?text=Ol%C3%A1%2C%20Henrique.%20Vim%20pelo%20site%20e%20gostaria%20de%20uma%20an%C3%A1lise%20gratuita." target="_blank" rel="noopener">
       <svg viewBox="0 0 24 24"><path d="M17.5 14.4c-.3-.1-1.6-.8-1.9-.9-.3-.1-.4-.1-.6.1s-.7.9-.9 1.1c-.2.2-.3.2-.6.1-.3-.1-1.2-.5-2.3-1.4-.8-.7-1.4-1.6-1.6-1.9-.2-.3 0-.4.1-.6.1-.1.3-.3.4-.5.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5 0-.1-.6-1.5-.9-2.1-.2-.5-.5-.5-.6-.5h-.5c-.2 0-.5.1-.7.4-.2.3-.9 1-.9 2.4 0 1.4 1 2.8 1.1 3 .1.2 1.9 3 4.7 4.2.7.3 1.2.4 1.6.6.7.2 1.3.2 1.8.1.5-.1 1.6-.7 1.9-1.3.2-.6.2-1.2.2-1.3 0-.1-.2-.2-.5-.3M12 21.7c-1.7 0-3.3-.4-4.7-1.3l-.3-.2-3.5.9.9-3.4-.2-.4c-.9-1.5-1.4-3.2-1.4-4.9 0-5.1 4.2-9.3 9.2-9.3 2.5 0 4.8 1 6.6 2.7 1.7 1.8 2.7 4.1 2.7 6.6-.1 5.1-4.2 9.3-9.3 9.3M20 4c-2.1-2.1-5-3.3-8-3.3-6.2 0-11.3 5.1-11.3 11.3 0 2 .5 3.9 1.5 5.6L.6 23.4l5.9-1.5c1.6.9 3.5 1.4 5.4 1.4 6.2 0 11.3-5.1 11.3-11.3 0-3-1.2-5.9-3.2-8z"/></svg>
       Análise Gratuita pelo WhatsApp
     </a>
@@ -2659,7 +2662,7 @@
       <div class="flourish"><svg viewBox="0 0 20 20"><path d="M10 2 L11 8 L17 9 L11 10 L10 16 L9 10 L3 9 L9 8 Z"/></svg></div>
     </div>
     <div class="areas-featured" data-stagger="> .area-card" data-stagger-step="200" data-reveal="up">
-      <article data-bg="assets/area-trabalhista.jpg" data-link="trabalhista/" class="area-card featured">
+      <article style="--c:#B8862E" data-bg="assets/area-trabalhista.jpg" data-link="trabalhista/" class="area-card featured">
         <img class="area-photo" src="assets/area-trabalhista.jpg" alt="" loading="lazy" aria-hidden="true" />
         <div class="area-num">— I —</div>
         <div class="area-icon">
@@ -2671,7 +2674,7 @@
         <a href="trabalhista/" class="area-saiba">Saiba mais <span aria-hidden="true">→</span></a>
         <a href="trabalhista/" class="area-arrow" aria-label="Falar sobre esta área"><svg viewBox="0 0 20 20"><path d="M3 10 L17 10"/><path d="M11 4 L17 10 L11 16"/></svg></a>
       </article>
-      <article data-bg="assets/area-empresarial.jpg" data-link="empresarial/" class="area-card featured">
+      <article style="--c:#2C6E8F" data-bg="assets/area-empresarial.jpg" data-link="empresarial/" class="area-card featured">
         <img class="area-photo" src="assets/area-trabalhista.jpg" alt="" loading="lazy" aria-hidden="true" />
         <div class="area-num">— X —</div>
         <div class="area-icon">
@@ -2685,56 +2688,56 @@
       </article>
     </div>
     <div class="areas-secondary" data-stagger="> .area-card" data-stagger-step="80" data-reveal="up">
-      <article data-bg="assets/area-previdenciario.jpg" data-link="previdenciario/" class="area-card compact">
+      <article style="--c:#2E7D5F" data-bg="assets/area-previdenciario.jpg" data-link="previdenciario/" class="area-card compact">
         <div class="area-icon"><svg viewBox="0 0 32 32"><path d="M16 4 L26 9 L26 22 C26 26 16 30 16 30 C16 30 6 26 6 22 L6 9 Z"/><path d="M11 16 L15 20 L22 13"/></svg></div>
         <h3>Direito <em>Previdenciário</em></h3>
         <p>Ações contra o INSS: aposentadorias por idade, tempo de contribuição, especial e BPC/LOAS. Auxílios por incapacidade, revisões e conversões.</p>
         <a href="previdenciario/" class="area-saiba">Saiba mais <span aria-hidden="true">→</span></a>
         <a href="previdenciario/" class="area-arrow" aria-label="Falar"><svg viewBox="0 0 20 20"><path d="M3 10 L17 10"/><path d="M11 4 L17 10 L11 16"/></svg></a>
       </article>
-      <article data-link="civel/" data-bg="assets/area-civel.jpg" class="area-card compact">
+      <article style="--c:#4E647F" data-link="civel/" data-bg="assets/area-civel.jpg" class="area-card compact">
         <div class="area-icon"><svg viewBox="0 0 32 32"><path d="M8 4h12l4 4v20H8z"/><path d="M20 4v4h4"/><path d="M12 14h12M12 18h12M12 22h8"/></svg></div>
         <h3>Direito <em>Cível</em></h3>
         <p>Contratos, indenizações, responsabilidade civil, danos morais e materiais. Cobranças, despejos, locatício e demais questões patrimoniais.</p>
         <a href="civel/" class="area-saiba">Saiba mais <span aria-hidden="true">→</span></a>
         <a href="civel/" class="area-arrow" aria-label="Falar"><svg viewBox="0 0 20 20"><path d="M3 10 L17 10"/><path d="M11 4 L17 10 L11 16"/></svg></a>
       </article>
-      <article data-bg="assets/area-familia.jpg" data-link="familia/" class="area-card compact">
+      <article style="--c:#A1495C" data-bg="assets/area-familia.jpg" data-link="familia/" class="area-card compact">
         <div class="area-icon"><svg viewBox="0 0 32 32"><circle cx="12" cy="10" r="3"/><circle cx="22" cy="11" r="2.5"/><path d="M6 26c0-4 3-7 6-7s6 3 6 7"/><path d="M18 26c0-3 2-5 4-5s4 2 4 5"/></svg></div>
         <h3>Direito de <em>Família</em></h3>
         <p>Divórcios consensuais e litigiosos, alimentos, partilha, guarda, regulamentação de vivência, reconhecimento de paternidade.</p>
         <a href="familia/" class="area-saiba">Saiba mais <span aria-hidden="true">→</span></a>
         <a href="familia/" class="area-arrow" aria-label="Falar"><svg viewBox="0 0 20 20"><path d="M3 10 L17 10"/><path d="M11 4 L17 10 L11 16"/></svg></a>
       </article>
-      <article data-link="consumidor/" data-bg="assets/area-consumidor.jpg" class="area-card compact">
+      <article style="--c:#1F8A8A" data-link="consumidor/" data-bg="assets/area-consumidor.jpg" class="area-card compact">
         <div class="area-icon"><svg viewBox="0 0 32 32"><path d="M6 8h22l-2 12H10z"/><circle cx="12" cy="26" r="2"/><circle cx="24" cy="26" r="2"/></svg></div>
         <h3>Direito do <em>Consumidor</em></h3>
         <p>Defesa em relações de consumo: cobranças indevidas, bancos, planos de saúde, viagens, telefonia, vícios de produto e serviço.</p>
         <a href="consumidor/" class="area-saiba">Saiba mais <span aria-hidden="true">→</span></a>
         <a href="consumidor/" class="area-arrow" aria-label="Falar"><svg viewBox="0 0 20 20"><path d="M3 10 L17 10"/><path d="M11 4 L17 10 L11 16"/></svg></a>
       </article>
-      <article data-bg="assets/area-imobiliario.jpg" data-link="imobiliario/" class="area-card compact">
+      <article style="--c:#B0633A" data-bg="assets/area-imobiliario.jpg" data-link="imobiliario/" class="area-card compact">
         <div class="area-icon"><svg viewBox="0 0 32 32"><path d="M5 14 L16 5 L27 14 V27 H5 Z"/><path d="M13 27 V20 H19 V27"/></svg></div>
         <h3>Direito <em>Imobiliário</em></h3>
         <p>Compra e venda, usucapião, regularização de imóvel, condomínio, distratos, despejos, ações possessórias e contratos de locação.</p>
         <a href="imobiliario/" class="area-saiba">Saiba mais <span aria-hidden="true">→</span></a>
         <a href="imobiliario/" class="area-arrow" aria-label="Falar"><svg viewBox="0 0 20 20"><path d="M3 10 L17 10"/><path d="M11 4 L17 10 L11 16"/></svg></a>
       </article>
-      <article data-link="juizados/" data-bg="assets/area-juizados.jpg" class="area-card compact">
+      <article style="--c:#7A5A93" data-link="juizados/" data-bg="assets/area-juizados.jpg" class="area-card compact">
         <div class="area-icon"><svg viewBox="0 0 32 32"><path d="M6 22 L18 10"/><path d="M14 6 L26 18"/><path d="M4 24 L12 20"/><path d="M16 4 L24 12"/></svg></div>
         <h3>Juizados <em>Especiais</em></h3>
         <p>Ações cíveis até 40 salários mínimos: cobranças, pequenos litígios de consumo, indenizações e demandas de menor complexidade.</p>
         <a href="juizados/" class="area-saiba">Saiba mais <span aria-hidden="true">→</span></a>
         <a href="juizados/" class="area-arrow" aria-label="Falar"><svg viewBox="0 0 20 20"><path d="M3 10 L17 10"/><path d="M11 4 L17 10 L11 16"/></svg></a>
       </article>
-      <article data-link="criminal/" data-bg="assets/area-criminal.jpg" class="area-card compact">
+      <article style="--c:#7C4A55" data-link="criminal/" data-bg="assets/area-criminal.jpg" class="area-card compact">
         <div class="area-icon"><svg viewBox="0 0 32 32"><path d="M16 4 V28"/><path d="M6 28 H26"/><path d="M16 8 L8 18"/><path d="M16 8 L24 18"/></svg></div>
         <h3>Direito <em>Criminal</em></h3>
         <p>Consultoria estratégica em matéria criminal mediante análise técnica criteriosa, com prioridade a clientes do portfólio em outros segmentos.</p>
         <a href="criminal/" class="area-saiba">Saiba mais <span aria-hidden="true">→</span></a>
         <a href="criminal/" class="area-arrow" aria-label="Falar"><svg viewBox="0 0 20 20"><path d="M3 10 L17 10"/><path d="M11 4 L17 10 L11 16"/></svg></a>
       </article>
-      <article data-link="tributario/" data-bg="assets/area-tributario.jpg" class="area-card compact">
+      <article style="--c:#8A7536" data-link="tributario/" data-bg="assets/area-tributario.jpg" class="area-card compact">
         <div class="area-icon"><svg viewBox="0 0 32 32"><circle cx="16" cy="16" r="11"/><path d="M16 8v16"/><path d="M12 12h6c1 0 2 1 2 2s-1 2-2 2h-4c-1 0-2 1-2 2s1 2 2 2h6"/></svg></div>
         <h3>Direito <em>Tributário</em></h3>
         <p>Defesa em execuções fiscais, planejamento tributário, parcelamentos, exclusões de tributos da base de cálculo e repetição de indébito.</p>
@@ -2871,19 +2874,20 @@
     <div class="about-grid portrait-layout">
       <div class="about-portrait" data-reveal="left">
         <div class="portrait-frame">
-          <img class="portrait-photo" src="assets/henrique-portrait.jpg" alt="Dr. José Henrique da Silva — Advogado · OAB/PE 31.742" loading="lazy" />
+          <img class="portrait-photo" src="assets/henrique-portrait.jpg" alt="José Henrique da Silva — Advogado · OAB/PE 31.742" loading="lazy" />
           <span class="portrait-corner tl" aria-hidden="true"><svg viewBox="0 0 36 36"><path d="M3 14 L3 3 L14 3"/><path d="M3 8 L8 3"/></svg></span>
           <span class="portrait-corner tr" aria-hidden="true"><svg viewBox="0 0 36 36"><path d="M3 14 L3 3 L14 3"/><path d="M3 8 L8 3"/></svg></span>
           <span class="portrait-corner bl" aria-hidden="true"><svg viewBox="0 0 36 36"><path d="M3 14 L3 3 L14 3"/><path d="M3 8 L8 3"/></svg></span>
           <span class="portrait-corner br" aria-hidden="true"><svg viewBox="0 0 36 36"><path d="M3 14 L3 3 L14 3"/><path d="M3 8 L8 3"/></svg></span>
-          <span class="portrait-plaque">Dr. Henrique Silva · OAB/PE 31.742</span>
+          <span class="portrait-plaque">Henrique Silva · OAB/PE 31.742</span>
         </div>
       </div>
       <div class="about-text about-text-integrated" data-reveal="right" data-delay="160">
         <div class="shead-eye"><span>Quem Sou</span></div>
-        <h2>Dr. <em>José Henrique da Silva</em>, advogado.</h2>
+        <h2><em>José Henrique da Silva</em>, advogado.</h2>
+        <div class="about-spec"><span>Especialização</span> Direito do Trabalho e Processo do Trabalho</div>
         <p class="lead">"Advocacia de excelência não se mede pelo número de ações, mas pela profundidade com que cada caso é estudado e a clareza com que cada decisão é explicada ao cliente."</p>
-        <p>Sou advogado inscrito na <strong>OAB/PE 31.742</strong>, com mais de <strong>14 anos de atuação multidisciplinar</strong> no Direito brasileiro. Minha prática concentra-se em causas trabalhistas de alta complexidade, demandas previdenciárias contra o INSS, litígios cíveis, questões imobiliárias, tributárias e de Direito das Famílias — com atenção especial à condução estratégica e à mitigação de riscos.</p>
+        <p>Sou advogado inscrito na <strong>OAB/PE 31.742</strong>, com <strong>especialização em Direito do Trabalho e Processo do Trabalho</strong> e mais de <strong>14 anos de atuação multidisciplinar</strong> no Direito brasileiro. Minha prática concentra-se em causas trabalhistas de alta complexidade, demandas previdenciárias contra o INSS, litígios cíveis, questões imobiliárias, tributárias e de Direito das Famílias — com atenção especial à condução estratégica e à mitigação de riscos.</p>
         <p>Acredito que advocacia é antes de tudo <strong>escuta técnica</strong>: ler o caso por inteiro, entender o que está em jogo, e devolver ao cliente um diagnóstico honesto antes de qualquer peça processual. Cada cliente é atendido pessoalmente, com sigilo absoluto e relatórios claros do andamento.</p>
         <div class="about-credentials">
           <div class="credential">
@@ -3238,7 +3242,7 @@
         <textarea id="cf-msg" name="message" required rows="5" placeholder="Conte brevemente seu caso ou dúvida"></textarea>
       </div>
       <button class="contact-cta-submit" type="submit">Enviar Mensagem pelo WhatsApp</button>
-      <div class="contact-cta-disclaimer">Você será levado direto ao WhatsApp do Dr. Henrique. Resposta em até 2h úteis.</div>
+      <div class="contact-cta-disclaimer">Você será levado direto ao WhatsApp de Henrique. Resposta em até 2h úteis.</div>
     </form>
   </div>
 </section>
@@ -3304,7 +3308,7 @@
 </footer>
 
 <!-- ============= WHATSAPP FAB ============= -->
-<a class="wa-fab" href="https://wa.me/5581987134878?text=Ol%C3%A1%2C%20Dr.%20Henrique.%20Vim%20pelo%20site." target="_blank" rel="noopener" aria-label="Abrir WhatsApp">
+<a class="wa-fab" href="https://wa.me/5581987134878?text=Ol%C3%A1%2C%20Henrique.%20Vim%20pelo%20site." target="_blank" rel="noopener" aria-label="Abrir WhatsApp">
   <span class="wa-fab-label">Falar agora</span>
   <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.5 14.4c-.3-.1-1.6-.8-1.9-.9-.3-.1-.4-.1-.6.1s-.7.9-.9 1.1c-.2.2-.3.2-.6.1-.3-.1-1.2-.5-2.3-1.4-.8-.7-1.4-1.6-1.6-1.9-.2-.3 0-.4.1-.6.1-.1.3-.3.4-.5.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5 0-.1-.6-1.5-.9-2.1-.2-.5-.5-.5-.6-.5h-.5c-.2 0-.5.1-.7.4-.2.3-.9 1-.9 2.4 0 1.4 1 2.8 1.1 3 .1.2 1.9 3 4.7 4.2.7.3 1.2.4 1.6.6.7.2 1.3.2 1.8.1.5-.1 1.6-.7 1.9-1.3.2-.6.2-1.2.2-1.3 0-.1-.2-.2-.5-.3M12 21.7c-1.7 0-3.3-.4-4.7-1.3l-.3-.2-3.5.9.9-3.4-.2-.4c-.9-1.5-1.4-3.2-1.4-4.9 0-5.1 4.2-9.3 9.2-9.3 2.5 0 4.8 1 6.6 2.7 1.7 1.8 2.7 4.1 2.7 6.6-.1 5.1-4.2 9.3-9.3 9.3M20 4c-2.1-2.1-5-3.3-8-3.3-6.2 0-11.3 5.1-11.3 11.3 0 2 .5 3.9 1.5 5.6L.6 23.4l5.9-1.5c1.6.9 3.5 1.4 5.4 1.4 6.2 0 11.3-5.1 11.3-11.3 0-3-1.2-5.9-3.2-8z"/></svg>
 </a>
@@ -3354,7 +3358,7 @@
     var name = ((document.getElementById('cf-name') || {}).value || '').trim();
     var msg = ((document.getElementById('cf-msg') || {}).value || '').trim();
     if (!name || !msg) { return false; }
-    var lines = ['Olá, Dr. Henrique. Vim pelo site.', '', '*Nome:* ' + name, '', '*Mensagem:*', msg];
+    var lines = ['Olá, Henrique. Vim pelo site.', '', '*Nome:* ' + name, '', '*Mensagem:*', msg];
     var text = encodeURIComponent(lines.join('\n'));
     window.open('https://wa.me/5581987134878?text=' + text, '_blank', 'noopener');
     return false;

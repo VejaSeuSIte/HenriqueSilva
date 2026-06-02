@@ -1,6 +1,7 @@
 {
   "trabalhista": {
     "slug": "trabalhista",
+    "color": "#B8862E",
     "nav": "trabalhista",
     "related_category": "trabalhista",
     "page_title": "Advogado Trabalhista em Cabo de Santo Agostinho/PE · Henrique Silva Advocacia",
@@ -9,7 +10,7 @@
     "h1": "Advogado <em>Trabalhista</em> com 14 anos de prática.",
     "subtitle": "Causas de alta complexidade, judicial e extrajudicial. Atendimento técnico e estratégico — para empregados e empresas em todo o estado de Pernambuco.",
     "cta_text": "Análise gratuita pelo WhatsApp",
-    "wa_text": "Olá, Dr. Henrique. Tenho uma dúvida trabalhista e gostaria de conversar.",
+    "wa_text": "Olá, Henrique. Tenho uma dúvida trabalhista e gostaria de conversar.",
     "intro": {
       "h2": "Trabalhista é a <em>frente principal</em> do escritório.",
       "paragraphs": [
@@ -38,6 +39,7 @@
   },
   "previdenciario": {
     "slug": "previdenciario",
+    "color": "#2E7D5F",
     "nav": "previdenciario",
     "related_category": "previdenciario",
     "page_title": "Advogado Previdenciário em Pernambuco · Aposentadoria, BPC e INSS · Henrique Silva",
@@ -46,7 +48,7 @@
     "h1": "Advogado <em>Previdenciário</em> · ações contra o INSS.",
     "subtitle": "Aposentadorias, BPC/LOAS, auxílios por incapacidade e revisões. Análise criteriosa do CNIS e da contagem de tempo, do administrativo à ação judicial.",
     "cta_text": "Análise gratuita pelo WhatsApp",
-    "wa_text": "Olá, Dr. Henrique. Tenho uma questão previdenciária (INSS) e gostaria de uma análise.",
+    "wa_text": "Olá, Henrique. Tenho uma questão previdenciária (INSS) e gostaria de uma análise.",
     "intro": {
       "h2": "O INSS nega 7 em cada 10 pedidos. <em>Nem sempre é definitivo</em>.",
       "paragraphs": [
@@ -75,6 +77,7 @@
   },
   "familia": {
     "slug": "familia",
+    "color": "#A1495C",
     "nav": "familia",
     "related_category": "familia",
     "page_title": "Advogado de Família em Pernambuco · Divórcio, Pensão, Guarda · Henrique Silva",
@@ -83,7 +86,7 @@
     "h1": "Direito de <em>Família</em> com sensibilidade e técnica.",
     "subtitle": "Divórcio, alimentos, guarda, partilha, paternidade. Casos que precisam de equilíbrio emocional e rigor jurídico — conduzidos do começo ao fim com cuidado.",
     "cta_text": "Análise gratuita pelo WhatsApp",
-    "wa_text": "Olá, Dr. Henrique. Tenho uma questão de família e gostaria de orientação.",
+    "wa_text": "Olá, Henrique. Tenho uma questão de família e gostaria de orientação.",
     "intro": {
       "h2": "Cada caso de família esconde uma <em>história única</em>.",
       "paragraphs": [
@@ -112,6 +115,7 @@
   },
   "empresarial": {
     "slug": "empresarial",
+    "color": "#2C6E8F",
     "nav": "empresarial",
     "related_category": "empresarial",
     "page_title": "Consultoria Empresarial Trabalhista em PE · Compliance e Pareceres · Henrique Silva",
@@ -120,7 +124,7 @@
     "h1": "Consultoria <em>empresarial</em> · compliance e prevenção.",
     "subtitle": "Modelos de consultoria fixa para empresas. Pareceres técnicos, análise contratual, palestras orientativas e gestão de riscos trabalhistas e tributários.",
     "cta_text": "Solicitar proposta",
-    "wa_text": "Olá, Dr. Henrique. Sou de uma empresa e gostaria de saber sobre consultoria fixa.",
+    "wa_text": "Olá, Henrique. Sou de uma empresa e gostaria de saber sobre consultoria fixa.",
     "intro": {
       "h2": "O passivo trabalhista <em>nasce silencioso</em> e quebra a empresa.",
       "paragraphs": [
@@ -149,6 +153,7 @@
   },
   "imobiliario": {
     "slug": "imobiliario",
+    "color": "#B0633A",
     "nav": "imobiliario",
     "related_category": "imobiliario",
     "page_title": "Advogado Imobiliário em PE · Locação, Usucapião, Compra e Venda · Henrique Silva",
@@ -157,7 +162,7 @@
     "h1": "Direito <em>Imobiliário</em> · do contrato à escritura.",
     "subtitle": "Compra e venda, usucapião, locação, condomínio e regularização. Atuação preventiva no contrato e contenciosa quando vira processo.",
     "cta_text": "Análise gratuita pelo WhatsApp",
-    "wa_text": "Olá, Dr. Henrique. Tenho uma questão imobiliária e gostaria de orientação.",
+    "wa_text": "Olá, Henrique. Tenho uma questão imobiliária e gostaria de orientação.",
     "intro": {
       "h2": "Imóvel é o <em>maior patrimônio</em> da maioria das famílias.",
       "paragraphs": [
@@ -186,6 +191,7 @@
   },
   "civel": {
     "slug": "civel",
+    "color": "#4E647F",
     "nav": "civel",
     "related_category": "civel",
     "page_title": "Advogado Cível em Pernambuco · Contratos, Indenizações e Responsabilidade Civil · Henrique Silva",
@@ -194,7 +200,7 @@
     "h1": "Direito <em>Cível</em> · contratos, indenizações e patrimônio.",
     "subtitle": "Contratos, indenizações por dano moral e material, responsabilidade civil, cobranças e demais questões patrimoniais entre particulares e empresas.",
     "cta_text": "Análise gratuita pelo WhatsApp",
-    "wa_text": "Olá, Dr. Henrique. Tenho uma questão cível e gostaria de conversar.",
+    "wa_text": "Olá, Henrique. Tenho uma questão cível e gostaria de conversar.",
     "intro": {
       "h2": "Cível é a <em>espinha dorsal</em> do dia a dia jurídico.",
       "paragraphs": [
@@ -223,6 +229,7 @@
   },
   "consumidor": {
     "slug": "consumidor",
+    "color": "#1F8A8A",
     "nav": "consumidor",
     "related_category": "consumidor",
     "page_title": "Advogado Direito do Consumidor em PE · Bancos, Saúde, Telefonia · Henrique Silva",
@@ -231,7 +238,7 @@
     "h1": "Direito do <em>Consumidor</em> · Código vigente desde 1990.",
     "subtitle": "Defesa em relações de consumo: cobranças indevidas, bancos, planos de saúde, viagens, telefonia, e-commerce e vícios. Indenizações e devolução em dobro.",
     "cta_text": "Análise gratuita pelo WhatsApp",
-    "wa_text": "Olá, Dr. Henrique. Tenho um problema de consumo e gostaria de conversar.",
+    "wa_text": "Olá, Henrique. Tenho um problema de consumo e gostaria de conversar.",
     "intro": {
       "h2": "O CDC é <em>uma das melhores leis</em> do Brasil — pouca gente usa.",
       "paragraphs": [
@@ -260,6 +267,7 @@
   },
   "juizados": {
     "slug": "juizados",
+    "color": "#7A5A93",
     "nav": "juizados",
     "related_category": "juizados",
     "page_title": "Juizados Especiais em PE · Pequenas Causas · Henrique Silva Advocacia",
@@ -268,7 +276,7 @@
     "h1": "Juizados <em>Especiais</em> · justiça rápida, custos baixos.",
     "subtitle": "Ações cíveis até 40 salários mínimos: cobranças, pequenos litígios de consumo, indenizações e demandas de menor complexidade. Mais rápido que a Justiça Comum.",
     "cta_text": "Análise gratuita pelo WhatsApp",
-    "wa_text": "Olá, Dr. Henrique. Tenho um caso para Juizado Especial.",
+    "wa_text": "Olá, Henrique. Tenho um caso para Juizado Especial.",
     "intro": {
       "h2": "Juizado Especial é <em>processo civil simplificado</em>.",
       "paragraphs": [
@@ -297,6 +305,7 @@
   },
   "criminal": {
     "slug": "criminal",
+    "color": "#7C4A55",
     "nav": "criminal",
     "related_category": "criminal",
     "page_title": "Advogado Criminal · Consultoria Estratégica · Henrique Silva Advocacia · OAB/PE 31.742",
@@ -305,7 +314,7 @@
     "h1": "Direito <em>Criminal</em> · atuação seletiva e estratégica.",
     "subtitle": "Consultoria criminal mediante análise técnica criteriosa, com prioridade a clientes já integrados ao portfólio do escritório em outros segmentos do Direito.",
     "cta_text": "Solicitar avaliação",
-    "wa_text": "Olá, Dr. Henrique. Preciso de orientação criminal.",
+    "wa_text": "Olá, Henrique. Preciso de orientação criminal.",
     "intro": {
       "h2": "Criminal exige <em>análise técnica</em> antes de qualquer atuação.",
       "paragraphs": [
@@ -334,6 +343,7 @@
   },
   "tributario": {
     "slug": "tributario",
+    "color": "#8A7536",
     "nav": "tributario",
     "related_category": "tributario",
     "page_title": "Advogado Tributário em PE · Execuções Fiscais e Planejamento · Henrique Silva",
@@ -342,7 +352,7 @@
     "h1": "Direito <em>Tributário</em> · defesa, planejamento e recuperação.",
     "subtitle": "Execuções fiscais, planejamento tributário, parcelamentos, exclusões da base de cálculo e repetição de indébito. Foco em redução legítima de carga.",
     "cta_text": "Solicitar avaliação tributária",
-    "wa_text": "Olá, Dr. Henrique. Tenho uma questão tributária e gostaria de conversar.",
+    "wa_text": "Olá, Henrique. Tenho uma questão tributária e gostaria de conversar.",
     "intro": {
       "h2": "Tributário é onde o <em>conhecimento técnico</em> mais paga a si mesmo.",
       "paragraphs": [
@@ -373,13 +383,13 @@
     "slug": "sobre",
     "nav": "sobre",
     "related_category": null,
-    "page_title": "Sobre · Dr. José Henrique da Silva · OAB/PE 31.742",
-    "page_description": "Conheça Dr. Henrique Silva, advogado em Pernambuco com 14 anos de atuação multidisciplinar em Direito Trabalhista, Previdenciário, Cível, Empresarial e mais.",
+    "page_title": "Sobre · José Henrique da Silva · OAB/PE 31.742",
+    "page_description": "Conheça José Henrique da Silva, advogado em Pernambuco com especialização em Direito do Trabalho e Processo do Trabalho e 14 anos de atuação multidisciplinar em Direito Trabalhista, Previdenciário, Cível, Empresarial e mais.",
     "eyebrow": "Quem Sou",
-    "h1": "Dr. <em>José Henrique da Silva</em>.",
-    "subtitle": "Advogado inscrito na OAB/PE 31.742 · 14 anos de atuação multidisciplinar em Pernambuco.",
+    "h1": "<em>José Henrique da Silva</em>.",
+    "subtitle": "Advogado inscrito na OAB/PE 31.742 · Especialista em Direito do Trabalho e Processo do Trabalho · 14 anos de atuação multidisciplinar em Pernambuco.",
     "cta_text": "Falar pelo WhatsApp",
-    "wa_text": "Olá, Dr. Henrique. Vim pela página Sobre.",
+    "wa_text": "Olá, Henrique. Vim pela página Sobre.",
     "intro": {
       "h2": "Advocacia técnica, atenciosa e <em>direta ao ponto</em>.",
       "paragraphs": [
@@ -413,7 +423,7 @@
     "h1": "Vamos <em>conversar</em>.",
     "subtitle": "Análise inicial gratuita pelo WhatsApp. Conte o que aconteceu — leio com calma e retorno em até 2 horas úteis.",
     "cta_text": "WhatsApp · (81) 9 8713-4878",
-    "wa_text": "Olá, Dr. Henrique. Vim pela página de contato.",
+    "wa_text": "Olá, Henrique. Vim pela página de contato.",
     "intro": {
       "h2": "Três caminhos <em>para começar</em>.",
       "paragraphs": [
