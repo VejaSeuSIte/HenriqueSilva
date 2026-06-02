@@ -3172,6 +3172,75 @@
       .wa-fab{bottom:max(18px, env(safe-area-inset-bottom)) !important}
     }
   }
+
+  /* ═══════════════════════════════════════════════════════════
+     TEMA MISTO — seções claras (ritmo entre o dark).
+     office · reviews · latest-posts · faq voltam a ser CLARAS pra
+     quebrar o "todo preto". Vem por último ⇒ vence as camadas dark.
+     ═══════════════════════════════════════════════════════════ */
+  :root{--paper:#f4efe3;--paper-2:#ece3d0;--ink-cl:#1a2438;--ink-cl-soft:#56617a;--gold-cl:#997529;--line-cl:#dcd2b8}
+
+  /* ---- OFFICE (claro) ---- */
+  .office{background:var(--paper)!important;color:var(--ink-cl)!important}
+  .office::before{filter:none!important;background:none!important;opacity:0!important}
+  .office .shead-eye{color:var(--gold-cl)!important}
+  .office-text h2{color:var(--ink-cl)!important}
+  .office-text h2 em{color:var(--gold-cl)!important}
+  .office-text p{color:var(--ink-cl-soft)!important}
+  .office-text p strong{color:var(--ink-cl)!important}
+  .pillar{border-top-color:var(--line-cl)!important}
+  .pillar-title{color:var(--ink-cl)!important}
+  .pillar-text{color:var(--ink-cl-soft)!important}
+  .office-photo-frame{background:#fbf7ec!important;border-color:var(--line-cl)!important}
+
+  /* ---- REVIEWS (claro) ---- */
+  .reviews{background:linear-gradient(180deg,var(--paper-2) 0%,#e6dcc6 100%)!important;color:var(--ink-cl)!important}
+  .reviews .shead h2{color:var(--ink-cl)!important}
+  .reviews .shead h2 em,.reviews .shead-eye{color:var(--gold-cl)!important}
+  .reviews .shead-sub,.reviews-banner-meta{color:var(--ink-cl-soft)!important}
+  .reviews-banner{background:rgba(255,255,255,.45)!important;border-color:var(--line-cl)!important}
+  .reviews-banner-num{color:var(--gold-cl)!important}
+  .reviews-banner-meta strong{color:var(--ink-cl)!important}
+  .review-card{background:#fbf7ec!important;border-color:var(--line-cl)!important}
+  .review-card:hover{background:#fff!important;border-color:var(--gold-cl)!important}
+  .review-card::before{background:linear-gradient(90deg,transparent,var(--gold-cl),transparent)!important}
+  .review-name{color:var(--ink-cl)!important}
+  .review-date{color:#8a8470!important}
+  .review-quote{color:var(--ink-cl-soft)!important}
+
+  /* ---- LATEST POSTS (claro) ---- */
+  .latest-posts{background:var(--paper)!important;color:var(--ink-cl)!important}
+  .latest-posts .shead h2{color:var(--ink-cl)!important}
+  .latest-posts .shead h2 em,.latest-posts .shead-eye{color:var(--gold-cl)!important}
+  .latest-posts .shead-sub{color:var(--ink-cl-soft)!important}
+  .latest-card{background:#fbf7ec!important;border-color:var(--line-cl)!important}
+  .latest-card:hover{border-color:var(--gold-cl)!important}
+  .latest-card-meta{color:var(--gold-cl)!important}
+  .latest-card-meta .read{color:#8a8470!important}
+  .latest-card h3{color:var(--ink-cl)!important}
+  .latest-card h3 em{color:var(--gold-cl)!important}
+  .latest-card-excerpt{color:var(--ink-cl-soft)!important}
+  .latest-empty{color:var(--ink-cl-soft)!important}
+
+  /* botão fantasma claro (reviews + latest compartilham .ghost-btn-dark) */
+  .reviews .ghost-btn-dark,.latest-posts .ghost-btn-dark{color:var(--gold-cl)!important;border-color:rgba(153,117,41,.45)!important;background:transparent!important}
+  .reviews .ghost-btn-dark:hover,.latest-posts .ghost-btn-dark:hover{background:var(--gold-cl)!important;color:#fff!important;border-color:var(--gold-cl)!important}
+
+  /* ---- FAQ (claro) ---- */
+  .faq-section{background:var(--paper-2)!important;color:var(--ink-cl)!important}
+  .faq-section .shead h2{color:var(--ink-cl)!important}
+  .faq-section .shead h2 em,.faq-section .shead-eye{color:var(--gold-cl)!important}
+  .faq-section .shead-sub{color:var(--ink-cl-soft)!important}
+  .faq-search input{background:#fff!important;border-color:var(--line-cl)!important;color:var(--ink-cl)!important}
+  .faq-search input::placeholder{color:#9a937e!important}
+  .faq-search svg{stroke:var(--gold-cl)!important}
+  .q{background:#fbf7ec!important;border-color:var(--line-cl)!important}
+  .q[open]{background:#fff!important;border-color:var(--gold-cl)!important;box-shadow:0 14px 30px rgba(8,23,41,.06)!important}
+  .q summary{color:var(--ink-cl)!important}
+  .q[open] summary{color:var(--gold-cl)!important}
+  .q summary::before,.q summary::after{background:var(--gold-cl)!important}
+  .q-body{color:var(--ink-cl-soft)!important}
+  .q-body strong{color:var(--ink-cl)!important}
 </style>
 <script>
   (function(){
