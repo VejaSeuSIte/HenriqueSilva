@@ -11,7 +11,7 @@
         "href": "#areas"
       },
       {
-        "label": "Quem Sou",
+        "label": "Quem Somos",
         "href": "sobre/"
       },
       {
@@ -240,7 +240,7 @@
     "cta_href": "https://www.google.com/search?q=Henrique+Silva+Advocacia+Cabo+de+Santo+Agostinho"
   },
   "about": {
-    "eyebrow": "Quem Sou",
+    "eyebrow": "Quem Somos",
     "h2": "<em>José Henrique da Silva</em>, advogado.",
     "lead": "\"Advocacia de excelência não se mede pelo número de ações, mas pela profundidade com que cada caso é estudado e a clareza com que cada decisão é explicada ao cliente.\"",
     "paragraphs": [

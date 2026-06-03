@@ -1089,11 +1089,11 @@ async function renderSiteEditor(app) {
       ],
     },
     {
-      id: 'about', title: 'Quem Sou', icon: I.user,
-      hint: 'Sua apresentação pessoal — onde o cliente vê você como pessoa, não só como escritório.',
+      id: 'about', title: 'Quem Somos', icon: I.user,
+      hint: 'A apresentação do escritório e de quem está à frente dele — o lado humano por trás do trabalho.',
       fields: [
         { key: 'eyebrow', label: 'Texto pequeno acima do título',
-          hint: 'Pré-título da seção. Ex: "Quem Sou".' },
+          hint: 'Pré-título da seção. Ex: "Quem Somos".' },
         { key: 'h2', label: 'Título com seu nome', html: true,
           hint: 'Inclua seu nome completo. Ex: "Dr. José Henrique da Silva, advogado".' },
         { key: 'lead', label: 'Citação em destaque', type: 'textarea',
