@@ -777,7 +777,7 @@ function renderLogin(app) {
     <div class="login-page">
       <div class="login-box">
         <div class="login-brand">
-          <img src="/HenriqueSilva/assets/seal-hsa.png" alt="HSA" />
+          <img src="/HenriqueSilva/assets/seal-hsa.png?v=6" alt="HSA" />
           <div class="login-brand-name">Henrique Silva<small>Advocacia · Admin</small></div>
         </div>
         <div class="login-title">Acesso ao painel</div>
@@ -824,7 +824,7 @@ function renderTopbar(active) {
   return `
     <div class="topbar" id="topbar">
       <div class="topbar-brand">
-        <img src="/HenriqueSilva/assets/seal-hsa.png" alt="HSA" />
+        <img src="/HenriqueSilva/assets/seal-hsa.png?v=6" alt="HSA" />
         <div class="topbar-brand-text">Henrique Silva<small>Advocacia · Admin</small></div>
       </div>
       <div class="topbar-nav">
