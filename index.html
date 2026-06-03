@@ -3351,6 +3351,11 @@
   .carousel-arrow.prev{left:8px}
   .carousel-arrow.next{right:8px}
   @media(max-width:780px){.carousel-arrow{width:38px;height:38px;font-size:21px;opacity:.92}}
+  /* Avaliações: setas FORA dos cards (espaço lateral no próprio wrap) + ocultas no touch */
+  .reviews .carousel-wrap{padding:0 50px}
+  .reviews .carousel-arrow.prev{left:4px}
+  .reviews .carousel-arrow.next{right:4px}
+  @media(max-width:980px){.reviews .carousel-wrap{padding:0}.reviews .carousel-arrow{display:none}}
 
   /* ═══ AVALIAÇÕES GOOGLE — embelezamento (ícone G + estrelas Google + avatares coloridos) ═══ */
   .review-head{position:relative;padding-right:26px}
