@@ -218,6 +218,58 @@
     if (cfg.about.portrait_plaque) setText('.portrait-plaque', cfg.about.portrait_plaque);
   }
 
+  // ========== EQUIPE / PROFISSIONAIS (dentro de Quem Somos; oculto até o cliente publicar) ==========
+  (function () {
+    const block = document.getElementById('teamBlock');
+    if (!block) return;
+    const team = (cfg.about && cfg.about.team) || {};
+    const grid = document.getElementById('teamGrid');
+    const members = Array.isArray(team.members)
+      ? team.members.filter((m) => m && (String(m.name || '').trim() || String(m.photo || '').trim()))
+      : [];
+    if (!team.visible || !members.length || !grid) { block.hidden = true; return; }
+
+    const initialsOf = (name) => {
+      const p = String(name || '').trim().split(/\s+/).filter(Boolean);
+      if (!p.length) return '·';
+      return ((p[0][0] || '') + (p.length > 1 ? (p[p.length - 1][0] || '') : '')).toUpperCase();
+    };
+
+    let cards = $$('.team-member', grid);
+    const template = cards[cards.length - 1];
+    if (template) {
+      while (cards.length < members.length) { grid.appendChild(template.cloneNode(true)); cards = $$('.team-member', grid); }
+    }
+    cards.forEach((card, i) => {
+      const m = members[i];
+      if (!m) { card.style.display = 'none'; return; }
+      card.style.display = '';
+      const photoWrap = card.querySelector('.team-photo');
+      const img = card.querySelector('.team-photo img');
+      const nm = card.querySelector('.team-name');
+      const rl = card.querySelector('.team-role');
+      const bio = card.querySelector('.team-bio');
+      if (nm) setText(nm, m.name || '');
+      if (rl) { setText(rl, m.role || ''); rl.style.display = String(m.role || '').trim() ? '' : 'none'; }
+      if (bio) { setText(bio, m.bio || ''); bio.style.display = String(m.bio || '').trim() ? '' : 'none'; }
+      const photo = String(m.photo || '').trim();
+      if (photo && img && photoWrap) {
+        img.setAttribute('src', BASE + photo.replace(/^\//, ''));
+        img.setAttribute('alt', m.name || '');
+        photoWrap.classList.remove('team-photo-empty');
+        photoWrap.removeAttribute('data-initials');
+      } else if (photoWrap) {
+        if (img) img.removeAttribute('src');
+        photoWrap.classList.add('team-photo-empty');
+        photoWrap.setAttribute('data-initials', initialsOf(m.name));
+      }
+    });
+    if (team.heading != null && String(team.heading).trim()) setText('.team-title', team.heading);
+    const subEl = $('.team-sub');
+    if (subEl && team.sub != null) { setText(subEl, team.sub); subEl.style.display = String(team.sub).trim() ? '' : 'none'; }
+    block.hidden = false;
+  })();
+
   // ========== LATEST (blog cards são gerados via posts.json — só mexemos no header) ==========
   if (cfg.latest) {
     const sec = document.querySelector('#artigos, section[data-section="latest"]');

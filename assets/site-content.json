@@ -262,7 +262,12 @@
       }
     ],
     "portrait_src": "assets/henrique-portrait.jpg",
-    "portrait_plaque": "Henrique Silva · OAB/PE 31.742"
+    "portrait_plaque": "Henrique Silva · OAB/PE 31.742",
+    "team": {
+      "visible": false,
+      "heading": "Profissionais do escritório",
+      "members": []
+    }
   },
   "latest": {
     "eyebrow": "Blog · Henrique Silva",

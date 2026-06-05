@@ -1106,6 +1106,8 @@ async function renderSiteEditor(app) {
           hint: 'Foto sua olhando pra câmera, fundo neutro. Vertical (retrato) funciona melhor que horizontal.' },
         { key: 'portrait_plaque', label: 'Plaqueta abaixo da foto',
           hint: 'Texto da plaqueta dourada sob a foto. Ex: "Dr. Henrique Silva · OAB/PE 31.742".' },
+        { key: 'team', label: 'Equipe / Profissionais', type: 'team',
+          hint: 'Espaço pros profissionais e colaboradores do escritório — cada um com foto, nome e área. Começa OCULTO no site; marque "Mostrar a equipe no site" quando quiser publicar. Pode adicionar quantos quiser.' },
       ],
     },
     {
@@ -1353,6 +1355,47 @@ async function renderSiteEditor(app) {
           </div>
         </div>`;
     }
+    if (field.type === 'team') {
+      const v = value || {};
+      const members = Array.isArray(v.members) ? v.members : [];
+      const memberCard = (m, i) => `
+        <details class="card-mini" data-idx="${i}">
+          <summary><strong>${escHtml(m.name || 'Profissional')}</strong>${m.role ? ` · <span style="color:var(--gold)">${escHtml(m.role)}</span>` : ''}</summary>
+          <div class="field"><label>Foto</label>
+            <div class="img-picker">
+              ${m.photo ? `<img class="img-preview" src="${previewUrl(m.photo)}" alt="" onerror="this.style.display='none'" />` : `<div class="img-picker-empty">${I.image}</div>`}
+              <div class="img-picker-body">
+                <input type="text" data-mkey="photo" value="${escAttr(m.photo)}" placeholder="assets/foto.jpg" />
+                <div class="img-picker-actions">
+                  <button type="button" class="btn btn-secondary btn-pickimg-member" data-idx="${i}">${I.upload} Enviar foto</button>
+                  <span class="drop-hint">…ou arraste</span>
+                </div>
+              </div>
+            </div>
+            <div class="field-help">Foto do profissional (retrato/vertical fica melhor). Sem foto, aparecem as iniciais do nome.</div>
+          </div>
+          <div class="field-row">
+            <div class="field"><label>Nome</label><input data-mkey="name" value="${escAttr(m.name)}" /><div class="field-help">Nome completo do profissional.</div></div>
+            <div class="field"><label>Área / cargo</label><input data-mkey="role" value="${escAttr(m.role)}" /><div class="field-help">Ex: "Direito Trabalhista", "Advogada associada".</div></div>
+          </div>
+          <div class="field"><label>Mini-bio (opcional)</label><textarea data-mkey="bio" rows="2">${escHtml(m.bio)}</textarea><div class="field-help">1-2 linhas sobre formação ou atuação. Pode deixar em branco.</div></div>
+          <button type="button" class="btn btn-danger btn-rmmember" data-idx="${i}">Remover profissional</button>
+        </details>`;
+      return `
+        <div class="field" data-team="${sectionId}.${field.key}">
+          <label>${field.label}</label>
+          ${hintHtml(field.hint)}
+          <label style="display:flex;align-items:center;gap:11px;margin:4px 0 18px;padding:13px 16px;background:rgba(212,175,55,.07);border:1px solid rgba(212,175,55,.28);font-family:'Inter Tight',sans-serif;font-size:13.5px;color:var(--off-white);cursor:pointer">
+            <input type="checkbox" data-team-visible ${v.visible ? 'checked' : ''} style="width:18px;height:18px;flex-shrink:0;accent-color:#d4af37;cursor:pointer" />
+            <span><strong style="font-weight:600">Mostrar a equipe no site</strong> — enquanto desmarcado, a seção fica invisível pros visitantes.</span>
+          </label>
+          <div class="field"><label>Título da seção</label><input data-team-heading value="${escAttr(v.heading || 'Profissionais do escritório')}" /><div class="field-help">Aparece acima das fotos, dentro de "Quem Somos". Ex: "Nossa equipe".</div></div>
+          <div class="team-members-list">
+            ${members.map(memberCard).join('')}
+          </div>
+          <button type="button" class="btn btn-secondary btn-addmember">${I.plus} Adicionar profissional</button>
+        </div>`;
+    }
     return `<div class="field"><label>${field.label}</label><input id="${id}" value="${escAttr(value)}" />${hintHtml(field.hint)}</div>`;
   };
 
@@ -1455,6 +1498,21 @@ async function renderSiteEditor(app) {
           const o = {};
           $$(`[data-form="${sec.id}.${f.key}"] [data-fkey]`, root).forEach(inp => { o[inp.dataset.fkey] = inp.value; });
           newCfg[sec.id][f.key] = o;
+        } else if (f.type === 'team') {
+          const teamEl = root.querySelector(`[data-team="${sec.id}.${f.key}"]`);
+          const o = { visible: false, heading: '', members: [] };
+          if (teamEl) {
+            const vis = teamEl.querySelector('[data-team-visible]');
+            o.visible = !!(vis && vis.checked);
+            const hd = teamEl.querySelector('[data-team-heading]');
+            o.heading = hd ? hd.value : '';
+            o.members = $$('.team-members-list details.card-mini', teamEl).map(card => {
+              const mo = {};
+              card.querySelectorAll('[data-mkey]').forEach(inp => { mo[inp.dataset.mkey] = inp.value; });
+              return mo;
+            }).filter(mo => (mo.name && mo.name.trim()) || (mo.photo && mo.photo.trim()));
+          }
+          newCfg[sec.id][f.key] = o;
         } else if (f.html && (f.type === 'textarea' || f.type === 'text' || !f.type)) {
           const richEl = root.querySelector(`.js-rich[data-rich-key="site.${sec.id}.${f.key}"]`);
           if (richEl) newCfg[sec.id][f.key] = getRichHtml(richEl);
@@ -1515,6 +1573,30 @@ async function renderSiteEditor(app) {
       initRichEditors(d);
       markDirty();
     }
+    if (t.classList.contains('btn-rmmember')) { t.closest('details').remove(); markDirty(); }
+    if (t.classList.contains('btn-addmember')) {
+      const list = t.parentElement.querySelector('.team-members-list');
+      const d = document.createElement('details');
+      d.className = 'card-mini'; d.open = true;
+      d.innerHTML = `<summary><strong>Novo profissional</strong></summary>
+        <div class="field"><label>Foto</label>
+          <div class="img-picker">
+            <div class="img-picker-empty">${I.image}</div>
+            <div class="img-picker-body">
+              <input type="text" data-mkey="photo" placeholder="assets/foto.jpg" />
+              <div class="img-picker-actions">
+                <button type="button" class="btn btn-secondary btn-pickimg-member">${I.upload} Enviar foto</button>
+                <span class="drop-hint">…ou arraste</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="field-row"><div class="field"><label>Nome</label><input data-mkey="name" /></div><div class="field"><label>Área / cargo</label><input data-mkey="role" /></div></div>
+        <div class="field"><label>Mini-bio (opcional)</label><textarea data-mkey="bio" rows="2"></textarea></div>
+        <button type="button" class="btn btn-danger btn-rmmember">Remover profissional</button>`;
+      list.appendChild(d);
+      markDirty();
+    }
   });
 
   // === Image upload (botão Trocar OU drag-drop)
@@ -1569,7 +1651,7 @@ async function renderSiteEditor(app) {
       fp.click();
     }
     // "Trocar" nos cards de Áreas: o input fica como sibling sem id, pega via .img-picker
-    if (t.classList.contains('btn-pickimg-area')) {
+    if (t.classList.contains('btn-pickimg-area') || t.classList.contains('btn-pickimg-member')) {
       const picker = t.closest('.img-picker');
       const inp = picker && picker.querySelector('input[type="text"]');
       if (!inp) { toast('Erro: input da imagem não encontrado', 'error'); return; }
