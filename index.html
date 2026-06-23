@@ -2595,11 +2595,11 @@
 <!-- ============= HERO ============= -->
 <section class="hero" id="top">
   <div class="hero-slideshow" aria-hidden="true">
-    <img class="hero-slide" src="assets/nme-entrada.webp?v=4" alt="" fetchpriority="high" />
-    <img class="hero-slide" src="assets/empresarial-fachada.webp?v=4" alt="" />
-    <img class="hero-slide" src="assets/nme-recepcao.webp?v=4" alt="" />
-    <img class="hero-slide" src="assets/escritorio-1.jpg?v=4" alt="" />
-    <img class="hero-slide" src="assets/escritorio-3.jpg?v=4" alt="" />
+    <img class="hero-slide" src="assets/nme-entrada.webp?v=4" alt="Entrada do escritório Henrique Silva Advocacia em Cabo de Santo Agostinho/PE" fetchpriority="high" />
+    <img class="hero-slide" src="assets/empresarial-fachada.webp?v=4" alt="Fachada do Cond. Novo Mundo Empresarial, sede do escritório Henrique Silva Advocacia" />
+    <img class="hero-slide" src="assets/nme-recepcao.webp?v=4" alt="Recepção do escritório de advocacia Henrique Silva na Reserva do Paiva" />
+    <img class="hero-slide" src="assets/escritorio-1.jpg?v=4" alt="Sala de atendimento do advogado Henrique Silva em Cabo de Santo Agostinho" />
+    <img class="hero-slide" src="assets/escritorio-3.jpg?v=4" alt="Estação de trabalho do escritório Henrique Silva Advocacia com diplomas e certificações" />
   </div>
   <div class="hero-overlay"></div>
   <div class="hero-overlay-2"></div>
@@ -3492,41 +3492,6 @@
     .team-photo-empty::after{font-size:38px}
   }
 
-  /* ═════════════ Botão de música clássica ═════════════ */
-  .music-fab{
-    position:fixed; bottom:30px; left:28px; z-index:60;
-    width:54px; height:54px; border-radius:50%;
-    display:flex; align-items:center; justify-content:center;
-    background:linear-gradient(155deg,#1a1207,#0d0a04);
-    border:1px solid rgba(212,175,55,.55);
-    color:var(--gold, #d4af37); cursor:pointer;
-    box-shadow:0 12px 30px rgba(0,0,0,.5), 0 0 0 0 rgba(212,175,55,.45);
-    transition:transform .3s cubic-bezier(.22,.8,.24,1), box-shadow .3s, border-color .3s;
-    -webkit-tap-highlight-color:transparent;
-  }
-  .music-fab:hover{transform:translateY(-3px) scale(1.04); border-color:rgba(212,175,55,.9); box-shadow:0 18px 38px rgba(0,0,0,.55), 0 0 26px rgba(212,175,55,.3)}
-  .music-fab svg{width:24px; height:24px; fill:currentColor; pointer-events:none}
-  .music-fab .ico-pause{display:none}
-  .music-fab.is-playing .ico-play{display:none}
-  .music-fab.is-playing .ico-pause{display:block}
-  .music-fab.is-playing{animation:music-glow 3.4s ease-in-out infinite}
-  @keyframes music-glow{0%,100%{box-shadow:0 12px 30px rgba(0,0,0,.5), 0 0 0 0 rgba(212,175,55,.4)} 50%{box-shadow:0 12px 30px rgba(0,0,0,.5), 0 0 0 9px rgba(212,175,55,0)}}
-  /* tooltip */
-  .music-fab::after{
-    content:attr(data-tip); position:absolute; left:calc(100% + 12px); top:50%; transform:translateY(-50%);
-    white-space:nowrap; font-family:'Cormorant SC','Cormorant Garamond',serif; font-size:11px; letter-spacing:.22em; text-transform:uppercase;
-    color:var(--gold,#d4af37); background:rgba(13,10,4,.92); border:1px solid rgba(212,175,55,.4);
-    padding:7px 12px; border-radius:4px; opacity:0; pointer-events:none; transition:opacity .3s;
-  }
-  .music-fab:hover::after{opacity:1}
-  @media(max-width:780px){
-    .music-fab{width:48px; height:48px; bottom:18px; left:18px}
-    .music-fab svg{width:21px; height:21px}
-    .music-fab::after{display:none}
-  }
-  @media(max-width:480px){
-    .music-fab{width:44px; height:44px; bottom:max(14px, env(safe-area-inset-bottom)); left:14px}
-  }
 </style>
 <script>
   (function(){
@@ -3596,8 +3561,8 @@
   <div class="contact-cta-overlay" aria-hidden="true"></div>
   <div class="wrap">
     <div class="contact-cta-head" data-reveal="up">
-      <h2>Receba a ligação <em>de um especialista</em></h2>
-      <p>Preencha o formulário abaixo que entraremos em contato o mais breve possível.</p>
+      <h2>Fale com <em>um especialista</em></h2>
+      <p>Conte seu caso no campo abaixo. Ao enviar, você vai direto para a conversa no WhatsApp — sem cadastro e sem espera.</p>
     </div>
     <form class="contact-cta-form" data-reveal="up" data-delay="160" id="contactForm" onsubmit="return sendWhats(event)">
       <div class="form-row">
@@ -3679,13 +3644,6 @@
   <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.5 14.4c-.3-.1-1.6-.8-1.9-.9-.3-.1-.4-.1-.6.1s-.7.9-.9 1.1c-.2.2-.3.2-.6.1-.3-.1-1.2-.5-2.3-1.4-.8-.7-1.4-1.6-1.6-1.9-.2-.3 0-.4.1-.6.1-.1.3-.3.4-.5.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5 0-.1-.6-1.5-.9-2.1-.2-.5-.5-.5-.6-.5h-.5c-.2 0-.5.1-.7.4-.2.3-.9 1-.9 2.4 0 1.4 1 2.8 1.1 3 .1.2 1.9 3 4.7 4.2.7.3 1.2.4 1.6.6.7.2 1.3.2 1.8.1.5-.1 1.6-.7 1.9-1.3.2-.6.2-1.2.2-1.3 0-.1-.2-.2-.5-.3M12 21.7c-1.7 0-3.3-.4-4.7-1.3l-.3-.2-3.5.9.9-3.4-.2-.4c-.9-1.5-1.4-3.2-1.4-4.9 0-5.1 4.2-9.3 9.2-9.3 2.5 0 4.8 1 6.6 2.7 1.7 1.8 2.7 4.1 2.7 6.6-.1 5.1-4.2 9.3-9.3 9.3M20 4c-2.1-2.1-5-3.3-8-3.3-6.2 0-11.3 5.1-11.3 11.3 0 2 .5 3.9 1.5 5.6L.6 23.4l5.9-1.5c1.6.9 3.5 1.4 5.4 1.4 6.2 0 11.3-5.1 11.3-11.3 0-3-1.2-5.9-3.2-8z"/></svg>
 </a>
 
-<!-- ============= MÚSICA CLÁSSICA (Beethoven — Sonata ao Luar, domínio público) ============= -->
-<audio id="bgMusic" src="assets/moonlight.mp3?v=1" loop preload="none"></audio>
-<button class="music-fab" id="musicFab" type="button" data-tip="Tocar música" aria-label="Tocar música clássica de fundo" aria-pressed="false">
-  <svg class="ico-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v10.6a4 4 0 1 0 2 3.46V8h5V3h-7zm0 16a2 2 0 1 1 0-4 2 2 0 0 1 0 4z"/></svg>
-  <svg class="ico-pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h3v14H7zM14 5h3v14h-3z"/></svg>
-</button>
-
 <script src="assets/common.js" defer></script>
 <script>
   // Year
@@ -3733,7 +3691,10 @@
     if (!name || !msg) { return false; }
     var lines = ['Olá, Henrique. Vim pelo site.', '', '*Nome:* ' + name, '', '*Mensagem:*', msg];
     var text = encodeURIComponent(lines.join('\n'));
-    window.open('https://wa.me/5581987134878?text=' + text, '_blank', 'noopener');
+    var url = 'https://wa.me/5581987134878?text=' + text;
+    var win = window.open(url, '_blank', 'noopener');
+    // Se o navegador bloquear o pop-up (comum no celular), abre na própria aba.
+    if (!win) { window.location.href = url; }
     return false;
   }
 
@@ -3852,60 +3813,6 @@
     }
     setupCarousel(document.getElementById('officeCarousel'), 4500);
     setupCarousel(document.querySelector('.reviews-scroll'), 4200);
-  })();
-
-  // ===== Música clássica de fundo (Beethoven) =====
-  (function(){
-    var audio = document.getElementById('bgMusic');
-    var fab   = document.getElementById('musicFab');
-    if(!audio || !fab) return;
-    audio.volume = 0.32;
-    var STORE = 'hsa-music';            // 'on' | 'off'
-    var pref  = null;
-    try { pref = localStorage.getItem(STORE); } catch(e){}
-    var armed = false;                  // listeners de "primeira interação" ativos?
-
-    function setUI(playing){
-      fab.classList.toggle('is-playing', playing);
-      fab.setAttribute('aria-pressed', playing ? 'true' : 'false');
-      fab.setAttribute('data-tip', playing ? 'Pausar música' : 'Tocar música');
-    }
-
-    function start(){
-      var p = audio.play();
-      if(p && p.then){ p.then(function(){ setUI(true); }).catch(function(){ setUI(false); arm(); }); }
-      else { setUI(true); }
-    }
-    function stop(){ audio.pause(); setUI(false); }
-
-    // Auto-iniciar no primeiro gesto do usuário (política de autoplay dos navegadores)
-    function onGesture(){
-      if(pref === 'off') return disarm();
-      start(); disarm();
-    }
-    function arm(){
-      if(armed) return; armed = true;
-      ['pointerdown','keydown','touchstart','scroll'].forEach(function(ev){
-        window.addEventListener(ev, onGesture, {once:true, passive:true});
-      });
-    }
-    function disarm(){
-      armed = false;
-      ['pointerdown','keydown','touchstart','scroll'].forEach(function(ev){
-        window.removeEventListener(ev, onGesture);
-      });
-    }
-
-    // Clique no botão = controle manual explícito (sempre funciona)
-    fab.addEventListener('click', function(){
-      if(audio.paused){ try{localStorage.setItem(STORE,'on');}catch(e){} disarm(); start(); }
-      else { try{localStorage.setItem(STORE,'off');}catch(e){} stop(); }
-    });
-    audio.addEventListener('ended', function(){ setUI(false); });
-
-    // Estado inicial: respeita a escolha anterior do visitante
-    if(pref === 'off'){ setUI(false); }
-    else { start(); arm(); }            // tenta tocar; se bloqueado, espera o 1º gesto
   })();
 </script>
 

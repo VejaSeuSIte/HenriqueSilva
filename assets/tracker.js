@@ -14,11 +14,26 @@
   var SLUG = 'henriquesilva';
   var basePath = location.pathname.indexOf('/HenriqueSilva/') === 0 ? '/HenriqueSilva/' : '/';
 
+  // ── Consentimento (LGPD): o envio de métricas só ocorre com "Aceitar". ──
+  // O short-link (?l=slug) é funcional e roda independente de consentimento.
+  function consentGranted() {
+    try { return localStorage.getItem('hsa-consent') === 'granted'; } catch (_) { return false; }
+  }
+  var _cfg = null, _inited = false;
+  function startAnalytics(cfg) {
+    if (_inited || !consentGranted()) return;
+    _inited = true;
+    try { init(cfg); } catch (e) { /* silencia falhas */ }
+  }
+  // Se o visitante aceitar no banner durante a navegação, começa a medir na hora.
+  window.addEventListener('hsa:consent', function () { if (_cfg) startAnalytics(_cfg); });
+
   fetch(basePath + 'assets/site-config.json', { cache: 'no-cache' })
     .then(function (r) { return r.ok ? r.json() : null; })
     .then(function (cfg) {
       if (!cfg || !cfg.supabase_url || !cfg.supabase_anon_key) return;
-      // Short link: ?l=slug — resolve e redireciona ANTES de inicializar o tracker normal.
+      _cfg = cfg;
+      // Short link: ?l=slug — resolve e redireciona ANTES de qualquer medição.
       var lp;
       try { lp = new URL(location.href).searchParams.get('l'); } catch (_) { lp = null; }
       if (lp && /^[a-z0-9-]{1,48}$/.test(lp)) {
@@ -30,12 +45,12 @@
               u.searchParams.delete('l');
               history.replaceState(null, '', u.toString());
             } catch (_) {}
-            try { init(cfg); } catch (e) { /* silencia */ }
+            startAnalytics(cfg);
           }
         });
         return;
       }
-      try { init(cfg); } catch (e) { /* silencia falhas */ }
+      startAnalytics(cfg);
     })
     .catch(function () { });
 
