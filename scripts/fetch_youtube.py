@@ -87,6 +87,19 @@ def main() -> int:
         print("[fetch_youtube] feed sem vídeos — abortando (preserva JSON atual).", file=sys.stderr)
         return 1
 
+    # Só reescreve se a lista de vídeos mudou de fato. O campo "updated" sozinho
+    # não deve gerar commit a cada execução do cron (evita ruído e rebuild à toa).
+    try:
+        with open(OUT_PATH, "r", encoding="utf-8") as f:
+            prev = json.load(f)
+        if prev.get("channel_id") == channel_id and prev.get("videos") == videos:
+            print("[fetch_youtube] sem mudança nos vídeos — JSON preservado.")
+            return 0
+    except FileNotFoundError:
+        pass
+    except Exception as e:  # noqa: BLE001
+        print(f"[fetch_youtube] aviso ao comparar JSON atual: {e}", file=sys.stderr)
+
     payload = {
         "channel_id": channel_id,
         "channel_title": channel_title,

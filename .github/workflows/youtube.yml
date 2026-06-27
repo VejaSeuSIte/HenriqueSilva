@@ -31,7 +31,15 @@ jobs:
           git add assets/youtube.json
           if git diff --cached --quiet; then
             echo "Nenhum vídeo novo."
-          else
-            git commit -m "chore: sync vídeos do YouTube [skip ci]"
-            git push
+            exit 0
           fi
+          git commit -m "chore: sync videos do YouTube [skip ci]"
+          # Push com retry: outro workflow (build) pode ter empurrado no meio.
+          for i in 1 2 3; do
+            if git push; then
+              echo "push ok"; exit 0
+            fi
+            echo "push rejeitado, rebase e retry ($i)..."
+            git pull --rebase --autostash origin main || true
+          done
+          echo "::error::falha ao dar push após retries"; exit 1
