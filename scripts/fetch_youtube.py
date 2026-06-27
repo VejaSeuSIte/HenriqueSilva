@@ -13,6 +13,7 @@ import json
 import os
 import re
 import sys
+import unicodedata
 import urllib.request
 import xml.etree.ElementTree as ET
 from datetime import datetime, timezone
@@ -23,7 +24,34 @@ OUT_PATH = os.path.join(ROOT, "assets", "youtube.json")
 
 # Canal Guia Trabalhista / Henrique Silva Advocacia (fallback)
 DEFAULT_CHANNEL_ID = "UCf9ai0uyqOTTrWijGWvloQw"
-MAX_VIDEOS = 12
+MAX_VIDEOS = 9
+
+# Vídeos cujo título contenha qualquer um destes termos (sem acento, case-insensitive)
+# são descartados — mantém só conteúdo jurídico/trabalhista na home do escritório.
+# Editável em assets/site-config.json → "youtube_blocklist" (substitui esta lista).
+DEFAULT_BLOCKLIST = [
+    "trump", "biden", "capitol", "fake news", "sonho americano",
+    "imperio", "mentira e do odio", "eleicao", "eleicoes",
+]
+
+# Títulos que são só uma data (lives sem nome real) — ex.: "5 de fevereiro de 2025".
+GENERIC_DATE_TITLE = re.compile(
+    r"^\s*\d{1,2}\s+de\s+[a-zç]+\s+de\s+\d{4}\s*$", re.IGNORECASE
+)
+
+
+def _norm(s: str) -> str:
+    """minúsculas + sem acento, pra casar blocklist de forma robusta."""
+    s = unicodedata.normalize("NFKD", s or "")
+    s = "".join(c for c in s if not unicodedata.combining(c))
+    return s.lower()
+
+
+def is_relevant(title: str, blocklist) -> bool:
+    if not title or GENERIC_DATE_TITLE.match(title):
+        return False
+    nt = _norm(title)
+    return not any(_norm(term) in nt for term in blocklist if term)
 
 NS = {
     "atom": "http://www.w3.org/2005/Atom",
@@ -32,16 +60,22 @@ NS = {
 }
 
 
-def read_channel_id() -> str:
+def read_config():
+    """Retorna (channel_id, blocklist) lendo assets/site-config.json com fallback."""
+    channel_id = DEFAULT_CHANNEL_ID
+    blocklist = DEFAULT_BLOCKLIST
     try:
         with open(CONFIG_PATH, "r", encoding="utf-8") as f:
             cfg = json.load(f)
         cid = (cfg.get("youtube_channel_id") or "").strip()
         if re.fullmatch(r"UC[0-9A-Za-z_-]{20,}", cid):
-            return cid
+            channel_id = cid
+        bl = cfg.get("youtube_blocklist")
+        if isinstance(bl, list):
+            blocklist = [str(t) for t in bl]
     except Exception as e:  # noqa: BLE001
         print(f"[fetch_youtube] site-config.json: {e}", file=sys.stderr)
-    return DEFAULT_CHANNEL_ID
+    return channel_id, blocklist
 
 
 def fetch_feed(channel_id: str) -> bytes:
@@ -68,23 +102,38 @@ def parse_feed(raw: bytes):
             "url": f"https://www.youtube.com/watch?v={vid}",
             "thumb": f"https://i.ytimg.com/vi/{vid}/hqdefault.jpg",
         })
-        if len(videos) >= MAX_VIDEOS:
-            break
     return channel_title, videos
 
 
 def main() -> int:
-    channel_id = read_channel_id()
+    channel_id, blocklist = read_config()
     try:
         raw = fetch_feed(channel_id)
-        channel_title, videos = parse_feed(raw)
+        channel_title, all_videos = parse_feed(raw)
     except Exception as e:  # noqa: BLE001
         print(f"[fetch_youtube] ERRO ao buscar feed: {e}", file=sys.stderr)
         # Não sobrescreve o JSON existente em caso de falha de rede.
         return 1
 
+    # Filtra fora vídeos políticos/off-brand e títulos genéricos (só data),
+    # deduplicando por título (reuploads com o mesmo nome aparecem só uma vez).
+    videos = []
+    seen_titles = set()
+    for v in all_videos:
+        if not is_relevant(v["title"], blocklist):
+            continue
+        key = _norm(v["title"])
+        if key in seen_titles:
+            continue
+        seen_titles.add(key)
+        videos.append(v)
+        if len(videos) >= MAX_VIDEOS:
+            break
+    dropped = len(all_videos) - len(videos)
+    print(f"[fetch_youtube] {len(all_videos)} no feed -> {len(videos)} relevantes ({dropped} descartados)")
+
     if not videos:
-        print("[fetch_youtube] feed sem vídeos — abortando (preserva JSON atual).", file=sys.stderr)
+        print("[fetch_youtube] nenhum vídeo relevante — preserva JSON atual.", file=sys.stderr)
         return 1
 
     # Só reescreve se a lista de vídeos mudou de fato. O campo "updated" sozinho
