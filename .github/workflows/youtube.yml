@@ -1,0 +1,37 @@
+name: Sync YouTube
+
+# Puxa os vídeos mais recentes do canal (RSS) e atualiza assets/youtube.json.
+# A home (assets/youtube.js) lê esse JSON estático e monta o carrossel sozinha.
+on:
+  schedule:
+    - cron: '17 */6 * * *'   # a cada ~6h (minuto 17 pra evitar pico de cron)
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: youtube-sync
+  cancel-in-progress: true
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Fetch latest videos
+        run: python scripts/fetch_youtube.py
+      - name: Commit if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/youtube.json
+          if git diff --cached --quiet; then
+            echo "Nenhum vídeo novo."
+          else
+            git commit -m "chore: sync vídeos do YouTube [skip ci]"
+            git push
+          fi

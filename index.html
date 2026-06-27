@@ -2627,6 +2627,7 @@
       </div>
       <a href="sobre/">Quem Somos</a>
       <a href="#depoimentos">Avaliações</a>
+      <a href="#videos">Vídeos</a>
       <a href="blog/">Blog</a>
       <a href="#faq">Dúvidas</a>
       <a href="contato/">Contato</a>
@@ -3015,6 +3016,71 @@
     </div>
   </div>
 </section>
+
+<!-- ============= VÍDEOS (YouTube — carrossel automático) ============= -->
+<section class="videos" id="videos">
+  <div class="wrap">
+    <div class="shead" data-reveal="up">
+      <div class="shead-eye"><span>Canal no YouTube</span></div>
+      <h2>Vídeos <em>recentes</em>.</h2>
+      <p class="shead-sub">Orientações sobre Direito do Trabalho e seus direitos — direto do canal do escritório.</p>
+    </div>
+
+    <div class="vids-carousel" data-reveal="up" data-delay="120">
+      <button class="vids-arrow vids-prev" type="button" aria-label="Vídeos anteriores">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M13 4 L7 10 L13 16"/></svg>
+      </button>
+      <div class="vids-track" id="vidsTrack" role="list">
+        <!-- preenchido via JS após fetch assets/youtube.json -->
+      </div>
+      <button class="vids-arrow vids-next" type="button" aria-label="Próximos vídeos">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M7 4 L13 10 L7 16"/></svg>
+      </button>
+    </div>
+
+    <div class="vids-cta" data-reveal="up" data-delay="240">
+      <a class="ghost-btn" id="vidsChannelLink" href="https://www.youtube.com/@guiatrabalhistademocratiza1594" target="_blank" rel="noopener">
+        Ver canal no YouTube
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 10 L17 10"/><path d="M11 4 L17 10 L11 16"/></svg>
+      </a>
+    </div>
+  </div>
+</section>
+<style>
+  .videos{padding:120px 0;background:var(--cream);position:relative}
+  .videos .shead{text-align:center;margin-bottom:54px}
+  .vids-carousel{position:relative;max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:14px}
+  .vids-track{display:flex;gap:24px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:smooth;padding:8px 4px 24px;flex:1;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  .vids-track::-webkit-scrollbar{display:none}
+  .vids-card{flex:0 0 340px;max-width:340px;scroll-snap-align:start;background:#fff;border:1px solid rgba(212,175,55,.22);overflow:hidden;display:flex;flex-direction:column;text-decoration:none;color:inherit;transition:transform .4s cubic-bezier(.22,.8,.24,1),box-shadow .4s,border-color .4s}
+  .vids-card:hover{transform:translateY(-4px);border-color:var(--gold);box-shadow:0 22px 48px rgba(12,30,58,.14)}
+  .vids-thumb{position:relative;width:100%;aspect-ratio:16/9;background:#0c1e3a center/cover no-repeat;display:block;cursor:pointer}
+  .vids-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+  .vids-thumb iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+  .vids-play{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg,rgba(8,23,41,.05),rgba(8,23,41,.35));transition:background .3s}
+  .vids-thumb:hover .vids-play{background:linear-gradient(180deg,rgba(8,23,41,.1),rgba(8,23,41,.5))}
+  .vids-play span{width:64px;height:64px;border-radius:50%;background:rgba(212,175,55,.94);display:flex;align-items:center;justify-content:center;box-shadow:0 8px 24px rgba(0,0,0,.3);transition:transform .3s}
+  .vids-thumb:hover .vids-play span{transform:scale(1.08)}
+  .vids-play svg{width:24px;height:24px;margin-left:3px;fill:var(--navy-2)}
+  .vids-body{padding:20px 22px 24px;display:flex;flex-direction:column;gap:10px;flex:1}
+  .vids-date{font-family:'Cormorant SC',serif;font-size:10.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold-d)}
+  .vids-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:500;line-height:1.25;color:var(--ink);margin:0;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+  .vids-arrow{flex:0 0 auto;width:48px;height:48px;border-radius:50%;border:1px solid rgba(212,175,55,.5);background:#fff;color:var(--gold-d);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .3s;z-index:2}
+  .vids-arrow:hover{background:var(--gold);color:var(--navy-2);border-color:var(--gold)}
+  .vids-arrow:disabled{opacity:.3;cursor:default;background:#fff;color:var(--gold-d);border-color:rgba(212,175,55,.5)}
+  .vids-arrow svg{width:20px;height:20px}
+  .vids-empty{flex:1;text-align:center;padding:60px 20px;color:var(--ink-soft);font-family:'Cormorant Garamond',serif;font-style:italic;font-size:19px}
+  .vids-cta{text-align:center;margin-top:36px}
+  .videos .ghost-btn{display:inline-flex;align-items:center;gap:14px;font-family:'Cormorant SC',serif;font-size:11px;letter-spacing:.28em;color:var(--gold-d);text-transform:uppercase;font-weight:600;border:1px solid rgba(212,175,55,.5);padding:16px 36px;transition:all .35s;background:transparent}
+  .videos .ghost-btn:hover{background:var(--gold);color:var(--navy-2);border-color:var(--gold);transform:translateY(-2px)}
+  .videos .ghost-btn svg{width:14px;height:14px}
+  @media(max-width:780px){
+    .videos{padding:84px 0}
+    .vids-arrow{display:none}
+    .vids-card{flex-basis:280px;max-width:280px}
+    .vids-track{gap:16px;padding-bottom:16px}
+  }
+</style>
 
 <!-- ============= LATEST POSTS (home) ============= -->
 <section class="latest-posts" id="artigos">
@@ -3855,6 +3921,7 @@
 </script>
 
 <script defer src="assets/content-loader.js"></script>
+<script defer src="assets/youtube.js"></script>
 
 <script>
   /* carrossel do escritório: indicadores (dots) + legenda que acompanham o scroll */

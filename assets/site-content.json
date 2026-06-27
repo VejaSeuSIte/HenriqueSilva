@@ -19,6 +19,10 @@
         "href": "#depoimentos"
       },
       {
+        "label": "Vídeos",
+        "href": "#videos"
+      },
+      {
         "label": "Blog",
         "href": "blog/"
       },
