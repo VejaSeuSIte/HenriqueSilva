@@ -106,6 +106,20 @@ def parse_feed(raw: bytes):
 
 
 def main() -> int:
+    # Se a lista de vídeos foi curada manualmente pelo painel admin
+    # (assets/youtube.json com "manual": true), não sobrescreve nada:
+    # o Dr. Henrique assumiu o controle da seleção/ordem dos vídeos.
+    try:
+        with open(OUT_PATH, "r", encoding="utf-8") as f:
+            existing = json.load(f)
+        if existing.get("manual"):
+            print("[fetch_youtube] youtube.json em modo manual (curadoria pelo painel) — preservado.")
+            return 0
+    except FileNotFoundError:
+        pass
+    except Exception as e:  # noqa: BLE001
+        print(f"[fetch_youtube] aviso ao checar modo manual: {e}", file=sys.stderr)
+
     channel_id, blocklist = read_config()
     try:
         raw = fetch_feed(channel_id)

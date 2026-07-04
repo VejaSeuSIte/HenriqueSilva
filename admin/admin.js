@@ -700,6 +700,7 @@ const I = {
   briefcase: '<svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>',
   pen: '<svg viewBox="0 0 24 24"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg>',
   save: '<svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>',
+  video: '<svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><polygon points="10 8.5 15.5 12 10 15.5 10 8.5"/></svg>',
 };
 
 function mdSafeUrl(u) {
@@ -765,6 +766,7 @@ async function route() {
   if (path === '/landings') return renderLandings(app);
   if (path.startsWith('/landing/')) return renderLandingEditor(app, decodeURIComponent(path.slice(9)));
   if (path === '/analytics') return renderAnalytics(app);
+  if (path === '/videos') return renderVideos(app);
   if (path === '/links') return renderLinks(app);
   if (path === '/config') return renderConfig(app);
   app.innerHTML = '<div class="container"><div class="empty"><h3>Página não encontrada</h3><a href="#/" class="btn btn-primary">Voltar</a></div></div>';
@@ -832,6 +834,7 @@ function renderTopbar(active) {
         ${item('site', 'Home', I.home, '#/site')}
         ${item('landings', 'Páginas', I.pages, '#/landings')}
         ${item('posts', 'Blog', I.posts, '#/posts')}
+        ${item('videos', 'Vídeos', I.video, '#/videos')}
         ${item('imagens', 'Imagens', I.image, '#/imagens')}
         ${item('analytics', 'Visitas', I.chart, '#/analytics')}
         ${item('links', 'Links', I.link, '#/links')}
@@ -917,6 +920,12 @@ async function renderDashboard(app) {
           <div class="dash-label">Artigos do blog</div>
           <div class="dash-sublabel">Escreva sobre seus casos</div>
         </a>
+        <a class="dash-card" href="#/videos">
+          <div class="dash-icon">${I.video}</div>
+          <div class="dash-num" id="dashVideos"><span class="skeleton" style="width:50px;height:32px;display:inline-block"></span></div>
+          <div class="dash-label">Vídeos do YouTube</div>
+          <div class="dash-sublabel">Adicionar, reordenar, remover</div>
+        </a>
         <a class="dash-card" href="#/imagens">
           <div class="dash-icon">${I.image}</div>
           <div class="dash-num" id="dashImages"><span class="skeleton" style="width:50px;height:32px;display:inline-block"></span></div>
@@ -992,6 +1001,10 @@ async function renderDashboard(app) {
     const imgs = await listDir(REPO_PATHS.IMAGES);
     $('#dashImages').textContent = (imgs || []).filter(x => /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(x.name)).length;
   } catch (e) { $('#dashImages').textContent = '0'; }
+  try {
+    const yt = await getJsonFile(YT_JSON_PATH);
+    $('#dashVideos').textContent = yt && Array.isArray(yt.content?.videos) ? yt.content.videos.length : '0';
+  } catch (e) { $('#dashVideos').textContent = '0'; }
   try {
     const slug = await getClientSlug();
     if (slug) {
@@ -3265,6 +3278,287 @@ function openLinkModal(slug, existing, onSaved) {
     }
   });
   setTimeout(() => $$$('#lf_desc').focus(), 50);
+}
+
+/* ===================== VÍDEOS (YouTube) ===================== */
+
+const YT_JSON_PATH = 'assets/youtube.json';
+
+// Extrai o ID de 11 caracteres de qualquer forma de link do YouTube (ou ID puro).
+function parseYouTubeId(input) {
+  if (!input) return null;
+  const s = String(input).trim();
+  if (/^[A-Za-z0-9_-]{11}$/.test(s)) return s;
+  let m;
+  m = s.match(/youtu\.be\/([A-Za-z0-9_-]{11})/); if (m) return m[1];
+  m = s.match(/[?&]v=([A-Za-z0-9_-]{11})/); if (m) return m[1];
+  m = s.match(/\/(?:shorts|embed|live|v)\/([A-Za-z0-9_-]{11})/); if (m) return m[1];
+  return null;
+}
+
+// Busca o título do vídeo pelo oEmbed do YouTube. Em produção (vejaseusite.github.io)
+// o oEmbed reflete o Origin, então o fetch funciona. Se falhar (rede/privado/local),
+// retorna null e o título é preenchido à mão.
+async function fetchYouTubeMeta(id) {
+  try {
+    const url = 'https://www.youtube.com/oembed?url=' +
+      encodeURIComponent('https://www.youtube.com/watch?v=' + id) + '&format=json';
+    const r = await fetch(url, { cache: 'no-store' });
+    if (!r.ok) return null;
+    const j = await r.json();
+    return { title: (j.title || '').trim() };
+  } catch (_) { return null; }
+}
+
+async function renderVideos(app) {
+  unmountSaveBar();
+  app.innerHTML = renderTopbar('videos') + `
+    <div class="container">
+      <div class="h1">Vídeos do <em>YouTube</em></div>
+      <div class="h-sub">Escolha quais vídeos aparecem na home e em que ordem. Adicione colando o link do YouTube, mude a posição com as setas, ou remova o que não quiser mostrar.</div>
+
+      <div class="vid-toolbar">
+        <button class="btn btn-primary" id="btnAddVideo">${I.plus} Adicionar vídeo</button>
+        <span class="vid-count" id="vidCount"></span>
+      </div>
+
+      <div id="vidAdminList"><div class="skeleton skel-row"></div><div class="skeleton skel-row"></div></div>
+
+      <p class="anly-foot">Os vídeos aparecem na seção <strong>Vídeos</strong> da home. Ao salvar aqui, a lista passa a ser exatamente esta seleção (a atualização automática do canal é pausada). Você pode mexer quando quiser.</p>
+    </div>
+  `;
+
+  let meta = {};
+  let videos = [];
+  let sha = null;
+
+  function markDirty() { setDirty(true, 0); }
+
+  function render() {
+    const list = $('#vidAdminList');
+    const count = $('#vidCount');
+    if (count) count.textContent = videos.length ? `${videos.length} vídeo${videos.length === 1 ? '' : 's'} na home` : '';
+    if (!videos.length) {
+      list.innerHTML = `
+        <div class="empty" style="padding:50px 20px;text-align:center">
+          <div style="font-size:48px;opacity:.4;margin-bottom:14px">${I.video}</div>
+          <h3 style="font-family:'Fraunces',serif;color:var(--off-white);font-weight:300;font-size:22px;margin-bottom:6px">Nenhum vídeo na lista</h3>
+          <p style="font-family:'Fraunces',serif;font-style:italic;color:var(--gray-300);margin-bottom:20px">Enquanto estiver vazia, a seção de vídeos fica escondida no site.</p>
+          <button class="btn btn-primary" id="btnFirstVideo">${I.plus} Adicionar primeiro vídeo</button>
+        </div>`;
+      $('#btnFirstVideo')?.addEventListener('click', () => openVideoModal(null, onVideoAdded));
+      return;
+    }
+    list.innerHTML = videos.map((v, i) => {
+      const id = escAttr(v.id);
+      const thumb = v.thumb || ('https://i.ytimg.com/vi/' + id + '/hqdefault.jpg');
+      return `<div class="vid-row" data-i="${i}">
+        <div class="vid-row-order">
+          <button class="vid-move" data-up="${i}" ${i === 0 ? 'disabled' : ''} title="Subir" aria-label="Subir">▲</button>
+          <span class="vid-row-pos">${i + 1}</span>
+          <button class="vid-move" data-down="${i}" ${i === videos.length - 1 ? 'disabled' : ''} title="Descer" aria-label="Descer">▼</button>
+        </div>
+        <div class="vid-row-thumb"><img loading="lazy" src="${escAttr(thumb)}" alt=""></div>
+        <div class="vid-row-body">
+          <div class="vid-row-title">${escHtml(v.title || '(sem título)')}</div>
+          <a class="vid-row-link" href="https://www.youtube.com/watch?v=${id}" target="_blank" rel="noopener">youtube.com/watch?v=${id} ↗</a>
+        </div>
+        <div class="vid-row-actions">
+          <button class="btn btn-secondary btn-sm" data-edit="${i}">${I.pen} Editar</button>
+          <button class="btn btn-danger btn-sm" data-del="${i}">${I.trash} Remover</button>
+        </div>
+      </div>`;
+    }).join('');
+
+    $$('#vidAdminList [data-up]').forEach(b => b.addEventListener('click', () => {
+      const i = +b.dataset.up; if (i <= 0) return;
+      [videos[i - 1], videos[i]] = [videos[i], videos[i - 1]];
+      markDirty(); render();
+    }));
+    $$('#vidAdminList [data-down]').forEach(b => b.addEventListener('click', () => {
+      const i = +b.dataset.down; if (i >= videos.length - 1) return;
+      [videos[i + 1], videos[i]] = [videos[i], videos[i + 1]];
+      markDirty(); render();
+    }));
+    $$('#vidAdminList [data-edit]').forEach(b => b.addEventListener('click', () => {
+      const i = +b.dataset.edit;
+      openVideoModal(videos[i], (v) => { videos[i] = v; markDirty(); render(); });
+    }));
+    $$('#vidAdminList [data-del]').forEach(b => b.addEventListener('click', async () => {
+      const i = +b.dataset.del;
+      const ok = await confirmModal({
+        title: 'Remover este vídeo da home?',
+        msg: 'Ele deixa de aparecer no site. O vídeo continua normal no seu canal do YouTube.',
+        confirmLabel: 'Sim, remover', confirmKind: 'btn-danger',
+      });
+      if (!ok) return;
+      videos.splice(i, 1);
+      markDirty(); render();
+    }));
+  }
+
+  function onVideoAdded(v) { videos.push(v); markDirty(); render(); }
+
+  $('#btnAddVideo').addEventListener('click', () => openVideoModal(null, onVideoAdded));
+
+  async function doSave() {
+    setSaving('saving');
+    const payload = Object.assign({}, meta, {
+      manual: true,
+      updated: new Date().toISOString().replace(/\.\d+Z$/, 'Z'),
+      videos: videos.map(v => ({
+        id: v.id,
+        title: v.title || '',
+        published: v.published || '',
+        url: 'https://www.youtube.com/watch?v=' + v.id,
+        thumb: v.thumb || ('https://i.ytimg.com/vi/' + v.id + '/hqdefault.jpg'),
+      })),
+    });
+    try {
+      const res = await putJsonFile(YT_JSON_PATH, payload, sha, 'admin: atualizar vídeos da home');
+      sha = res?.content?.sha || sha;
+      meta = payload;
+      setDirty(false);
+      setSaving('saved');
+      showModal({
+        icon: 'success',
+        title: 'Vídeos salvos',
+        msg: 'A seção de vídeos da home já reflete sua seleção. Pode abrir o site pra conferir.',
+        actions: [
+          { label: 'Ver no site', href: '/HenriqueSilva/#videos', target: '_blank', kind: 'btn-primary' },
+          { label: 'Continuar editando', kind: 'btn-secondary' },
+        ]
+      });
+    } catch (e) {
+      setSaving('saved'); setDirty(true);
+      if (e.status === 409) {
+        showModal({
+          icon: 'warn',
+          title: 'Conflito de edição',
+          msg: 'A lista de vídeos foi alterada em outro lugar antes de você salvar. Recarregue a página pra pegar a versão mais recente e refaça suas mudanças.',
+          actions: [
+            { label: 'Recarregar', kind: 'btn-primary', onClick: () => location.reload() },
+            { label: 'Continuar editando', kind: 'btn-secondary' },
+          ]
+        });
+      } else {
+        toast('Erro ao salvar: ' + (e.message || e), 'error');
+      }
+    }
+  }
+
+  mountSaveBar(doSave, '/HenriqueSilva/#videos');
+
+  try {
+    const f = await getJsonFile(YT_JSON_PATH);
+    if (f) {
+      sha = f.sha;
+      meta = f.content || {};
+      videos = Array.isArray(meta.videos) ? meta.videos.map(v => Object.assign({}, v)) : [];
+    }
+    render();
+  } catch (e) {
+    $('#vidAdminList').innerHTML = `<p style="color:var(--danger)">Erro ao carregar os vídeos: ${escHtml(e.message || e)}</p>`;
+  }
+}
+
+function openVideoModal(existing, onSave) {
+  document.querySelector('.modal-bg')?.remove();
+  const isEdit = !!existing;
+  const bg = document.createElement('div');
+  bg.className = 'modal-bg';
+  bg.setAttribute('role', 'dialog');
+  bg.setAttribute('aria-modal', 'true');
+  bg.innerHTML = `
+    <div class="modal-box modal-wide">
+      <div class="modal-title">${isEdit ? 'Editar vídeo' : 'Adicionar vídeo'}</div>
+      <form id="vidForm" class="link-form">
+        <div class="field">
+          <label>Link do vídeo no YouTube</label>
+          <input type="text" id="vf_url" placeholder="Cole aqui, ex: https://www.youtube.com/watch?v=..." value="${escAttr(existing ? ('https://www.youtube.com/watch?v=' + existing.id) : '')}" />
+          <div class="field-help">Abra o vídeo no YouTube, toque em <em>Compartilhar</em> → <em>Copiar link</em> e cole aqui. Funciona com youtube.com, youtu.be e Shorts.</div>
+        </div>
+        <div id="vf_preview" class="vid-modal-preview" style="display:none">
+          <img id="vf_thumb" alt="" />
+          <div class="vid-modal-preview-body">
+            <label style="margin-top:0">Título <span class="field-help-inline">— aparece embaixo do vídeo no site</span></label>
+            <input type="text" id="vf_title" maxlength="200" value="${escAttr(existing?.title || '')}" placeholder="Digite o título do vídeo" />
+          </div>
+        </div>
+        <div id="vf_err" class="vid-modal-err" style="display:none"></div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" id="vf_cancel">Cancelar</button>
+          <button type="submit" class="btn btn-primary" id="vf_save" disabled>${isEdit ? 'Salvar' : 'Adicionar'}</button>
+        </div>
+      </form>
+    </div>
+  `;
+  bg.addEventListener('click', e => { if (e.target === bg) bg.remove(); });
+  document.body.appendChild(bg);
+  function onKey(e) { if (e.key === 'Escape') { bg.remove(); document.removeEventListener('keydown', onKey); } }
+  document.addEventListener('keydown', onKey);
+  const q = (s) => bg.querySelector(s);
+
+  const urlInput = q('#vf_url');
+  const preview = q('#vf_preview');
+  const thumbImg = q('#vf_thumb');
+  const titleInput = q('#vf_title');
+  const errBox = q('#vf_err');
+  const saveBtn = q('#vf_save');
+  let published = existing?.published || '';
+  let lastAutoTitle = '';
+
+  function showErr(msg) { errBox.textContent = msg || ''; errBox.style.display = msg ? 'block' : 'none'; }
+
+  async function resolve() {
+    const id = parseYouTubeId(urlInput.value);
+    if (!id) {
+      preview.style.display = 'none';
+      saveBtn.disabled = true;
+      showErr(urlInput.value.trim() ? 'Não reconheci esse link do YouTube. Confira se copiou o endereço completo.' : '');
+      return;
+    }
+    showErr('');
+    thumbImg.src = 'https://i.ytimg.com/vi/' + id + '/hqdefault.jpg';
+    preview.style.display = 'flex';
+    saveBtn.disabled = false;
+    // Se trocou de vídeo e o título estava vazio (ou era o que buscamos antes), busca de novo.
+    const cur = titleInput.value.trim();
+    if (!cur || cur === lastAutoTitle) {
+      const prevPlaceholder = titleInput.placeholder;
+      titleInput.placeholder = 'Buscando título…';
+      const m = await fetchYouTubeMeta(id);
+      titleInput.placeholder = prevPlaceholder;
+      if (m && m.title && (!titleInput.value.trim() || titleInput.value.trim() === lastAutoTitle)) {
+        titleInput.value = m.title;
+        lastAutoTitle = m.title;
+      }
+    }
+  }
+
+  urlInput.addEventListener('input', resolve);
+  urlInput.addEventListener('paste', () => setTimeout(resolve, 0));
+
+  q('#vf_cancel').addEventListener('click', () => { bg.remove(); document.removeEventListener('keydown', onKey); });
+  q('#vidForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const id = parseYouTubeId(urlInput.value);
+    if (!id) { showErr('Cole um link válido do YouTube.'); return; }
+    const title = titleInput.value.trim();
+    if (!title) { showErr('Escreva um título pro vídeo.'); titleInput.focus(); return; }
+    bg.remove();
+    document.removeEventListener('keydown', onKey);
+    onSave({
+      id,
+      title,
+      published: (existing && id === existing.id) ? published : '',
+      url: 'https://www.youtube.com/watch?v=' + id,
+      thumb: 'https://i.ytimg.com/vi/' + id + '/hqdefault.jpg',
+    });
+  });
+
+  if (existing) { lastAutoTitle = ''; resolve(); }
+  setTimeout(() => urlInput.focus(), 50);
 }
 
 async function renderAnalytics(app) {
