@@ -189,7 +189,7 @@
   "reviews": {
     "rating_num": "5,0",
     "rating_stars": "★★★★★",
-    "meta_html": "Excelente · com base em <strong>16 avaliações</strong> no Google",
+    "meta_html": "Excelente · com base em <strong>26 avaliações</strong> no Google",
     "items": [
       {
         "name": "Jefferson Sobral",
@@ -238,9 +238,63 @@
         "date": "há 1 mês · Google",
         "stars": "★★★★★",
         "quote": "Ótimo."
+      },
+      {
+        "name": "Maria do Socorro Correia dos Anjos",
+        "date": "há 1 mês · Google",
+        "stars": "★★★★★",
+        "quote": "Dr. Henrique, obrigada por tudo. Foram 12 anos esperando por essa causa, eu não tinha mais esperanças. Quando o senhor assumiu o meu caso, com sua competência e profissionalismo, eu ganhei. Gratidão. Super indico!"
+      },
+      {
+        "name": "Felipe Vieira",
+        "date": "há 1 mês · Google",
+        "stars": "★★★★★",
+        "quote": "Faz tempo que sou cliente do escritório, só tenho boas recomendações: atendimento rápido, resultados satisfatórios e objetivos. Sou grato ao Dr. Henrique e o recomendo."
+      },
+      {
+        "name": "Talita Gabryelle Nascimento",
+        "date": "há 1 ano · Google",
+        "stars": "★★★★★",
+        "quote": "Ótimo advogado, muito atencioso, tira todas as nossas dúvidas."
+      },
+      {
+        "name": "Jailson Benedito",
+        "date": "há 1 mês · Google",
+        "stars": "★★★★★",
+        "quote": "Super indico os trabalhos do Dr. Henrique Silva, um advogado sério e muito competente!"
+      },
+      {
+        "name": "Verônica Gabriel",
+        "date": "há 2 semanas · Google",
+        "stars": "★★★★★",
+        "quote": "Muito bom o escritório de advocacia. Enquanto outros não conseguiram, este realmente usou dos recursos e conseguiu."
+      },
+      {
+        "name": "Joselia Lima dos Santos",
+        "date": "há 3 semanas · Google",
+        "stars": "★★★★★",
+        "quote": "Profissionais de excelentes habilidades, muito competentes e responsáveis."
+      },
+      {
+        "name": "Kaio Henrique",
+        "date": "há 1 mês · Google",
+        "stars": "★★★★★",
+        "quote": "Excelente profissional."
+      },
+      {
+        "name": "Fernando Martins",
+        "date": "há 1 mês · Google",
+        "stars": "★★★★★",
+        "quote": "Profissional excelente!"
+      },
+      {
+        "name": "Myslaine Silva",
+        "date": "há 3 semanas · Google",
+        "stars": "★★★★★",
+        "quote": "Profissional excelente."
       }
     ],
-    "cta_label": "Ver todas as 16 avaliações no Google",
+    "cta_label": "Ver todas as 26 avaliações no Google",
     "cta_href": "https://www.google.com/search?q=Henrique+Silva+Advocacia+Cabo+de+Santo+Agostinho"
   },
   "about": {
