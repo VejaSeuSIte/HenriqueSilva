@@ -40,7 +40,7 @@ gh auth token
 
 ### 3. Testar login
 
-Acessa `https://vejaseusite.github.io/HenriqueSilva/admin/` e digita a senha definida durante o cadastro do user (passo de Auth Admin no Supabase Dashboard).
+Acessa `https://henriquesilvaadvocacia.com.br/admin/` e digita a senha definida durante o cadastro do user (passo de Auth Admin no Supabase Dashboard).
 
 > **Importante:** antes de entregar pro cliente, troque a senha provisória via [Authentication › Users](https://supabase.com/dashboard/project/zrpirpdspltxdyniqogq/auth/users) → user `cliente@henriquesilva.app` → "Reset password" e gere uma nova. Não reuse a senha que esteve em chat/repo durante desenvolvimento.
 

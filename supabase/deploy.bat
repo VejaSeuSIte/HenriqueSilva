@@ -25,7 +25,7 @@ if errorlevel 1 goto erro
 echo.
 echo ===============================================
 echo Deploy concluido com sucesso!
-echo Acesse https://vejaseusite.github.io/HenriqueSilva/admin/
+echo Acesse https://henriquesilvaadvocacia.com.br/admin/
 echo ===============================================
 goto fim
 

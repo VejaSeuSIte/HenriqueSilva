@@ -4,4 +4,4 @@ Disallow: /admin/
 Disallow: /blog/_posts/
 Disallow: /blog/_layouts/
 
-Sitemap: https://vejaseusite.github.io/HenriqueSilva/sitemap.xml
+Sitemap: https://henriquesilvaadvocacia.com.br/sitemap.xml

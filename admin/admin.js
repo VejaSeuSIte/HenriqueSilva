@@ -46,7 +46,7 @@ const $$ = (s, ctx = document) => Array.from(ctx.querySelectorAll(s));
 
 async function bootstrap() {
   try {
-    const r = await fetch('/HenriqueSilva/assets/site-config.json?v=' + Date.now(), { cache: 'no-store' });
+    const r = await fetch('/assets/site-config.json?v=' + Date.now(), { cache: 'no-store' });
     const cfg = await r.json();
     SUPABASE_URL = cfg.supabase_url || '';
     SUPABASE_ANON_KEY = cfg.supabase_anon_key || '';
@@ -166,20 +166,20 @@ function escHtml(s) { return String(s == null ? '' : s).replace(/&/g,'&amp;').re
 
 // previewUrl: usa raw.githubusercontent.com (sem cache do Pages CDN, mostra imagens
 // recém-uploadadas imediatamente). Path pode ser tipo "blog/images/foo.jpg" ou
-// "/HenriqueSilva/blog/images/foo.jpg" — normaliza nos dois casos.
+// "/blog/images/foo.jpg" — normaliza nos dois casos.
 function previewUrl(path) {
   if (!path) return '';
   if (/^https?:\/\//.test(path)) return path;
   if (path.startsWith('data:')) return path;
   let p = path.replace(/^\//, '').replace(/^HenriqueSilva\//, '');
-  return `https://raw.githubusercontent.com/VejaSeuSIte/HenriqueSilva/main/${p}?t=${Date.now()}`;
+  return `https://raw.githubusercontent.com/VejaSeuSIte/main/${p}?t=${Date.now()}`;
 }
-// pasteUrl: caminho que vai pro markdown / HTML do site (sob /HenriqueSilva/)
+// pasteUrl: caminho que vai pro markdown / HTML do site (sob /)
 function pasteUrl(path) {
   if (!path) return '';
   if (/^https?:\/\//.test(path)) return path;
   let p = path.replace(/^\//, '').replace(/^HenriqueSilva\//, '');
-  return `/HenriqueSilva/${p}`;
+  return `/${p}`;
 }
 
 function parseFrontMatter(text) {
@@ -779,7 +779,7 @@ function renderLogin(app) {
     <div class="login-page">
       <div class="login-box">
         <div class="login-brand">
-          <img src="/HenriqueSilva/assets/seal-hsa.png?v=6" alt="HSA" />
+          <img src="/assets/seal-hsa.png?v=6" alt="HSA" />
           <div class="login-brand-name">Henrique Silva<small>Advocacia · Admin</small></div>
         </div>
         <div class="login-title">Acesso ao painel</div>
@@ -826,7 +826,7 @@ function renderTopbar(active) {
   return `
     <div class="topbar" id="topbar">
       <div class="topbar-brand">
-        <img src="/HenriqueSilva/assets/seal-hsa.png?v=6" alt="HSA" />
+        <img src="/assets/seal-hsa.png?v=6" alt="HSA" />
         <div class="topbar-brand-text">Henrique Silva<small>Advocacia · Admin</small></div>
       </div>
       <div class="topbar-nav">
@@ -839,7 +839,7 @@ function renderTopbar(active) {
         ${item('analytics', 'Visitas', I.chart, '#/analytics')}
         ${item('links', 'Links', I.link, '#/links')}
         ${item('config', 'Configurações', I.cog, '#/config')}
-        <a href="/HenriqueSilva/" target="_blank" rel="noopener">${I.ext}<span>Ver site</span></a>
+        <a href="/" target="_blank" rel="noopener">${I.ext}<span>Ver site</span></a>
       </div>
       <div class="topbar-actions">
         <button class="btn btn-ghost" id="btnHelp" title="Ver guia rápido" style="padding:8px 12px;color:var(--gold-light)">${I.help}</button>
@@ -954,7 +954,7 @@ async function renderDashboard(app) {
             <a class="btn btn-secondary" href="#/new">${I.plus} Escrever novo artigo</a>
             <a class="btn btn-secondary" href="#/site">${I.home} Editar Home</a>
             <a class="btn btn-secondary" href="#/imagens">${I.upload} Subir foto</a>
-            <a class="btn btn-secondary" href="/HenriqueSilva/" target="_blank">${I.ext} Ver site público</a>
+            <a class="btn btn-secondary" href="/" target="_blank">${I.ext} Ver site público</a>
           </div>
         </div>
       </div>
@@ -1735,7 +1735,7 @@ async function renderSiteEditor(app) {
         title: 'Salvo com sucesso',
         msg: 'Suas alterações já estão no ar. Pode abrir o site público pra conferir.',
         actions: [
-          { label: 'Ver no site', href: '/HenriqueSilva/', target: '_blank', kind: 'btn-primary' },
+          { label: 'Ver no site', href: '/', target: '_blank', kind: 'btn-primary' },
           { label: 'Continuar editando', kind: 'btn-secondary' },
         ]
       });
@@ -1781,7 +1781,7 @@ async function renderSiteEditor(app) {
     }
   } catch(_) {}
 
-  mountSaveBar(doSave, '/HenriqueSilva/');
+  mountSaveBar(doSave, '/');
 }
 
 /* ===================== LANDINGS LIST ===================== */
@@ -2056,7 +2056,7 @@ async function renderLandingEditor(app, slug) {
         title: 'Página salva',
         msg: 'O site está sendo regenerado. Em cerca de 30 segundos a alteração estará no ar.',
         actions: [
-          { label: 'Ver no site', href: `/HenriqueSilva/${slug}/`, target: '_blank', kind: 'btn-primary' },
+          { label: 'Ver no site', href: `/${slug}/`, target: '_blank', kind: 'btn-primary' },
           { label: 'Voltar para lista', kind: 'btn-secondary', onClick: () => { location.hash = '#/landings'; } },
         ]
       });
@@ -2101,7 +2101,7 @@ async function renderLandingEditor(app, slug) {
     }
   } catch(_) {}
 
-  mountSaveBar(doSave, `/HenriqueSilva/${slug}/`);
+  mountSaveBar(doSave, `/${slug}/`);
 }
 
 /* ===================== POSTS LIST ===================== */
@@ -2161,7 +2161,7 @@ async function renderPosts(app) {
           <p>${escHtml(p.excerpt||'')}</p>
           <div class="post-row-actions">
             <a href="#/edit/${encodeURIComponent(p.fileBase)}" class="btn btn-secondary">Editar</a>
-            ${isDraft ? '' : `<a href="/HenriqueSilva/blog/${p.slug || ''}/" target="_blank" class="btn btn-secondary">Ver ↗</a>`}
+            ${isDraft ? '' : `<a href="/blog/${p.slug || ''}/" target="_blank" class="btn btn-secondary">Ver ↗</a>`}
             <button class="btn btn-danger" data-del="${p.path}" data-sha="${p.sha}" data-name="${escAttr(p.title||'')}">Excluir</button>
           </div>
         </article>`;
@@ -2304,7 +2304,7 @@ async function renderEditor(app, fileBase) {
                 ${meta.cover ? `<div class="cover-preview"><img src="${previewUrl(meta.cover)}" alt="${escAttr(meta.cover_alt||'')}" id="coverImg" onerror="this.style.display='none'" /><button type="button" class="cover-remove" id="coverRemove" aria-label="Remover capa">×</button></div>` : `<div class="cover-empty"><div class="cover-empty-inner">${I.image}<span>Sem capa</span></div></div>`}
                 <div class="cover-controls">
                   <button type="button" class="btn btn-secondary btn-pickcover">${I.upload} ${meta.cover ? 'Trocar' : 'Escolher imagem'}</button>
-                  <input type="text" id="f-cover" value="${escAttr(meta.cover)}" placeholder="/HenriqueSilva/blog/images/..." class="cover-url" aria-label="URL da capa" />
+                  <input type="text" id="f-cover" value="${escAttr(meta.cover)}" placeholder="/blog/images/..." class="cover-url" aria-label="URL da capa" />
                 </div>
                 <div class="field" style="margin-top:8px">
                   <label>Texto alternativo</label>
@@ -2655,7 +2655,7 @@ async function renderEditor(app, fileBase) {
       const isPublished = !m.draft;
       const actions = isPublished
         ? [
-            { label: 'Ver no site', href: `/HenriqueSilva/blog/${m.slug}/`, target: '_blank', kind: 'btn-primary' },
+            { label: 'Ver no site', href: `/blog/${m.slug}/`, target: '_blank', kind: 'btn-primary' },
             { label: 'Continuar editando', kind: 'btn-secondary' },
             { label: 'Voltar pra lista', kind: 'btn-secondary', onClick: () => { location.hash = '#/posts'; } },
           ]
@@ -2743,7 +2743,7 @@ async function renderEditor(app, fileBase) {
     }
   } catch(_) {}
 
-  mountSaveBar(doSave, fileBase ? `/HenriqueSilva/blog/${meta.slug}/` : null);
+  mountSaveBar(doSave, fileBase ? `/blog/${meta.slug}/` : null);
 }
 
 function insertAtCursor(ta, text) {
@@ -3024,7 +3024,7 @@ const UTM_SOURCE_OPTIONS = ['instagram', 'whatsapp', 'facebook', 'linkedin', 'ti
 const UTM_MEDIUM_OPTIONS = ['bio', 'stories', 'post', 'reel', 'status', 'grupo', 'dm', 'assinatura', 'organic', 'paid', 'qr'];
 
 function buildShortUrl(slug) {
-  return `https://vejaseusite.github.io/HenriqueSilva/?l=${encodeURIComponent(slug)}`;
+  return `https://henriquesilvaadvocacia.com.br/?l=${encodeURIComponent(slug)}`;
 }
 
 async function renderLinks(app) {
@@ -3037,7 +3037,7 @@ async function renderLinks(app) {
       <div class="links-toolbar">
         <div class="links-base">
           <span class="links-base-label">Base dos links</span>
-          <code class="links-base-url">vejaseusite.github.io/HenriqueSilva/?l=<em>seu-atalho</em></code>
+          <code class="links-base-url">vejaseusite.github.io/?l=<em>seu-atalho</em></code>
         </div>
         <button class="btn btn-primary" id="btnNewLink">${I.plus} Criar link</button>
       </div>
@@ -3086,7 +3086,7 @@ async function renderLinks(app) {
             </div>
           </div>
           <div class="link-card-url">
-            <code>vejaseusite.github.io/HenriqueSilva/?l=<strong>${escHtml(l.slug)}</strong></code>
+            <code>vejaseusite.github.io/?l=<strong>${escHtml(l.slug)}</strong></code>
           </div>
           <div class="link-card-meta">
             <span>→ ${escHtml(target)}</span>
@@ -3152,7 +3152,7 @@ function openLinkModal(slug, existing, onSaved) {
         <div class="field">
           <label>Atalho <span class="field-help-inline">— vira o final do link curto</span></label>
           <div class="link-slug-wrap">
-            <span class="link-slug-prefix">vejaseusite.github.io/HenriqueSilva/?l=</span>
+            <span class="link-slug-prefix">vejaseusite.github.io/?l=</span>
             <input type="text" id="lf_slug" maxlength="48" pattern="[a-z0-9-]+" required value="${escAttr(existing?.slug || '')}" placeholder="insta" />
           </div>
           <div class="field-help">Só letras minúsculas, números e hífen. Curto e fácil de lembrar — ex: "insta", "card", "promo".</div>
@@ -3235,7 +3235,7 @@ function openLinkModal(slug, existing, onSaved) {
     const med = $$$('#lf_medium').value.trim();
     const cmp = $$$('#lf_campaign').value.trim();
     const utmBits = [src && `utm_source=${src}`, med && `utm_medium=${med}`, cmp && `utm_campaign=${cmp}`].filter(Boolean).join(' & ');
-    $$$('#lf_preview').textContent = s ? `vejaseusite.github.io/HenriqueSilva/?l=${s}  →  ${t || '(escolha o destino)'}${utmBits ? '  +  ' + utmBits : ''}` : '(preencha o atalho)';
+    $$$('#lf_preview').textContent = s ? `vejaseusite.github.io/?l=${s}  →  ${t || '(escolha o destino)'}${utmBits ? '  +  ' + utmBits : ''}` : '(preencha o atalho)';
   }
   ['lf_slug','lf_source','lf_medium','lf_campaign'].forEach(id => $$$('#'+id).addEventListener('input', updatePreview));
   targetSel.addEventListener('change', updatePreview);
@@ -3425,7 +3425,7 @@ async function renderVideos(app) {
         title: 'Vídeos salvos',
         msg: 'A seção de vídeos da home já reflete sua seleção. Pode abrir o site pra conferir.',
         actions: [
-          { label: 'Ver no site', href: '/HenriqueSilva/#videos', target: '_blank', kind: 'btn-primary' },
+          { label: 'Ver no site', href: '/#videos', target: '_blank', kind: 'btn-primary' },
           { label: 'Continuar editando', kind: 'btn-secondary' },
         ]
       });
@@ -3447,7 +3447,7 @@ async function renderVideos(app) {
     }
   }
 
-  mountSaveBar(doSave, '/HenriqueSilva/#videos');
+  mountSaveBar(doSave, '/#videos');
 
   try {
     const f = await getJsonFile(YT_JSON_PATH);
@@ -4001,7 +4001,7 @@ async function showPathDetail(slug, path, days) {
         <div class="skeleton" style="height:60px"></div>
       </div>
       <div class="modal-actions">
-        <a class="btn btn-secondary" href="/HenriqueSilva${escAttr(path.replace(/^\/HenriqueSilva/, ''))}" target="_blank">Ver no site ↗</a>
+        <a class="btn btn-secondary" href="/${escAttr(path.replace(/^\/, ''))}" target="_blank">Ver no site ↗</a>
         <button class="btn btn-primary" id="pathClose">Fechar</button>
       </div>
     </div>
@@ -4160,11 +4160,11 @@ async function renderConfig(app) {
         icon: 'success', title: 'Configurações salvas',
         msg: 'Telefone, e-mail e demais informações foram atualizados em todo o site.',
         actions: [
-          { label: 'Ver no site', href: '/HenriqueSilva/', target: '_blank', kind: 'btn-primary' },
+          { label: 'Ver no site', href: '/', target: '_blank', kind: 'btn-primary' },
           { label: 'Continuar', kind: 'btn-secondary' },
         ]
       });
     } catch(err){ setSaving('saved'); setDirty(true); toast(err.message, 'error'); }
   }
-  mountSaveBar(doSaveCfg, '/HenriqueSilva/');
+  mountSaveBar(doSaveCfg, '/');
 }

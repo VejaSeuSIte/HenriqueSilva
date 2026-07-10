@@ -64,7 +64,7 @@ SRC_BLOG = ROOT / 'blog'
 LAYOUTS = SRC_BLOG / '_layouts'
 POSTS_DIR = SRC_BLOG / '_posts'
 DIST = ROOT / 'dist'
-SITE_URL = 'https://vejaseusite.github.io/HenriqueSilva'
+SITE_URL = 'https://henriquesilvaadvocacia.com.br'
 
 CATEGORIES = {
     'trabalhista': 'Trabalhista',
@@ -148,7 +148,7 @@ def parse_post(path):
         'body_html': body_html,
         'read_min': read_min,
         'word_count': word_count,
-        'url': f'/HenriqueSilva/blog/{slug}/',
+        'url': f'/blog/{slug}/',
         'absolute_url': f'{SITE_URL}/blog/{slug}/',
     }
 

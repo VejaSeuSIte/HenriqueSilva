@@ -6,7 +6,7 @@ Site institucional do escritório **Henrique Silva Advocacia** — Dr. José Hen
 
 Escritório multidisciplinar com mais de 14 anos de atuação, especializado em Direito Trabalhista, Previdenciário, Cível, Família, Consumidor, Imobiliário, Juizados Especiais, Tributário, Criminal e Assessoria Empresarial. Atendimento em Pernambuco e online em todo o Brasil.
 
-- **Site live:** https://vejaseusite.github.io/HenriqueSilva/
+- **Site live:** https://henriquesilvaadvocacia.com.br/
 - **WhatsApp:** (81) 9 8713-4878
 - **E-mail:** henriquesilva.adv@gmail.com
 
