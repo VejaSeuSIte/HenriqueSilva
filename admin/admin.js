@@ -172,7 +172,7 @@ function previewUrl(path) {
   if (/^https?:\/\//.test(path)) return path;
   if (path.startsWith('data:')) return path;
   let p = path.replace(/^\//, '').replace(/^HenriqueSilva\//, '');
-  return `https://raw.githubusercontent.com/VejaSeuSIte/main/${p}?t=${Date.now()}`;
+  return `https://raw.githubusercontent.com/VejaSeuSIte/HenriqueSilva/main/${p}?t=${Date.now()}`;
 }
 // pasteUrl: caminho que vai pro markdown / HTML do site (sob /)
 function pasteUrl(path) {
@@ -4001,7 +4001,7 @@ async function showPathDetail(slug, path, days) {
         <div class="skeleton" style="height:60px"></div>
       </div>
       <div class="modal-actions">
-        <a class="btn btn-secondary" href="/${escAttr(path.replace(/^\/, ''))}" target="_blank">Ver no site ↗</a>
+        <a class="btn btn-secondary" href="/${escAttr(path.replace(/^\//, ''))}" target="_blank">Ver no site ↗</a>
         <button class="btn btn-primary" id="pathClose">Fechar</button>
       </div>
     </div>
